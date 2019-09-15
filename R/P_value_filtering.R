@@ -40,8 +40,8 @@ for (i in 1:N) {
   subdata <- subset(melt_data, variable == aVariable)
   for (j in 1:(ncol(subdata)-2)) {
     if (length(unique(subdata[ , j])) == 2) {
-    sub1c <- subdata[which(subdata[,j]==unique(subdata[ , j])[1]),]
-    sub2c <- subdata[which(subdata[,j]==unique(subdata[ , j])[2]),]
+    sub1c <- subdata[which(subdata[, j]==unique(subdata[ , j])[1]),]
+    sub2c <- subdata[which(subdata[, j]==unique(subdata[ , j])[2]),]
     p <- wilcox.test(sub1c$value, sub2c$value, paired = F)$p.value
     Ps[i,j] <- p
     } else if (length(unique(melt_data[ , j])) >= 2) {
@@ -50,21 +50,27 @@ for (i in 1:N) {
     Ps[i,j] <- p
     } else if (length(unique(melt_data[ , j])) < 2) {
     Ps[i,j] <- "NA"
-    col_NA <- c(col_NA,j)
+    col_NA <- c(col_NA, j)
     }
     }
 }
 
+# Save the original Ps matrix to Ps_ori
 Ps_ori <- Ps
 
-Ps <- Ps[,-unique(col_NA)]
+# Exclude columns containing NA, and then turn the class of matrix into numeric
+Ps <- Ps[ , -unique(col_NA)]
 mode(Ps) <- "numeric"
 
+# Select only the factors with at least one p value smaller than 0.05
 sel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) > 0)]
-nosel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) == 0)]
+nonsel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) == 0)]
 
-#接下來寫for迴圈去做lmtest fmla2 <. as.formula(paste(sel_fac))
 
+# Do lmtest with the selected factors fmla2 <. as.formula(paste(sel_fac))
+m1 <- lm(data = )
+m2 <- lm(data = )
+p12
 ############################Testing############################
 
 length(unique(melt_data[ , 1]))==2
