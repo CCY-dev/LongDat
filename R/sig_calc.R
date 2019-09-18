@@ -18,6 +18,7 @@ sig_calc <- function(file, pair){
                            "Study FDR (MWU post-hoc, N=3)" = pdata$pPost13, "Signal" = rep (NA, N))
 
   # The criteria is that the qmodel of the feature < 0.1, and that the post-hoc p value < 0.05
+  # NS means not significant
   for (i in pair) {
     pPost_pair <- as.character(paste0("pPost", pair))
     cd_pair <- as.character(paste0("cd", pair))
