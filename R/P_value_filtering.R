@@ -1,4 +1,4 @@
-# !! Tidyr is my dependency!!
+# !! Tidyr, dplyr is my dependency!!
 # User has to define: value_column, factor_column, paired_test
 rm(list=ls())
 
@@ -73,6 +73,9 @@ for (i in 1:N) {
 # Save the original Ps matrix to Ps_ori
 Ps_ori <- Ps
 
+# Output the original P value table
+write.table(x = Ps_ori, file = "P_value_all.txt", sep = "\t",
+            row.names = T, col.names = NA, quote = F)
 # Exclude columns containing NA, and then turn the class of matrix into numeric
 Ps <- Ps[ , -unique(col_NA)]
 mode(Ps) <- "numeric"
@@ -80,6 +83,12 @@ mode(Ps) <- "numeric"
 # Select only the factors with at least one p value smaller than 0.05
 sel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) > 0)]
 nonsel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) == 0)]
+
+
+# Output the factors sel_fac and nonsel_fac
+ff = (list("selected factors" = sel_fac, "non-selected factors" = nonsel_fac))
+FF <- sapply(ff, "length<-", max(lengths(ff)))
+write.file(FF, file = "Factor_filtering.txt", sep = "\t", quote = F)
 
 N <- length (variables)
 # Do lmtest with the selected factors
@@ -105,128 +114,153 @@ for (i in 1:N) {
   }
 }
 
+# Output the Ps_lm table
+write.table(x = Ps_lm, file = "P_value_lm.txt", sep = "\t",
+            row.names = T, col.names = NA, quote = F)
+
 # Calculate cliff's delta
+# First, ask user to define the column names that are paired (paired = T)
+# in charactor vector
+paired_test <- c("Case")
+#############要怎麼做才能把所有的Delta_unpaired集合起來？
+D_unpaired <- c()
+D_paired <- c()
+N <- length (variables)
+
+# Calculate cliff's delta only for the sel_fac
+subdata_sel <- dplyr::select(subdata, -c(nonsel_fac))
+
+# Generate the dataset for unpaired test
+subdata_unpaired <- as.data.frame(subdata_sel[ , -match(x = paired_test,
+                                                    table = colnames(subdata_sel))])
+
+# And also generate the subset for paired test (only if the paired_test
+#factors are present in sel_fac and the length of paired_test isn't zero)
+if (paired_test %in% sel_fac & !length(paired_test) == 0) {
+subdata_paired <- as.data.frame(subdata_sel[ , match(x = paired_test,
+                                                     table = colnames(subdata_sel))])
+colnames(subdata_paired) <- paired_test
+subdata_paired[ , "variable"] <- subdata$variable
+subdata_paired[ , "value"] <- subdata$value
+}
+
 for (i in 1:N) {
   # loop through all variables
   aVariable = variables [i]
   print(i)
   print(aVariable)
-N <- length (variables)
-D_unpaired <- list()
-D_paired <- list()
-# Make empty lists first, because there's paired and unpaired cliff's delta, so
-# here calculate them separately
-Delta_unpaired <- list()
-Delta_paired <- list()
+  # Make empty lists first, because there's paired and unpaired cliff's delta, so
+  # here calculate them separately
+  Delta_unpaired <- list()
+  Delta_paired <- list()
 
-# Ask user to define the column names that are paired (paired = T) in charactor vector
-paired_test <- c("Case")
+  # Do the unpaired test first
+  for (m in 1:(ncol(subdata_unpaired)-2)) {
+    print(m)
+    # Only calculate effect size for the ones with more than two values, and exclude
+    # any factor whose levels has fewer than 3 values
+    # 這一行是指factor中只要有一個少於3個值的就不會算，
+    # 但是如果有一個factor有五個大於3個，只有一個小於3個，
+    # 這個是否要計算？ （為什麼orddom會設最小值是3？）
 
-# Generate the subset for paired test
-subdata_paired <- as.data.frame(subdata[ , match(x = paired_test,
-                                                 table = colnames(subdata))])
-colnames(subdata_paired) <- paired_test
-subdata_paired[ , "variable"] <- subdata$variable
-subdata_paired[ , "value"] <- subdata$value
-
-# And then also generate the dataset for unpaired test
-subdata_unpaired <- as.data.frame(subdata[ , -match(x = paired_test,
-                                                    table = colnames(subdata))])
-# Do the unpaired test first
-for (m in 1:(ncol(subdata_unpaired)-2)) {
-  print(m)
-  # Only calculate effect size for the ones with more than two values, and exclude
-  # any factor whose levels has fewer than 3 values
-  # 這一行是指factor中只要有一個少於3個值的就不會算，
-  # 但是如果有一個factor有五個大於3個，只有一個小於3個，
-  # 這個是否要計算？ （為什麼orddom會設最小值是3？）
-
-  if (length(unique(subdata_unpaired[ , m])) >= 2
+    if (length(unique(subdata_unpaired[ , m])) >= 2
       & !any(as.numeric(table(subdata_unpaired[ , m]))<3)){
-
-    # Split the dataset into groups by the column value
-    subm_unpaired <- split(x = subdata_unpaired, f = subdata_unpaired[ , m])
-    # Generate pairs to calculate pairwise effect size
-    pairs_unpaired <- combn(x = seq(1:length(subm_unpaired)), m = 2)
-    # D stores delta value
-    D <- c()
-    # N stores the name of the delta value
-    N <- c()
-    for (i in 1:ncol(pairs_unpaired)) {
-      print(i)
-
-      # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
-      # and pairs[2, i], and since subm is a list, so use [[]] to do selection
-      d <- as.numeric (orddom::orddom(x = (subm_unpaired[[pairs_unpaired[1,i]]])$value,
+      # Split the dataset into groups by the column value
+      subm_unpaired <- split(x = subdata_unpaired, f = subdata_unpaired[ , m])
+      # Generate pairs to calculate pairwise effect size
+      pairs_unpaired <- combn(x = seq(1:length(subm_unpaired)), m = 2)
+      # D stores delta value
+      D <- c()
+      # N stores the name of the delta value
+      Name <- c()
+      for (i in 1:ncol(pairs_unpaired)) {
+        print(i)
+        # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
+        # and pairs[2, i], and since subm is a list, so use [[]] to do selection
+        d <- as.numeric (orddom::orddom(x = (subm_unpaired[[pairs_unpaired[1,i]]])$value,
                                       y = (subm_unpaired[[pairs_unpaired[2,i]]])$value, paired = F)[13,1])
 
-      # This is a really clever way utilizing loop! All the D values will be filled after
-      # looping
-      D <- c(D, d)
-      # n is the name of each d value
-      n <- paste("d", names(subm_unpaired)[pairs_unpaired[1,i]], names(subm_unpaired)[pairs_unpaired[2,i]], sep = "_")
-      # This is a really clever way utilizing loop! All the N values will be filled after
-      # looping
-      N <- c(N, n)
+        # This is a really clever way utilizing loop! All the D values will be filled after
+        # looping
+        D <- c(D, d)
+        # n is the name of each d value
+        n <- paste("d", names(subm_unpaired)[pairs_unpaired[1,i]], names(subm_unpaired)[pairs_unpaired[2,i]], sep = "_")
+        # This is a really clever way utilizing loop! All the N values will be filled after
+        # looping
+        Name <- c(Name, n)
+        }
+      # Name the d values in D with the names in N
+      names(D) <- Name
+      # Collect all the D into Delta list
+      Delta_unpaired[[m]] <- D
+      } else {
+        Delta_unpaired[[m]] <- "NA"
+      }
     }
-    # Name the d values in D with the names in N
-    names(D) <- N
-    # Collect all the D into Delta list
-    Delta_unpaired[[m]] <- D
-  } else {
-    Delta_unpaired[[m]] <- "NA"
-  }
-}
+  # Name the lists
+  names(Delta_unpaired) <- paste(aVariable, colnames(subdata_unpaired)[1:(ncol(subdata_unpaired)-2)]
+                                 , sep = "_")
+  #names(Delta_unpaired) <- colnames(subdata_unpaired)[1:(ncol(subdata_unpaired)-2)]
+  D_unpaired <- c(D_unpaired,Delta_unpaired)
 
-# Name the lists
-names(Delta_unpaired) <- colnames(subdata_unpaired)[1:(ncol(subdata_unpaired)-2)]
+  # Then do the paired test (only if the paired_test factors are present in sel_fac
+  # and the length of paired_test isn't zero)
+  if (paired_test %in% sel_fac & !length(paired_test) == 0) {
 
+    for (m in 1:(ncol(subdata_paired)-2)) {
+      print(m)
+      # Only calculate effect size for the ones with more than two values, and exclude
+      # any factor whose levels has fewer than 3 values
+      if (length(unique(subdata_paired[ , m])) >= 2
+        & !any(as.numeric(table(subdata_paired[ , m]))<3)){
 
-# Then do the paired test
-for (m in 1:(ncol(subdata_paired)-2)) {
-  print(m)
-  # Only calculate effect size for the ones with more than two values, and exclude
-  # any factor whose levels has fewer than 3 values
-  if (length(unique(subdata_paired[ , m])) >= 2
-      & !any(as.numeric(table(subdata_paired[ , m]))<3)){
-
-    # Split the dataset into groups by the column value
-    subm_paired <- split(x = subdata_paired, f = subdata_paired[ , m])
-    # Generate pairs to calculate pairwise effect size
-    pairs_paired <- combn(x = seq(1:length(subm_paired)), m = 2)
-    # D stores delta value
-    D <- c()
-    # N stores the name of the delta value
-    N <- c()
-    for (i in 1:ncol(pairs_paired)) {
-      print(i)
-
-      # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
-      # and pairs[2, i], and since subm is a list, so use [[]] to do selection
-      d <- as.numeric (orddom::orddom(x = (subm_paired[[pairs_paired[1,i]]])$value,
+        # Split the dataset into groups by the column value
+        subm_paired <- split(x = subdata_paired, f = subdata_paired[ , m])
+        # Generate pairs to calculate pairwise effect size
+        pairs_paired <- combn(x = seq(1:length(subm_paired)), m = 2)
+        # D stores delta value
+        D <- c()
+        # N stores the name of the delta value
+       Name <- c()
+       for (i in 1:ncol(pairs_paired)) {
+        print(i)
+        # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
+        # and pairs[2, i], and since subm is a list, so use [[]] to do selection
+        d <- as.numeric (orddom::orddom(x = (subm_paired[[pairs_paired[1,i]]])$value,
                                       y = (subm_paired[[pairs_paired[2,i]]])$value, paired = T)[11,1])
 
-      # This is a really clever way utilizing loop! All the D values will be filled after
-      # looping
-      D <- c(D, d)
-      # n is the name of each d value
-      n <- paste("d",names(subm_paired)[pairs_paired[1,i]], names(subm_paired)[pairs_paired[2,i]], sep = "_")
-      # This is a really clever way utilizing loop! All the N values will be filled after
-      # looping
-      N <- c(N, n)
+        # This is a really clever way utilizing loop! All the D values will be filled after
+        # looping
+        D <- c(D, d)
+        # n is the name of each d value
+        n <- paste("d",names(subm_paired)[pairs_paired[1,i]], names(subm_paired)[pairs_paired[2,i]]
+                   , sep = "_")
+        # This is a really clever way utilizing loop! All the N values will be filled after
+        # looping
+        Name <- c(Name, n)
+        }
+      # Name the d values in D with the names in N
+      names(D) <- Name
+      # Collect all the D into Delta list
+      Delta_paired[[m]] <- D
+      } else {
+        Delta_paired[[m]] <- "NA"
+      }
     }
-    # Name the d values in D with the names in N
-    names(D) <- N
-    # Collect all the D into Delta list
-    Delta_paired[[m]] <- D
-  } else {
-    Delta_paired[[m]] <- "NA"
   }
-}
-# Name the lists
-names(Delta_paired) <- colnames(subdata_paired)[1:(ncol(subdata_paired)-2)]
+  # Name the lists
+  names(Delta_paired) <- paste(aVariable, colnames(subdata_paired)[1:(ncol(subdata_paired)-2)]
+                               , sep = "_")
+  D_paired <- c(D_paired,Delta_paired)
 }
 
+D_paired_df <- sapply(D_paired, "length<-", max(lengths(D_paired)))
+D_unpaired_df <- sapply(D_unpaired, "length<-", max(lengths(D_unpaired)))
+
+write.table(x = D_paired_df, file = "D_paired.txt", sep = "\t",
+            row.names = T, col.names = NA, quote = F)
+write.table(x = D_unpaired_df, file = "D_unpaired.txt", sep = "\t",
+            row.names = T, col.names = NA, quote = F)
 
 ############################Testing############################
 
@@ -296,7 +330,7 @@ for (m in 1:(ncol(subdata_unpaired)-2)) {
 
 # Name the lists
 names(Delta_unpaired) <- colnames(subdata_unpaired)[1:(ncol(subdata_unpaired)-2)]
-
+D_unpaired[[i]] <- Delta_unpaired
 
 # Then do the paired test
 for (m in 1:(ncol(subdata_paired)-2)) {
@@ -338,8 +372,8 @@ for (m in 1:(ncol(subdata_paired)-2)) {
   } else {
     Delta_paired[[m]] <- "NA"
   }
-}
-
 # Name the lists
 names(Delta_paired) <- colnames(subdata_paired)[1:(ncol(subdata_paired)-2)]
+D_paired[[i]] <- Delta_paired
+}
 
