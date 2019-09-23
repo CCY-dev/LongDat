@@ -1,5 +1,17 @@
 # !! Tidyr, dplyr is my dependency!!
 # User has to define: value_column, factor_column, paired_test
+# functionu 一開始也列出adjustMethod = "fdr",
+# robustCutoff = 5, QCutoff = 0.1, DCutoff = 0等等預設值，也可以給人更改
+# if (missing(metaMat)) {
+#stop('Error - Necessary argument "metaMat" missing.')
+#}
+#if (missing(featureMat)) {
+#  stop('Error - Necessary argument "featureMat" missing.')
+#}
+#if (nrow(metaMat) != nrow(featureMat)) {
+#  stop("featureMat and metaMat don't have same number of rows.")
+#}
+
 rm(list=ls())
 
 setwd("/Users/Jessica/Documents/Lab/CORONA")
@@ -80,6 +92,25 @@ write.table(x = Ps_ori, file = "P_value_all.txt", sep = "\t",
 Ps <- Ps[ , -unique(col_NA)]
 mode(Ps) <- "numeric"
 
+# Do FDR correction (correct for the number of features)
+adjust_fun <- function(x) p.adjust(p = x, method = "fdr", n = N)
+Ps_fdr <- apply(X = Ps, MARGIN = 2, FUN = adjust_fun)
+
+# Make an empty list
+D_unpaired <- c()
+for (i in 1:N) {
+  # loop through all variables
+  aVariable = variables[i]
+  print(i)
+  print(aVariable)
+  for (j in 1:(ncol(Ps_fdr))) {
+if (Ps_fdr[i, j] < 0.1) {
+
+}
+}
+}
+
+
 # Select only the factors with at least one p value smaller than 0.05
 sel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) > 0)]
 nonsel_fac <- colnames(Ps)[apply(Ps, 2, function(x) sum(x < 0.05) == 0)]
@@ -105,10 +136,13 @@ for (i in 1:N) {
 
   for (j in 1:length(sel_fac)) {
     sel_fac_minus1 <- sel_fac[-j]
-    fmla1 <- as.formula(paste("value ~ ", paste(sel_fac_minus1, collapse= "+")))
-    fmla2 <- as.formula(paste("value ~ ", paste(sel_fac, collapse= "+")))
+    fmla1 <- as.formula(paste("rank(value) ~ ", paste(sel_fac_minus1, collapse= "+")))
+    fmla2 <- as.formula(paste("rank(value )~ ", paste(sel_fac, collapse= "+")))
+    # !!!!!這裡不用先做兩個lm！！直接用lrtest(fm2, fm1)就可以了！！
+    # https://www.rdocumentation.org/packages/lmtest/versions/0.9-37/topics/lrtest
     m1 <- lm(data = subdata, fmla1)
     m2 <- lm(data = subdata, fmla2)
+    # lrtest: Likelihood Ratio Test Of Nested Models
     p_lm <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)" [2]
     Ps_lm[i,j] <- p_lm
   }
@@ -122,7 +156,9 @@ write.table(x = Ps_lm, file = "P_value_lm.txt", sep = "\t",
 # First, ask user to define the column names that are paired (paired = T)
 # in charactor vector
 paired_test <- c("Case")
-#############要怎麼做才能把所有的Delta_unpaired集合起來？
+
+# Make empty lists first, because there's paired and unpaired cliff's delta, so
+# here calculate them separately
 D_unpaired <- c()
 D_paired <- c()
 N <- length (variables)
@@ -264,116 +300,36 @@ write.table(x = D_unpaired_df, file = "D_unpaired.txt", sep = "\t",
 
 ############################Testing############################
 
-# Make empty lists first, because there's paired and unpaired cliff's delta, so
-# here calculate them separately
-Delta_unpaired <- list()
-Delta_paired <- list()
+###### This is my script (without rank)
+  aVariable = variables [16]
+  print(aVariable)
+  subdata <- subset(melt_data, variable == aVariable)
+    sel_fac_minus1 <- sel_fac[-2]
+    fmla1 <- as.formula(paste("value ~ ", paste(sel_fac_minus1, collapse= "+")))
+    fmla2 <- as.formula(paste("value ~ ", paste(sel_fac, collapse= "+")))
+    m1 <- lm(data = subdata, fmla1)
+    m2 <- lm(data = subdata, fmla2)
+    p_lm <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)" [2]
+    p_lm
 
-# Ask user to define the column names that are paired (paired = T) in charactor vector
-paired_test <- c("Case")
+###### This is my script using rank
+    fmla1 <- as.formula(paste("rank(value) ~ ", paste(sel_fac_minus1, collapse= "+")))
+    fmla2 <- as.formula(paste("rank(value) ~ ", paste(sel_fac, collapse= "+")))
+    m1 <- lm(data = subdata, fmla1)
+    m2 <- lm(data = subdata, fmla2)
+    p_lm <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)" [2]
+    p_lm
+# !!!!!!!!!!! There is huge difference between with and without rank!!!!!!!!!!
 
-# Generate the subset for paired test
-subdata_paired <- as.data.frame(subdata[ , match(x = paired_test,
-                                                 table = colnames(subdata))])
-colnames(subdata_paired) <- paired_test
-subdata_paired[ , "variable"] <- subdata$variable
-subdata_paired[ , "value"] <- subdata$value
+###### From original CORONA script
+    m1 <- lm (data = subdata, rank (value) ~ Patient + age + sex + ACE_INHIBITOR + ANTIDEPRESSANT + ANTIDIABETIC + ANTI_PLATELET + AT2_BLOCKER + BETA_BLOCKER + CALCIUMANTAGONIST + CORTICOSTEROID + DIURETIC + IMIDAZOLE_AGONIST + METFORMIN + PPI + STATIN + THYROID + VITAMIN_D + XANTHAN_OXIDASE_INHIBITOR)
+    m2 <- lm (data = subdata, rank (value) ~ Patient + Case + age + sex + ACE_INHIBITOR + ANTIDEPRESSANT + ANTIDIABETIC + ANTI_PLATELET + AT2_BLOCKER + BETA_BLOCKER + CALCIUMANTAGONIST + CORTICOSTEROID + DIURETIC + IMIDAZOLE_AGONIST + METFORMIN + PPI + STATIN + THYROID + VITAMIN_D + XANTHAN_OXIDASE_INHIBITOR)
+    pModel <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)" [2]
+    pModel
 
-# And then also generate the dataset for unpaired test
-subdata_unpaired <- as.data.frame(subdata[ , -match(x = paired_test,
-                                                    table = colnames(subdata))])
-# Do the unpaired test first
-for (m in 1:(ncol(subdata_unpaired)-2)) {
-  print(m)
-  # Only calculate effect size for the ones with more than two values, and exclude
-  # any factor whose levels has fewer than 3 values
-  # 這一行是指factor中只要有一個少於3個值的就不會算，
-  # 但是如果有一個factor有五個大於3個，只有一個小於3個，
-  # 這個是否要計算？ （為什麼orddom會設最小值是3？）
-
-  if (length(unique(subdata_unpaired[ , m])) >= 2
-      & !any(as.numeric(table(subdata_unpaired[ , m]))<3)){
-
-    # Split the dataset into groups by the column value
-    subm_unpaired <- split(x = subdata_unpaired, f = subdata_unpaired[ , m])
-    # Generate pairs to calculate pairwise effect size
-    pairs_unpaired <- combn(x = seq(1:length(subm_unpaired)), m = 2)
-    # D stores delta value
-    D <- c()
-    # N stores the name of the delta value
-    N <- c()
-    for (i in 1:ncol(pairs_unpaired)) {
-      print(i)
-
-    # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
-    # and pairs[2, i], and since subm is a list, so use [[]] to do selection
-    d <- as.numeric (orddom::orddom(x = (subm_unpaired[[pairs_unpaired[1,i]]])$value,
-                                      y = (subm_unpaired[[pairs_unpaired[2,i]]])$value, paired = F)[13,1])
-
-    # This is a really clever way utilizing loop! All the D values will be filled after
-    # looping
-    D <- c(D, d)
-    # n is the name of each d value
-    n <- paste("d", names(subm_unpaired)[pairs_unpaired[1,i]], names(subm_unpaired)[pairs_unpaired[2,i]], sep = "_")
-    # This is a really clever way utilizing loop! All the N values will be filled after
-    # looping
-    N <- c(N, n)
-    }
-  # Name the d values in D with the names in N
-  names(D) <- N
-  # Collect all the D into Delta list
-  Delta_unpaired[[m]] <- D
-  } else {
-  Delta_unpaired[[m]] <- "NA"
-  }
-}
-
-# Name the lists
-names(Delta_unpaired) <- colnames(subdata_unpaired)[1:(ncol(subdata_unpaired)-2)]
-D_unpaired[[i]] <- Delta_unpaired
-
-# Then do the paired test
-for (m in 1:(ncol(subdata_paired)-2)) {
-  print(m)
-  # Only calculate effect size for the ones with more than two values, and exclude
-  # any factor whose levels has fewer than 3 values
-  if (length(unique(subdata_paired[ , m])) >= 2
-      & !any(as.numeric(table(subdata_paired[ , m]))<3)){
-
-    # Split the dataset into groups by the column value
-    subm_paired <- split(x = subdata_paired, f = subdata_paired[ , m])
-    # Generate pairs to calculate pairwise effect size
-    pairs_paired <- combn(x = seq(1:length(subm_paired)), m = 2)
-    # D stores delta value
-    D <- c()
-    # N stores the name of the delta value
-    N <- c()
-    for (i in 1:ncol(pairs_paired)) {
-      print(i)
-
-      # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
-      # and pairs[2, i], and since subm is a list, so use [[]] to do selection
-      d <- as.numeric (orddom::orddom(x = (subm_paired[[pairs_paired[1,i]]])$value,
-                                      y = (subm_paired[[pairs_paired[2,i]]])$value, paired = T)[11,1])
-
-      # This is a really clever way utilizing loop! All the D values will be filled after
-      # looping
-      D <- c(D, d)
-      # n is the name of each d value
-      n <- paste("d",names(subm_paired)[pairs_paired[1,i]], names(subm_paired)[pairs_paired[2,i]], sep = "_")
-      # This is a really clever way utilizing loop! All the N values will be filled after
-      # looping
-      N <- c(N, n)
-    }
-    # Name the d values in D with the names in N
-    names(D) <- N
-    # Collect all the D into Delta list
-    Delta_paired[[m]] <- D
-  } else {
-    Delta_paired[[m]] <- "NA"
-  }
-# Name the lists
-names(Delta_paired) <- colnames(subdata_paired)[1:(ncol(subdata_paired)-2)]
-D_paired[[i]] <- Delta_paired
-}
+###### From original CORONA script excluding nonsel_fac
+    m1 <- lm (data = subdata, rank (value) ~ Patient + age + sex + ACE_INHIBITOR + ANTIDEPRESSANT + ANTI_PLATELET + AT2_BLOCKER + BETA_BLOCKER + CALCIUMANTAGONIST + DIURETIC + IMIDAZOLE_AGONIST + METFORMIN + PPI + STATIN + THYROID + VITAMIN_D )
+    m2 <- lm (data = subdata, rank (value) ~ Patient + Case + age + sex + ACE_INHIBITOR + ANTIDEPRESSANT + ANTI_PLATELET + AT2_BLOCKER + BETA_BLOCKER + CALCIUMANTAGONIST + DIURETIC + IMIDAZOLE_AGONIST + METFORMIN + PPI + STATIN + THYROID + VITAMIN_D )
+    pModel <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)" [2]
+    pModel
 
