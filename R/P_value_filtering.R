@@ -92,23 +92,10 @@ write.table(x = Ps_ori, file = "P_value_all.txt", sep = "\t",
 Ps <- Ps[ , -unique(col_NA)]
 mode(Ps) <- "numeric"
 
+
 # Do FDR correction (correct for the number of features)
 adjust_fun <- function(x) p.adjust(p = x, method = "fdr", n = N)
 Ps_fdr <- apply(X = Ps, MARGIN = 2, FUN = adjust_fun)
-
-# Make an empty list
-D_unpaired <- c()
-for (i in 1:N) {
-  # loop through all variables
-  aVariable = variables[i]
-  print(i)
-  print(aVariable)
-  for (j in 1:(ncol(Ps_fdr))) {
-if (Ps_fdr[i, j] < 0.1) {
-
-}
-}
-}
 
 
 # Select only the factors with at least one p value smaller than 0.05
@@ -138,8 +125,6 @@ for (i in 1:N) {
     sel_fac_minus1 <- sel_fac[-j]
     fmla1 <- as.formula(paste("rank(value) ~ ", paste(sel_fac_minus1, collapse= "+")))
     fmla2 <- as.formula(paste("rank(value )~ ", paste(sel_fac, collapse= "+")))
-    # !!!!!這裡不用先做兩個lm！！直接用lrtest(fm2, fm1)就可以了！！
-    # https://www.rdocumentation.org/packages/lmtest/versions/0.9-37/topics/lrtest
     m1 <- lm(data = subdata, fmla1)
     m2 <- lm(data = subdata, fmla2)
     # lrtest: Likelihood Ratio Test Of Nested Models
