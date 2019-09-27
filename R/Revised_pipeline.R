@@ -92,9 +92,13 @@ Ps_ori <- Ps
 Ps <- Ps[ , -unique(col_NA)]
 mode(Ps) <- "numeric"
 
+<<<<<<< HEAD
 # Do FDR correction (correct for the number of features)
 #adjust_fun <- function(x) p.adjust(p = x, method = "fdr", n = N)
 #Ps_fdr <- apply(X = Ps, MARGIN = 2, FUN = adjust_fun)
+=======
+
+>>>>>>> c517a33efcc785eab0afc82a50825364fc7cb1a2
 
 # Extract the selected factors whose p value < 0.05
 # Make an empty list first
@@ -112,7 +116,17 @@ for (i in 1:N) {
 }
 names(sel_fac) <- variables
 
+<<<<<<< HEAD
 # Then do the model test (lrtest)
+=======
+
+# Then do the model test (lrtest)
+
+#######################Testing##########################
+
+
+
+>>>>>>> c517a33efcc785eab0afc82a50825364fc7cb1a2
 # Make a empty list first
 Ps_model <- c()
 
@@ -122,6 +136,7 @@ for (i in 1:N) {
   subdata <- subset(melt_data, variable == aVariable)
   ps_lm <- c()
   if (length(sel_fac[[i]]) >= 2) {
+<<<<<<< HEAD
     pairs <- combn(x = sel_fac[[i]], m = 2)
     for (k in 1:length(sel_fac[[i]])) {
       for (m in 1:ncol(pairs)) {
@@ -137,6 +152,23 @@ for (i in 1:N) {
         }
       }
     }
+=======
+  pairs <- combn(x = sel_fac[[i]], m = 2)
+  for (k in 1:length(sel_fac[[i]])) {
+    for (m in 1:ncol(pairs)) {
+      if (sel_fac[[i]][k] %in% pairs[ , m] ) {
+        # setdiff(pairs[ , m], sel_fac[[i]][k]) finds the element of pairs[ , m] in sel_fac[[1]][1]
+        fmla1 <- as.formula(paste("rank(value) ~ ", paste((setdiff(pairs[ , m], sel_fac[[i]][k])), collapse= "+")))
+        fmla2 <- as.formula(paste("rank(value) ~ ", paste(pairs[ , m], collapse= "+")))
+        m1 <- lm(data = subdata, fmla1)
+        m2 <- lm(data = subdata, fmla2)
+        p_lm <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)"[2]
+        names(p_lm) <- paste(sel_fac[[i]][k])
+        ps_lm <- c(ps_lm, p_lm)
+      }
+    }
+  }
+>>>>>>> c517a33efcc785eab0afc82a50825364fc7cb1a2
   } else if (length(sel_fac[[i]]) == 1){
     fmla3 <- as.formula(paste("value ~ ", colnames(subdata), sep = ""))
     ps_lm <- as.list(kruskal.test(fmla3 , data = subdata))$p.value
@@ -150,14 +182,18 @@ for (i in 1:N) {
 names(Ps_model) <- variables
 
 
+<<<<<<< HEAD
 
 
 #######################Testing##########################
 
+=======
+>>>>>>> c517a33efcc785eab0afc82a50825364fc7cb1a2
 # Do FDR correction (correct for the number of features)
 adjust_fun <- function(x) p.adjust(p = x, method = "fdr", n = N)
 Ps_fdr <- apply(X = Ps, MARGIN = 2, FUN = adjust_fun)
 
+<<<<<<< HEAD
 adjust_fun <- function(x) p.adjust(p = x, method = "fdr")
 adjust_fun(Ps_model[[1]][1])
 adjust_fun(Ps_model[[1]])
@@ -169,3 +205,5 @@ Ps_fdr <- lapply(X = Ps_model, FUN = adjust_fun)
 
 
 
+=======
+>>>>>>> c517a33efcc785eab0afc82a50825364fc7cb1a2
