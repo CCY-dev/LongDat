@@ -25,11 +25,13 @@ data <- read.table (file = "corona.motu2matrix.rarefied.r.Genus.r.master.r.dose_
 
 # Ask users to put all microbes at the end of the dataset,
 # and define the first microbe column
-value_column <- 23
+value_column <- 24
 predictor_names <- (colnames(data))[1: (value_column - 1)]
 melt_data <- reshape::melt (data, id = predictor_names)
 # Omit the rows whose value column equals to NA
+library(tidyr)
 melt_data %>% tidyr::drop_na(value)
+melt_data$variable <- gsub(".", " ", melt_data$variable, fixed = TRUE)
 
 # Ask users to place the columns that aren't numeric
 # in the front of data, and define the factor_column
@@ -73,13 +75,13 @@ for (i in 1:N) {   # loop through all variables
       Ps[i,j] <- p
 
       # If the factor has more than two kinds of values
-    } else if (length(unique(melt_data[ , j])) > 2) {
+    } else if (length(unique(subdata[ , j])) > 2) {
       fmla <- as.formula(paste("value ~ ", colnames(subdata)[j], sep = ""))
       p <- as.list(kruskal.test(fmla , data = subdata))$p.value
       Ps[i,j] <- p
 
       # If the factor has only one value
-    } else if (length(unique(melt_data[ , j])) < 2) {
+    } else if (length(unique(subdata[ , j])) < 2) {
       Ps[i,j] <- "NA"
       col_NA <- c(col_NA, j)
     }
@@ -156,7 +158,11 @@ mode(unlist) <- "numeric" # it's numeric now!
 unlist_noNA <-unlist[!is.na(unlist)] # Exclude NA in unlist
 unlist_withname = unlist(Ps_model) # numbers with names
 unlist_name <- names(unlist_withname) # outputs the name of every element
-unlist_name_noNA <- unlist_name[-which(is.na(unlist))] # remove names of NA value
+if (TRUE %in% is.na(unlist)) {# if there's NA, then remove names of NA value
+  unlist_name_noNA <- unlist_name[-which(is.na(unlist))]
+} else {
+  unlist_name_noNA <- unlist_name
+}
 
 
 max_ps_lm <- c() # Make an empty list first
@@ -176,7 +182,8 @@ max_ps_lm_m[ , 1] <- unique(unlist_name_noNA)
 max_ps_lm_m[ , 2] <- max_ps_lm
 
 # Split the names of each p_lm, ex: Actinobacteria.PPI becomes "Actinobacteria" "PPI"
-out <- stringr::str_split_fixed(max_ps_lm_m$name, pattern = fixed("."), 2)
+library(stringr)
+out <- stringr::str_split_fixed(max_ps_lm_m$name, pattern = fixed("."), n = 2)
 # Add the 2 new columns with split names to the matrix
 max_ps_lm_m2 <- cbind(out, max_ps_lm_m)
 # Remove the original unsplit name column, and then name the columns
@@ -205,7 +212,97 @@ for (i in 1:nrow(p_lm_fdr)) { # loop through all variables
 
 sel_fac2 <- as.list(sel_fac2)
 names(sel_fac2) <- row.names(p_lm_fdr)
+# Remove the features with no sel factors (who has "NA")
+sel_fac2 <- sel_fac2[is.na(sel_fac2) == FALSE]
 
+# Post-hoc test on the selected factors
+p_poho <- list()
+for (i in 1:length(sel_fac2)) { # loop through all bacteria in sel_fac2
+  print(i)
+  bVariable = names(sel_fac2[i])
+  bVariable
+  subdata2 <- subset(melt_data, variable == bVariable)
+  pss_w <- c()
+  for (j in 1:length(sel_fac2[[i]])) { # loop through all factors in each feature
+    pairs_2 <- combn(x = unique(subdata2[ , sel_fac2[[i]][j]]), m = 2)
+    ps_w <- list()
+    for (k in 1:ncol(pairs_2)) { # loop through each factor pair
+      sub3 <- subdata2[subdata2[ ,(sel_fac2[[i]][j])] == pairs_2[1,k], ]
+      sub4 <- subdata2[subdata2[ ,(sel_fac2[[i]][j])] == pairs_2[2,k], ]
+      p_w <- wilcox.test(sub3$value, sub4$value, paired = F)$p.value
+      names(p_w) <- paste(sel_fac2[[i]][j], pairs_2[1,k], sep = "_", pairs_2[2,k])
+      ps_w <- c(ps_w, p_w)
+    }
+    #ps_w <- ps_w[!is.na(ps_w)]
+    pss_w[[j]] <- ps_w
+  }
+  p_poho[[i]] <- pss_w
+}
+names(p_poho) <- names(sel_fac2)
+
+save.image(file = "to_posthoc.RData")
+load("to_posthoc.RData")
 ##################Testing###############
+# First unlist the p_poho list
+unlist_poho <- unlist(p_poho, use.names = FALSE)  # output only the numbers
+mode(unlist_poho) <- "numeric" # it's numeric now!
+unlist_noNA_poho <-unlist_poho[!is.na(unlist_poho)] # Exclude NA in unlist
+unlist_withname_poho <- unlist(p_poho) # numbers with names
+unlist_withname_poho_noNA <- unlist_withname_poho[!is.na(unlist_withname_poho)]
+unlist_name_poho <- names(unlist_withname_poho) # outputs the name of every element
+if (TRUE %in% is.na(unlist_poho)) {# if there's NA, then remove names of NA value
+  unlist_name_noNA_poho <- unlist_name_poho[-(which(is.na(unlist_poho)))]
+} else {
+  unlist_name_noNA_poho <- unlist_name_poho
+}
+
+# Do FDR correction for the number of pairs
+p_poho_fdr <- list()
+for (i in 1:length(sel_fac2)) {
+  print(i)
+  bVariable = names(sel_fac2[i])
+  subdata2 <- subset(melt_data, variable == bVariable)
+  for (j in 1:length(sel_fac2[[i]])) {
+    print(j)
+    #sub5 <- names(unlist_withname_poho) == paste((names(sel_fac2[i])), sep = ".", sel_fac2[[i]][j])
+    sub5 <- unlist_withname_poho[(grepl(paste((names(sel_fac2[i])), sep = ".", sel_fac2[[i]][j]), names(unlist_withname_poho), fixed=TRUE))]
+    #sub5 <- unlist_withname_poho[(grepl(names(sel_fac2[i]), names(unlist_withname_poho), fixed=TRUE))]
+    #sub6 <- sub5[(grepl(sel_fac2[[i]][j], names(sub5), fixed=TRUE))]
+    pair_numbers <- ncol(combn(x = unique(subdata2[ , sel_fac2[[i]][j]]), m = 2))
+    p_w_fdr <- p.adjust(p = sub5, method = "fdr", n = pair_numbers)
+
+  }
+  p_poho_fdr[[i]] <- p_w_fdr
+}
+
+# Unlist the p_poho_fdr
+unlist_poho_fdr <- unlist(p_poho_fdr, use.names = FALSE)  # output only the numbers
+mode(unlist_poho_fdr) <- "numeric" # it's numeric now!
+unlist_noNA_poho_fdr <-unlist_poho_fdr[!is.na(unlist_poho_fdr)] # Exclude NA in unlist
+unlist_withname_poho_fdr <- unlist(p_poho_fdr) # numbers with names
+unlist_withname_poho_noNA_fdr <- unlist_withname_poho_fdr[!is.na(unlist_withname_poho_fdr)]
+unlist_name_poho_fdr <- names(unlist_withname_poho_fdr) # outputs the name of every element
+
+# Create an empty matrix first
+poho_fdr_m <- data.frame(matrix(nrow = length(unlist_poho_fdr), ncol = 2))
+# Specify column names and fill in the values
+colnames(poho_fdr_m) <- c("name", "p_poho")
+# Fill in the values
+poho_fdr_m[ , 1] <- unlist_name_poho_fdr
+poho_fdr_m[ , 2] <- unlist_poho_fdr
+
+# Split the names of each p, ex: Actinobacteria.PPI becomes "Actinobacteria" "PPI"
+library(stringr)
+out_poho_fdr <- stringr::str_split_fixed(poho_fdr_m$name, pattern = fixed("."), n = 2)
+
+# Add the 2 new columns with split names to the matrix
+poho_fdr_m2 <- cbind(out_poho_fdr, poho_fdr_m)
+# Remove the original unsplit name column, and then name the columns
+poho_fdr_m2$name = NULL
+colnames(poho_fdr_m2) <- c("feature", "factor", "p_poho_fdr")
+# Reshaping the matrix so that can do fdr correction in the next step
+cast.poho_fdr_m2 <- reshape2::dcast(data = poho_fdr_m2, feature ~ factor)
+rownames(cast.poho_fdr_m2) <- cast.poho_fdr_m2$feature
+cast.poho_fdr_m2 <- cast.poho_fdr_m2[ , -1]
 
 
