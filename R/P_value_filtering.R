@@ -23,8 +23,10 @@ data <- read.table (file = "corona.motu2matrix.rarefied.r.Phylum.r.master.r.dose
 # and define the first microbe column
 value_column <- 23
 predictor_names <- (colnames(data))[1: (value_column - 1)]
+library(reshape)
 melt_data <- reshape::melt (data, id = predictor_names)
 # Omit the rows whose value column equals to NA
+library(tidyr)
 melt_data %>% tidyr::drop_na(value)
 
 # Ask users to place ordinal data in the front of data, and define the factor_column
@@ -69,13 +71,13 @@ for (i in 1:N) {
     Ps[i,j] <- p
 
     # If the factor has more than two kinds of values
-    } else if (length(unique(melt_data[ , j])) >= 2) {
+    } else if (length(unique(sub[ , j])) >= 2) {
     fmla <- as.formula(paste("value ~ ", colnames(subdata)[j], sep = ""))
     p <- as.list(kruskal.test(fmla , data = subdata))$p.value
     Ps[i,j] <- p
 
     # If the factor has only one value
-    } else if (length(unique(melt_data[ , j])) < 2) {
+    } else if (length(unique(subdata[ , j])) < 2) {
     Ps[i,j] <- "NA"
     col_NA <- c(col_NA, j)
     }
@@ -149,6 +151,7 @@ D_paired <- c()
 N <- length (variables)
 
 # Calculate cliff's delta only for the sel_fac
+library(dplyr)
 subdata_sel <- dplyr::select(subdata, -c(nonsel_fac))
 
 # Generate the dataset for unpaired test
@@ -198,6 +201,7 @@ for (i in 1:N) {
         print(i)
         # Pairs is a matrix, and we want to select subm by the numbers in pairs[1, i]
         # and pairs[2, i], and since subm is a list, so use [[]] to do selection
+        library(orddom)
         d <- as.numeric (orddom::orddom(x = (subm_unpaired[[pairs_unpaired[1,i]]])$value,
                                       y = (subm_unpaired[[pairs_unpaired[2,i]]])$value, paired = F)[13,1])
 
@@ -302,6 +306,7 @@ write.table(x = D_unpaired_df, file = "D_unpaired.txt", sep = "\t",
     fmla2 <- as.formula(paste("rank(value) ~ ", paste(sel_fac, collapse= "+")))
     m1 <- lm(data = subdata, fmla1)
     m2 <- lm(data = subdata, fmla2)
+    library(lmtest)
     p_lm <- lmtest::lrtest (m1, m2)$"Pr(>Chisq)" [2]
     p_lm
 # !!!!!!!!!!! There is huge difference between with and without rank!!!!!!!!!!
