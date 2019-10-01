@@ -240,9 +240,7 @@ for (i in 1:length(sel_fac2)) { # loop through all bacteria in sel_fac2
 }
 names(p_poho) <- names(sel_fac2)
 
-save.image(file = "to_posthoc.RData")
-load("to_posthoc.RData")
-##################Testing###############
+
 
 # First unlist the p_poho list
 unlist_poho <- unlist(p_poho, use.names = FALSE)  # output only the numbers
@@ -306,30 +304,9 @@ cast.poho_fdr_m2 <- reshape2::dcast(data = poho_fdr_m2, feature ~ factor)
 rownames(cast.poho_fdr_m2) <- cast.poho_fdr_m2$feature
 cast.poho_fdr_m2 <- cast.poho_fdr_m2[ , -1]
 
+save.image(file = "to_posthoc_fdr.RData")
 
-# Post-hoc test on the selected factors
-p_poho <- list()
-for (i in 1:length(sel_fac2)) { # loop through all bacteria in sel_fac2
-  print(i)
-  bVariable = names(sel_fac2[i])
-  bVariable
-  subdata2 <- subset(melt_data, variable == bVariable)
-  subdata2
-  pss_w <- c()
-  for (j in 1:length(sel_fac2[[i]])) { # loop through all factors in each feature
-    pairs_2 <- combn(x = unique(subdata2[ , sel_fac2[[i]][j]]), m = 2)
-    ps_w <- list()
-    for (k in 1:ncol(pairs_2)) { # loop through each factor pair
-      sub1 <- subdata2[subdata2[ ,(sel_fac2[[i]][j])] == pairs_2[1,k], ]
-      sub2 <- subdata2[subdata2[ ,(sel_fac2[[i]][j])] == pairs_2[2,k], ]
-      p_w <- wilcox.test(sub1$value, sub2$value, paired = F)$p.value
-      names(p_w) <- paste(sel_fac2[[i]][j], pairs_2[1,k], sep = "_", pairs_2[2,k])
-      ps_w <- c(ps_w, p_w)
-    }
-    ps_w <- ps_w[!is.na(ps_w)]
-    pss_w[[j]] <- ps_w
-  }
-  p_poho[[i]] <- pss_w
-}
+##################Testing###############
 
+load("to_posthoc_fdr.RData")
 
