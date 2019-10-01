@@ -214,7 +214,6 @@ sel_fac2 <- as.list(sel_fac2)
 names(sel_fac2) <- row.names(p_lm_fdr)
 # Remove the features with no sel factors (who has "NA")
 sel_fac2 <- sel_fac2[is.na(sel_fac2) == FALSE]
-<<<<<<< HEAD
 
 # Post-hoc test on the selected factors
 p_poho <- list()
@@ -240,13 +239,11 @@ for (i in 1:length(sel_fac2)) { # loop through all bacteria in sel_fac2
   p_poho[[i]] <- pss_w
 }
 names(p_poho) <- names(sel_fac2)
-=======
->>>>>>> 5bb60fe673adcc1a6ccc566310c6895162f7da06
 
 save.image(file = "to_posthoc.RData")
 load("to_posthoc.RData")
 ##################Testing###############
-<<<<<<< HEAD
+
 # First unlist the p_poho list
 unlist_poho <- unlist(p_poho, use.names = FALSE)  # output only the numbers
 mode(unlist_poho) <- "numeric" # it's numeric now!
@@ -309,7 +306,7 @@ cast.poho_fdr_m2 <- reshape2::dcast(data = poho_fdr_m2, feature ~ factor)
 rownames(cast.poho_fdr_m2) <- cast.poho_fdr_m2$feature
 cast.poho_fdr_m2 <- cast.poho_fdr_m2[ , -1]
 
-=======
+
 # Post-hoc test on the selected factors
 p_poho <- list()
 for (i in 1:length(sel_fac2)) { # loop through all bacteria in sel_fac2
@@ -334,5 +331,5 @@ for (i in 1:length(sel_fac2)) { # loop through all bacteria in sel_fac2
   }
   p_poho[[i]] <- pss_w
 }
->>>>>>> 5bb60fe673adcc1a6ccc566310c6895162f7da06
+
 
