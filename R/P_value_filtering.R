@@ -71,7 +71,7 @@ for (i in 1:N) {
     Ps[i,j] <- p
 
     # If the factor has more than two kinds of values
-    } else if (length(unique(sub[ , j])) >= 2) {
+    } else if (length(unique(subdata[ , j])) >= 2) {
     fmla <- as.formula(paste("value ~ ", colnames(subdata)[j], sep = ""))
     p <- as.list(kruskal.test(fmla , data = subdata))$p.value
     Ps[i,j] <- p
