@@ -1,16 +1,14 @@
 Package: longdat
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
+Title: A tool for analyzing longitudinal data
+Version: 1.0.0
 Author: Chia-Yu Chen <Chia-Yu.Chen@mdc-berlin.de>
 Maintainer: Chia-Yu Chen <Chia-Yu.Chen@mdc-berlin.de>
-Description: Longda takes longitudinal data as input and ouputs the significance result
-License: What license is it under?
+Description: Longdat takes longitudinal dataset as input and analyze if there is significant 
+             change of the features over time. The output table contains both p value 
+             effect size of features
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
-Imports:
- lme4,
- orddom,
- reshape,
- lmtest
+RoxygenNote: 7.0.0
+Imports: lme4, orddom, reshape2, lmtest, tidyr, dplyr, stringr
