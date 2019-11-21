@@ -4,12 +4,24 @@
 \alias{longdat_cont}
 \title{Calculate the p values and effect size from longitudinal data}
 \usage{
-longdat_cont(input, value_column, factor_column, non_factors)
+longdat_cont(
+  input,
+  test_var,
+  value_column,
+  factor_column,
+  non_factors,
+  adjustMethod = "fdr",
+  model_p = 0.1,
+  posthoc_p = 0.05
+)
 }
 \arguments{
-\item{input}{a table with the first column as "Patient", and all the features
+\item{input}{a table with the first column as "Individual", and all the features
 should be at the end of the table. Also, place the columns that aren't
-numerical (e.g. categorical, ordinal) in the front of the table, right after "Patient"}
+numerical (e.g. categorical, ordinal) in the front of the table, right after "Individual"}
+
+\item{test_var}{the name of the variable you are testing for, should be a character vector
+identical to its column name and make sure there is no space in it.}
 
 \item{value_column}{the number of the position where the features columns start in the table}
 
@@ -17,12 +29,21 @@ numerical (e.g. categorical, ordinal) in the front of the table, right after "Pa
 numerical  (e.g. categorical, ordinal) ends in the table}
 
 \item{non_factors}{the factors that are not considered as potential confounders to the factor tested for,
-for example, "Patient" and "SampleID" are random factors instead of confounders, so
+for example, "Individual" and "SampleID" are random factors instead of confounders, so
 they should be listed as non_factors}
+
+\item{adjustMethod}{Multiple testing p value correction. Choices are the ones in p.adjust(), including
+"holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr"). The default is "fdr".}
+
+\item{model_p}{The threshold for significance of model test after multiple testing correction.
+The default is 0.1.}
+
+\item{posthoc_p}{The threshold for significance of post-hoc test after multiple testing correction.
+The default is 0.05.}
 }
 \description{
 Calculate the p values and effect size from longitudinal data
 }
 \examples{
-longdat_disc(table, 24, 5, c("Case", "Patient", "SampleID"))
+longdat_disc(table, 24, 5, c("Case", "Individual", "SampleID"))
 }

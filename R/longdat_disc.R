@@ -2,12 +2,14 @@
 #' @param input a table with the first column as "Individual", and all the features
 #'         should be at the end of the table. Also, place the columns that aren't
 #'         numerical (e.g. categorical, ordinal) in the front of the table, right after "Individual"
+#' @param test_var the name of the variable you are testing for, should be a character vector
+#'        identical to its column name and make sure there is no space in it.
 #' @param value_column the number of the position where the features columns start in the table
 #' @param factor_column the number of the position where the columns that aren't
 #'         numerical  (e.g. categorical, ordinal) ends in the table
-#' @param non_factors the factors that are not considered as potential confounders to the factor tested for,
+#' @param non_factors a character vector containing the factors that are not considered as potential confounders to the factor tested for,
 #'         for example, "Individual" and "SampleID" are random factors instead of confounders, so
-#'         they should be listed as non_factors
+#'         they should be listed as non_factors. Also make sure to include test_var, because it isn't a potential confounder in your test.
 #' @param adjustMethod Multiple testing p value correction. Choices are the ones in p.adjust(), including
 #'         "holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr"). The default is "fdr".
 #' @param model_p The threshold for significance of model test after multiple testing correction.
@@ -24,10 +26,13 @@
 #' @import dplyr
 #' @import stringr
 
-longdat_disc <- function(input, value_column, factor_column, non_factors,
+longdat_disc <- function(input, test_var, value_column, factor_column, non_factors,
                          adjustMethod = "fdr", model_p = 0.1, posthoc_p = 0.05) {
   if (missing(input)) {
     stop('Error! Necessary argument "input" missing.')
+  }
+  if (missing(test_var)) {
+    stop('Error! Necessary argument "test_var" missing.')
   }
   if (missing(value_column)) {
     stop('Error! Necessary argument "value_column" missing.')
@@ -38,6 +43,7 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   if (missing(non_factors)) {
     stop('Error! Necessary argument "non_factors" missing.')
   }
+
   data <- read.table (file = input, header = T, sep = "\t", check.names = F, row.names = NULL)
   # Here value column is defined by the user
   predictor_names <- (colnames(data))[1: (value_column - 1)]
@@ -159,10 +165,10 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   print("Finished selecting factors.")
 
   ################## Model test ###############
-  # Only focus on the comparison between "Case" and other factors!!
-  # The goal is to know if adding in "case" as a variable can enhance the fitness of
-  # the model. Here, the "small model" is used, meaning that case is compared to other
-  # factors separately. All q values <0.1 we can say "case" is sigificant for this bacteria
+  # Only focus on the comparison between "test_var" and other factors!!
+  # The goal is to know if adding in "test_var" as a variable can enhance the fitness of
+  # the model. Here, the "small model" is used, meaning that test_var is compared to other
+  # factors separately. All q values <0.1 we can say "test_var" is sigificant for this bacteria
   Ps_model <- list() # Make a empty list first
   library(lme4)
   suppressWarnings(
@@ -177,7 +183,7 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
         tryCatch({
           for (k in 1:length(sel_fac[[i]])) {
             fmla1 <- as.formula(paste("rank(value) ~ (1| Individual) + (" , sel_fac[[i]][k], "| Individual)"))
-            fmla2 <- as.formula(paste("rank(value) ~ (1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+ Case"))
+            fmla2 <- as.formula(paste("rank(value) ~ (1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+", test_var))
             m1 <- lme4::glmer(data = subdata, fmla1, control=lmerControl(check.nobs.vs.nRE="ignore"))
             m2 <- lme4::glmer(data = subdata, fmla2, control=lmerControl(check.nobs.vs.nRE="ignore"))
             p <- lmtest::lrtest (m1, m2)
@@ -251,33 +257,33 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   Ps_inv_model <- list() # Make a empty list first
   library(lme4)
   suppressWarnings(
-  for (i in 1:N) {
-    # loop through all variables
-    aVariable = variables[i]
-    print(i)
-    subdata <- subset(melt_data, variable == aVariable)
-    ps_lm <- c()
-    if (length(sel_fac[[i]]) >= 1) {
-      tryCatch({
-        for (k in 1:length(sel_fac[[i]])) {
-          fmla1 <- as.formula(paste("rank(value) ~ ", "(1| Individual)", "+ Case"))
-          fmla2 <- as.formula(paste("rank(value) ~ ", "(1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+ Case"))
-          m1 <- lme4::glmer(data = subdata, fmla1, control=lmerControl(check.nobs.vs.nRE="ignore"))
-          m2 <- lme4::glmer(data = subdata, fmla2, control=lmerControl(check.nobs.vs.nRE="ignore"))
-          p <- lmtest::lrtest (m1, m2)
-          # Here make sure that m2 likelihood is larger than m1, if m2 likelihood is smaller,
-          # mark it as "1", meaning it's insignificant
-          ifelse(test = p$LogLik[2] > p$LogLik[1],
-                 yes = p_lm <- p$"Pr(>Chisq)"[2],
-                 no = p_lm <- 1)
-          names(p_lm) <- paste(sel_fac[[i]][k])
-          ps_lm <- c(ps_lm, p_lm)
-        }}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-    } else if (length(sel_fac[[i]]) == 0) {
-      ps_lm <- "No significant factor for model test"
+    for (i in 1:N) {
+      # loop through all variables
+      aVariable = variables[i]
+      print(i)
+      subdata <- subset(melt_data, variable == aVariable)
+      ps_lm <- c()
+      if (length(sel_fac[[i]]) >= 1) {
+        tryCatch({
+          for (k in 1:length(sel_fac[[i]])) {
+            fmla1 <- as.formula(paste("rank(value) ~ ", "(1| Individual)", "+", test_var))
+            fmla2 <- as.formula(paste("rank(value) ~ ", "(1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+", test_var))
+            m1 <- lme4::glmer(data = subdata, fmla1, control=lmerControl(check.nobs.vs.nRE="ignore"))
+            m2 <- lme4::glmer(data = subdata, fmla2, control=lmerControl(check.nobs.vs.nRE="ignore"))
+            p <- lmtest::lrtest (m1, m2)
+            # Here make sure that m2 likelihood is larger than m1, if m2 likelihood is smaller,
+            # mark it as "1", meaning it's insignificant
+            ifelse(test = p$LogLik[2] > p$LogLik[1],
+                   yes = p_lm <- p$"Pr(>Chisq)"[2],
+                   no = p_lm <- 1)
+            names(p_lm) <- paste(sel_fac[[i]][k])
+            ps_lm <- c(ps_lm, p_lm)
+          }}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+      } else if (length(sel_fac[[i]]) == 0) {
+        ps_lm <- "No significant factor for model test"
+      }
+      Ps_inv_model[[i]] <- ps_lm
     }
-    Ps_inv_model[[i]] <- ps_lm
-  }
   )
   names(Ps_inv_model) <- gsub(".", " ", variables, fixed = TRUE)
 
@@ -329,7 +335,7 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   print("Finished inverse model test.")
 
   ############## Post-hoc test for all variables #################
-  case_pairs <- combn(x = sort(unique(melt_data$Case)), m = 2)
+  case_pairs <- combn(x = sort(unique(melt_data[ , test_var])), m = 2)
   p_poho <- data.frame(matrix(nrow = length(variables), ncol = ncol(case_pairs)))
   case_pairs_name <- c()
   for (i in 1:N) { # loop through all variables
@@ -337,8 +343,8 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
     bVariable = variables[i]
     subdata2 <- subset(melt_data, variable == bVariable)
     for (k in 1:ncol(case_pairs)) { # loop through each case pair
-      sub3 <- subdata2[subdata2[ , "Case"] == case_pairs[1,k], ]
-      sub4 <- subdata2[subdata2[ , "Case"] == case_pairs[2,k], ]
+      sub3 <- subdata2[subdata2[ , test_var] == case_pairs[1,k], ]
+      sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ]
       # Here use "paired wilcoxon test because it's longitudinal data
       p_w <- wilcox.test(sub3$value, sub4$value, paired = T)$p.value
       p_poho[i, k] <- p_w
@@ -364,7 +370,7 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   print("Finished post-hoc wilcoxon test.")
 
   ############## Calculate cliff's delta for all variables #################
-  case_pairs <- combn(x = sort(unique(melt_data$Case)), m = 2)
+  case_pairs <- combn(x = sort(unique(melt_data[ , test_var])), m = 2)
   delta <- data.frame(matrix(nrow = length(row.names(Ps_poho_fdr)), ncol = ncol(case_pairs)))
   case_pairs_name <- c()
   library(orddom)
@@ -373,8 +379,8 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
     bVariable = row.names(Ps_poho_fdr)[i]
     subdata2 <- subset(melt_data, variable == bVariable)
     for (k in 1:ncol(case_pairs)) { # loop through each case pair
-      sub3 <- subdata2[subdata2[ , "Case"] == case_pairs[1,k], ]
-      sub4 <- subdata2[subdata2[ , "Case"] == case_pairs[2,k], ]
+      sub3 <- subdata2[subdata2[ , test_var] == case_pairs[1,k], ]
+      sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ]
       d <- as.numeric(orddom::dmes(x = sub3$value, y = sub4$value)$dw)
       delta[i, k] <- d
       name <- paste(case_pairs[1,k], sep = "_", case_pairs[2,k])
@@ -463,7 +469,7 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   # Replace "NA" in signal column with "insignificant"
   result_table[is.na(result_table$Signal), "Signal"] <- "Insignificant"
 
-  case_pairs <- combn(x = sort(unique(melt_data$Case)), m = 2)
+  case_pairs <- combn(x = sort(unique(melt_data[ , test_var])), m = 2)
   case_pairs_name <- c()
   for (i in 1:ncol(case_pairs)) {
     pn <- paste(case_pairs[1, i], case_pairs[2, i], sep = "")
@@ -472,19 +478,16 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
 
   result_table <- cbind(result_table, con_type)
   # Change the signal of ambiguously deconfounded features from "Insignificant" to "Potential", meaning that
-  # "case" is potentially significant for this feature
+  # "test_var" is potentially significant for this feature
   result_table[result_table$con_type == "Ambiguously deconfounded", "Signal"] <- "Potential"
 
   colnames(result_table) <- c(paste("Effect_", sep = "", case_pairs_name), paste("Post-hoc_", sep = "", case_pairs_name),
                               paste("Effectsize_", sep = "", case_pairs_name), "Signal", "Confounding_type")
 
-  result_table <- result_table[c("Effect_12", "Effect_23", "Effect_13",
-                                 "Post-hoc_12", "Post-hoc_23", "Post-hoc_13", "Effectsize_12",
-                                 "Effectsize_23", "Effectsize_13", "Confounding_type", "Signal" )]
-
   write.table(x = result_table, file = "result_table.txt", sep = "\t",
               row.names = T, col.names = NA, quote = F)
   print("Result_table.txt is in your directory.")
   print("Finished! The result table and confounding table are now in your directory.")
+
 }
 

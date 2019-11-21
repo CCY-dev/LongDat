@@ -2,6 +2,8 @@
 #' @param input a table with the first column as "Individual", and all the features
 #'         should be at the end of the table. Also, place the columns that aren't
 #'         numerical (e.g. categorical, ordinal) in the front of the table, right after "Individual"
+#' @param test_var the name of the variable you are testing for, should be a character vector
+#'        identical to its column name and make sure there is no space in it.
 #' @param value_column the number of the position where the features columns start in the table
 #' @param factor_column the number of the position where the columns that aren't
 #'         numerical  (e.g. categorical, ordinal) ends in the table
@@ -24,10 +26,13 @@
 #' @import dplyr
 #' @import stringr
 
-longdat_cont <- function(input, value_column, factor_column, non_factors,
+longdat_cont <- function(input, test_var, value_column, factor_column, non_factors,
                          adjustMethod = "fdr", model_p = 0.1, posthoc_p = 0.05) {
   if (missing(input)) {
     stop('Error! Necessary argument "input" missing.')
+  }
+  if (missing(test_var)) {
+    stop('Error! Necessary argument "test_var" missing.')
   }
   if (missing(value_column)) {
     stop('Error! Necessary argument "value_column" missing.')
@@ -107,7 +112,9 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
   Ps_ori <- Ps # Save the original Ps matrix to Ps_ori
 
   # Exclude columns containing NA, and then turn the class of matrix into numeric
-  Ps <- Ps[ , -unique(col_NA)]
+  if (length(col_NA) > 0) {
+    Ps <- Ps[ , -unique(col_NA)]
+  }
   mode(Ps) <- "numeric"
 
   # Before extracting sel_fac, discard the factors defined by user "non_factors",
@@ -158,10 +165,10 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
   print("Finished selecting factors.")
 
   ################## Model test ###############
-  # Only focus on the comparison between "Case" and other factors!!
-  # The goal is to know if adding in "case" as a variable can enhance the fitness of
-  # the model. Here, the "small model" is used, meaning that case is compared to other
-  # factors separately. All q values <0.1 can we say "case" is sigificant for this bacteria
+  # Only focus on the comparison between "test_var" and other factors!!
+  # The goal is to know if adding in "test_var" as a variable can enhance the fitness of
+  # the model. Here, the "small model" is used, meaning that test_var is compared to other
+  # factors separately. All q values <0.1 can we say "test_var" is sigificant for this bacteria
   Ps_model <- list() # Make a empty list first
   library(lme4)
   suppressWarnings(
@@ -176,7 +183,7 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
         tryCatch({
           for (k in 1:length(sel_fac[[i]])) {
             fmla1 <- as.formula(paste("rank(value) ~ (1| Individual) + (" , sel_fac[[i]][k], "| Individual)"))
-            fmla2 <- as.formula(paste("rank(value) ~ (1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+ Case"))
+            fmla2 <- as.formula(paste("rank(value) ~ (1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+", test_var))
             m1 <- lme4::glmer(data = subdata, fmla1, control=lmerControl(check.nobs.vs.nRE="ignore"))
             m2 <- lme4::glmer(data = subdata, fmla2, control=lmerControl(check.nobs.vs.nRE="ignore"))
             p <- lmtest::lrtest (m1, m2)
@@ -258,8 +265,8 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
     if (length(sel_fac[[i]]) >= 1) {
       tryCatch({
         for (k in 1:length(sel_fac[[i]])) {
-          fmla1 <- as.formula(paste("rank(value) ~ ", "(1| Individual)", "+ Case"))
-          fmla2 <- as.formula(paste("rank(value) ~ ", "(1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+ Case"))
+          fmla1 <- as.formula(paste("rank(value) ~ ", "(1| Individual)", "+", test_var))
+          fmla2 <- as.formula(paste("rank(value) ~ ", "(1| Individual) + (" , sel_fac[[i]][k], "| Individual)", "+", test_var))
           m1 <- lme4::glmer(data = subdata, fmla1, control=lmerControl(check.nobs.vs.nRE="ignore"))
           m2 <- lme4::glmer(data = subdata, fmla2, control=lmerControl(check.nobs.vs.nRE="ignore"))
           p <- lmtest::lrtest (m1, m2)
@@ -334,9 +341,9 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
     print(i)
     bVariable = variables[i]
     subdata2 <- subset(melt_data, variable == bVariable)
-    # Here set the "Case" to numeric
-    subdata$Case <- as.numeric(subdata$Case)
-    c <- cor.test(subdata$Case, subdata$value, method = "spearman")
+    # Here set the "test_var" to numeric
+    subdata[ , test_var] <- as.numeric(subdata[ , test_var])
+    c <- cor.test(subdata[ , test_var], subdata$value, method = "spearman")
     p_c <- c$p.value
     a_c <- c$estimate
     p_poho[i, 1] <- p_c
@@ -407,12 +414,12 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
   # p_poho > 0.05 is non-significant
   for (i in 1:nrow(p_poho)) {
     if (p_lm_fdr_min[i] < model_p | p_lm_fdr_min[i] == "Inf") {
-    ifelse(test = p_poho[i, 1] < posthoc_p, no = result_table[i, 1] <- "NS",
-           yes = ifelse(test = assoc[i, 1] < 0, yes = result_table[i, 1] <- "Negative",
-                        no = result_table[i, 1] <- "Positive"))
-  } else if (p_lm_fdr_min[i] > model_p) {
-    result_table[i, 1] <- "NS"
-  }}
+      ifelse(test = p_poho[i, 1] < posthoc_p, no = result_table[i, 1] <- "NS",
+             yes = ifelse(test = assoc[i, 1] < 0, yes = result_table[i, 1] <- "Negative",
+                          no = result_table[i, 1] <- "Positive"))
+    } else if (p_lm_fdr_min[i] > model_p) {
+      result_table[i, 1] <- "NS"
+    }}
 
   # Bind the columns together
   result_table <- cbind(result_table, p_poho, assoc)
@@ -433,7 +440,7 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
   result_table <- cbind(result_table, con_type)
 
   # Change the signal of ambiguously deconfounded features to "Potential", meaning that
-  # "case" is potentially significant for this feature
+  # "test_var" is potentially significant for this feature
   result_table[result_table$con_type == "Ambiguously deconfounded", "Signal"] <- "Potential"
 
   colnames(result_table) <- c("Correlation", "P_post-hoc", "Association", "Signal", "Confounding_type")
@@ -443,7 +450,6 @@ longdat_cont <- function(input, value_column, factor_column, non_factors,
 
   print("Result_table.txt is in your directory.")
   print("Finished! The result table and confounding table are now in your directory.")
-
 }
 
 
