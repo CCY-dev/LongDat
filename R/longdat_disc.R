@@ -107,7 +107,9 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
   Ps_ori <- Ps # Save the original Ps matrix to Ps_ori
 
   # Exclude columns containing NA, and then turn the class of matrix into numeric
-  Ps <- Ps[ , -unique(col_NA)]
+  if (length(col_NA) > 0) {
+    Ps <- Ps[ , -unique(col_NA)]
+  }
   mode(Ps) <- "numeric"
 
   # Before extracting sel_fac, discard the factors defined by user "non_factors",
@@ -351,7 +353,13 @@ longdat_disc <- function(input, value_column, factor_column, non_factors,
 
   ############## FDR correction on post-hoc test (on number of pairs) #################
   Ps_poho_fdrt <- apply(X = p_poho2t, MARGIN = 2, FUN = adjust_fun)
-  Ps_poho_fdr <- as.data.frame(t(Ps_poho_fdrt))
+
+  if (ncol(case_pairs) == 1) {
+    Ps_poho_fdrt <- as.data.frame(Ps_poho_fdrt)
+    Ps_poho_fdr <- as.data.frame(Ps_poho_fdrt)
+  } else {
+    Ps_poho_fdr <- as.data.frame(t(Ps_poho_fdrt))
+  }
 
   print("Finished post-hoc wilcoxon test.")
 
