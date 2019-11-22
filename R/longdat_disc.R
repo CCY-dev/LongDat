@@ -120,14 +120,14 @@ longdat_disc <- function(input, test_var, value_column, factor_column, non_facto
 
   # Before extracting sel_fac, discard the factors defined by user "non_factors",
   # because we don't want them to be included in sel_fac
-  Ps <- Ps[ , -match(non_factors, colnames(Ps))]
+  Ps <- Ps[ , -(match(non_factors, colnames(Ps)))[!is.na(match(non_factors, colnames(Ps)))]]
 
   # Extract the selected factors whose p value < 0.05
   sel_fac_ini <- c() # Make an empty list first
   for (i in 1:N) {  # loop through all variables
     facs <- c()
     for (j in 1:(ncol(Ps))) {
-      if (Ps[i, j] < 0.05) {
+      if (Ps[i, j] < 0.05 & !is.na(Ps[i, j])) {
         fac <- colnames(Ps)[j]
         facs <- c(facs, fac)
       }
@@ -154,7 +154,7 @@ longdat_disc <- function(input, test_var, value_column, factor_column, non_facto
         fac <- c(fac, f)
       }
       if (sum(fac) == 0) { # If all individuals have the same value on this factor
-        ff <- NULL
+        ff <- NA
       } else { # If there's any individual having different value on this factor
         ff <- sel_fac_ini[[i]][k]}
       facs <- c(facs, ff)
@@ -162,6 +162,7 @@ longdat_disc <- function(input, test_var, value_column, factor_column, non_facto
     sel_fac[[i]] <- facs
   }
   names(sel_fac) <- variables
+  sel_fac <- lapply(sel_fac, function(x) x[!is.na(x)])
   print("Finished selecting factors.")
 
   ################## Model test ###############
