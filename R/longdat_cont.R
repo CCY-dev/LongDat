@@ -44,14 +44,18 @@
 #' First, the model test tests the significance of test_var on dependent variables. Different generalized linear mixed effect models are implemented
 #' for different types of dependent variable. Negative binomial mixed model for "count", linear mixed model (dependent variables normalized first) for "measurement",
 #' beta mixed model for "proportion", Binary logistic mixed model for "binary", and proportional odds logistic mixed model for "ordinal". Then, post-hoc test
-#' (Spearman's correlation test) on the model is done.
+#' (Spearman's correlation test) on the model is done. When the data type is "count" mode, a control model test will be run on randomized data (the rows are shuffled).
+#' If there are false positive signals in this control model test, users will get a warning at the end of the run.
 #'
 #' When there are potential confounders:
 #' After the model test and post-hoc test described above, a confounding model test will be added to the work flow. The potential confounders will be added to the model
 #' one by one and test for its significance on each dependent variable. The rest are the same as the description above.
+#'
 #' @return
 #' The result table will be in your output directory. If there are confounders in the input,
-#' there will be another table called "confounders". The detailed description is as below.
+#' there will be another table called "confounders". For count mode, if there is false postive
+#' in the randomized control result, then another table named "randomized_control" will also be
+#' generated. The detailed description is as below.
 #'
 #' Result table
 #'
@@ -94,6 +98,25 @@
 #' confounded with this confounder; Effect_size column shows the effect size of dependent variable value between different values of
 #' confounders. Due to the different number of confounders for each dependent variable, there may be NAs in the table and they can
 #' simply be ignored. If the confounder table is totally empty, this means that there are no confounders detected.
+#'
+#' Randomized_control table (for user's reference)
+#'
+#' We assume that there shouldn't be positive results in the randomized control test, because all the rows in the original dataset are
+#' shuffled randomly. Therefore, any signal that showed significance here will be regarded as false positive. And if there's false
+#' positive in this randomized control result, longdat_disc will warn the user at the end of the run. This Randomized_control table is only
+#' generated when there is false positive in the randomized control test. It is intended to be a reference for users to see the effect size of
+#' false positive features.
+#'
+#'  1. The first column "Model_q" shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the negative-binomial models in the randomized
+#'     dataset. Only the features with Model_q lower than the defined model_q (default = 0.1) will be listed in this table.
+#'
+#'  2. Signal: This column describes if test_var is significant on each dependent variable based
+#'                 on the post-hoc test p values (Spearman's correlation test). "False positive" indicates that test_var is significant, while "Negative" indicates non-significance.
+#'
+#'  3. Posthoc_q: This column describes the multiple-comparison-adjusted p values from the post-hoc test (Spearman's correlation test) of the model in the randomized control dataset.
+#'
+#'  4. Effect_size: This column describes the correlation coeffecient (Spearman's rho) of each dependent variable between each dependent variable value and time.
+#'
 #' @examples
 #' # Get the path of example dataset
 #' system.file("Fasting_cont.txt", package = "longdat")
@@ -568,6 +591,178 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
 
   print("Finished post-hoc correlation test.")
 
+  ######### Randomized negative control model test #########
+  if (data_type == "count") {
+    ######### Randomize the raw data first
+    # Shuffle the rows randomly
+    value_for_random <- data[ , variable_col:ncol(data)]
+    set.seed(143)
+    value_random <- value_for_random[sample(nrow(value_for_random)), ]
+    data_randomized <- as.data.frame(cbind(data[ , 1:(variable_col-1)], value_random))
+
+    # Melt randomized data
+    predictor_names <- (colnames(data_randomized))[1: (variable_col - 1)]
+    melt_data_random <- reshape2::melt (data_randomized, id = predictor_names)
+    # Omit the rows whose value column equals to NA
+    melt_data_random <- melt_data_random %>% tidyr::drop_na(value)
+    # Remove all dots in the bacteria name or it will cause problem
+    melt_data_random$variable <- gsub(".", "_", melt_data_random$variable, fixed = TRUE)
+
+    # Make sure that all the columns are in the right class
+    # Columns mentioned in fac_var, and the second last column in melt data are factors
+    # Columns not in fac_var, and the last column in melt data are numerical numbers
+    "%notin%" <- Negate("%in%")
+    num_var <- c(which(1:(ncol(melt_data_random)-2) %notin% fac_var), ncol(melt_data_random))
+    fac_var <- c(fac_var, ncol(melt_data_random)-1)
+    for (i in fac_var) {
+      melt_data_random[ ,i] <- as.factor(melt_data_random[ ,i])
+    }
+    for (i in num_var) {
+      melt_data_random[ ,i] <- as.numeric(as.character(melt_data_random[ ,i]))
+    }
+
+    # Remove the not-used columns in melt_data
+    if (!is.null(not_used)) {
+      melt_data_random <- melt_data_random %>% dplyr::select(-c(not_used))
+    }
+    # Change the first column name of melt_data to "Individual"
+    colnames(melt_data_random)[1] <- "Individual"
+
+    ######### Then do the model test
+    Ps_neg_ctrl <- as.data.frame(matrix(data = NA, nrow = N, ncol = 2))
+    rownames(Ps_neg_ctrl) <- gsub(".", "_", variables, fixed = TRUE)
+    colnames(Ps_neg_ctrl) <- c("Neg_ctrl_model_p", "Signal_of_CI_signs")
+    Theta_random <- c()
+
+    suppressWarnings(
+      for (i in 1:N) { # loop through all variables
+        aVariable = variables[i]
+        print(i)
+        subdata_random <- subset(melt_data_random, variable == aVariable)
+        tryCatch({
+          # Negative binomial
+          fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
+          m3 <- glmmTMB(formula = fmla2, data = subdata_random, family = nbinom2, REML = F)
+
+          # Extract dispersion theta out of model
+          Theta_random[i] <- sigma(m3)
+
+          # Wald Chisq test
+          Ps_neg_ctrl[i, 1] <- car::Anova(m3, type=c("II"),  test.statistic=c("Chisq"))$"Pr(>Chisq)"
+
+          # Calculate confidence interval for test_var
+          # Followed by the determination of the signs. For "- -" or "+ +", it means that the doesn't span 0.
+          # But "- +" means that the CI spans 0. Here I sum the signs over the row, sum != 0 means it's OK.
+          ci <- as.data.frame(confint(m3))
+          ci <- ci[str_detect(row.names(ci), test_var), 1:2]
+          if (nrow(ci) > 1) {
+            if (any(apply(sign(ci), 1, sum, na.rm = T) != 0)) {
+              Ps_neg_ctrl[i, 2] <- "Good"
+            } else {
+              Ps_neg_ctrl[i, 2] <- "Bad"
+            }
+          } else if (nrow(ci) == 1) {
+            if (sign(ci)[1] == sign(ci)[2]) {
+              Ps_neg_ctrl[i, 2] <- "Good"
+            } else {
+              Ps_neg_ctrl[i, 2] <- "Bad"
+            }
+          }
+        }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+      })
+    Ps_neg_ctrl <- Ps_neg_ctrl %>%
+      rownames_to_column() %>%
+      mutate(NB_theta = Theta_random) %>%
+      column_to_rownames()
+
+    ######### Post-hoc test and effect size
+    # Here uses Spearman's correlation
+    p_poho_random <- as.data.frame(matrix(nrow = length(variables), ncol = 1))
+    assoc_random <- as.data.frame(matrix(nrow = length(variables), ncol = 1))
+
+    for (i in 1:N) { # loop through all variables
+      print(i)
+      cVariable = variables[i]
+      subdata_random <- subset(melt_data_random, variable == cVariable)
+      # Here set the "test_var" to numeric
+      subdata_random[ , test_var] <- as.numeric(subdata_random[ , test_var])
+      e <- cor.test(subdata_random[ , test_var], subdata_random$value, method = "spearman")
+      p_c_random <- e$p.value
+      a_c_random <- e$estimate
+      p_poho_random[i, 1] <- p_c_random
+      assoc_random[i, 1] <- a_c_random
+    }
+    row.names(p_poho_random) <- variables
+    row.names(assoc_random) <- variables
+    colnames(p_poho_random) <- "p_post-hoc"
+    colnames(assoc_random) <- "association"
+
+    #### Remove high theta and low prevalence ones from randomized result
+    absolute_sparsity_random <- c()
+    for (i in 1:ncol(value_random)) {
+      absolute_sparsity_random[i] <- sum(value_random[ , i] == 0)
+    }
+
+    non_zero_count_randomized <- nrow(data_randomized) - absolute_sparsity_random
+    Ps_neg_ctrl <- Ps_neg_ctrl %>%
+      rownames_to_column() %>%
+      mutate(non_zero_count = non_zero_count_randomized) %>%
+      column_to_rownames()
+
+    bac_exclude_1_random <- subset(Ps_neg_ctrl, non_zero_count <= nonzero_count_cutoff1 & NB_theta >= theta_cutoff)
+    bac_exclude_2_random <- subset(Ps_neg_ctrl, non_zero_count <= nonzero_count_cutoff2)
+    bac_exclude_random <- unique(c(rownames(bac_exclude_1_random), rownames(bac_exclude_2_random)))
+    bac_include_random <- rownames(Ps_neg_ctrl)[!rownames(Ps_neg_ctrl) %in% bac_exclude_random]
+
+    Ps_neg_ctrl_filterd <- Ps_neg_ctrl %>%
+      rownames_to_column() %>%
+      dplyr::filter(rowname %in% bac_include_random) %>%
+      column_to_rownames()
+
+    p_poho_random_filtered <- p_poho_random %>%
+      rownames_to_column() %>%
+      dplyr::filter(rowname %in% bac_include_random) %>%
+      column_to_rownames()
+
+    assoc_random_filtered <- assoc_random %>%
+      rownames_to_column() %>%
+      dplyr::filter(rowname %in% bac_include_random) %>%
+      column_to_rownames()
+
+    ####### FDR correction
+    adjust_fun <- function(x) p.adjust(p = x, method = adjustMethod)
+    Ps_neg_ctrl_fdr <- adjust_fun(Ps_neg_ctrl_filterd$Neg_ctrl_model_p)
+    Ps_neg_ctrl_filterd <- Ps_neg_ctrl_filterd %>%
+      rownames_to_column() %>%
+      mutate(P_fdr = Ps_neg_ctrl_fdr) %>%
+      column_to_rownames()
+    p_poho_random_fdr <- adjust_fun(p_poho_random_filtered$`p_post-hoc`)
+    p_poho_random_filtered <- p_poho_random_filtered %>%
+      rownames_to_column() %>%
+      mutate(P_poho_fdr = p_poho_random_fdr) %>%
+      column_to_rownames()
+
+    ####### Write randomized control table
+    if (sum(Ps_neg_ctrl_filterd$P_fdr < model_q) > 0) {
+      signal_neg_ctrl <- ifelse(p_poho_random_fdr < posthoc_q,
+                                yes = "False_positive", no = "Negative")
+      signal_neg_ctrl_tbl <- data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl_filterd)), ncol = 1,
+                                               data = signal_neg_ctrl, byrow = F))
+      colnames(signal_neg_ctrl_tbl) <- "Signal"
+      rownames(signal_neg_ctrl_tbl) <- rownames(Ps_neg_ctrl_filterd)
+      result_neg_ctrl <- cbind(Ps_neg_ctrl_filterd[ ,c(2, 5)], signal_neg_ctrl_tbl,
+                               p_poho_random_filtered$P_poho_fdr, assoc_random_filtered)
+      colnames(result_neg_ctrl) <- c("Signal_of_CI_signs", "Model_q", "Signal",
+                                     "Posthoc_q", "Effect_size")
+      result_neg_ctrl_sig <- result_neg_ctrl %>%
+        filter(Model_q < model_q & Signal_of_CI_signs == "Good") %>%
+        dplyr::select(-1)
+      write.table(x = result_neg_ctrl_sig, file = paste0(output_tag, "_randomized_control.txt"), sep = "\t",
+                  row.names = T, col.names = NA, quote = F)
+    }
+  }
+
+
   ######################### Remove the excluded ones #########################
   if (data_type == "count") {
     absolute_sparsity <- c()
@@ -668,12 +863,12 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
           c_type <- if (is.null(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) { # if Ps_conf_model_unlist is null
             print("Strictly deconfounded")
           } else { #Ps_conf_model_unlist isn't  null
-            if (Ps_conf_model_unlist[i, sel_fac[[i]][j]] < 0.05 & !is.na(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {# Confounding model p < 0.05
+            if (Ps_conf_model_unlist[i, sel_fac[[i]][j]] < posthoc_q & !is.na(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {# Confounding model p < posthoc_q
               print("Strictly deconfounded")
-            } else {# Confounding model p >= 0.05
-              if (Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]] < 0.05 & !is.na(Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]])) {# Inverse onfounding model p < 0.05
+            } else {# Confounding model p >= posthoc_q
+              if (Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]] < posthoc_q & !is.na(Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]])) {# Inverse onfounding model p < posthoc_q
                 print("Confounded")
-              } else {# Inverse onfounding model p >= 0.05
+              } else {# Inverse onfounding model p >= posthoc_q
                 print("Ambiguously deconfounded")
               }
             }}
@@ -801,6 +996,14 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
   write.table(x = result_table, file = paste0(output_tag, "_result_table.txt"), sep = "\t",
               row.names = T, col.names = NA, quote = F)
   print("Finished! The results are now in your directory.")
+  if (data_type == "count") {
+    false_pos <- Ps_neg_ctrl_filterd %>%
+      filter(P_fdr < model_q & Signal_of_CI_signs == "Good")
+    false_pos_count <- nrow(false_pos)
+    if (false_pos_count > 0) {
+      print("Attention! There are false positives in randomized control test. See documentation for more details.")
+    }
+  }
 }
 
 

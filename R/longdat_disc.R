@@ -45,7 +45,7 @@
 #' First, the model test tests the significance of test_var on dependent variables. Different generalized linear mixed effect models are implemented
 #' for different types of dependent variable. Negative binomial mixed model for "count", linear mixed model (dependent variables normalized first) for "measurement",
 #' beta mixed model for "proportion", Binary logistic mixed model for "binary", and proportional odds logistic mixed model for "ordinal". Then, post-hoc test (emmeans) on
-#' the model is done. While the data type is "count", a control model test will be run on randomized data. If there are false positive signals in this  control model
+#' the model is done. When the data type is "count" mode, a control model test will be run on randomized data (the rows are shuffled). If there are false positive signals in this control model
 #' test, then additional Wilcoxon post-hoc test will be done because it is more conservative.
 #'
 #' When there are potential confounders:
@@ -54,7 +54,9 @@
 #'
 #' @return
 #' The result table will be in your output directory. If there are confounders in the input,
-#' there will be another table called "confounders". The detailed description is as below.
+#' there will be another table called "confounders". For count mode, if there is false postive
+#' in the randomized control result, then another table named "randomized_control" will also be
+#' generated. The detailed description is as below.
 #'
 #' Result table
 #'
@@ -104,6 +106,30 @@
 #' confounded with this confounder; Effect_size column shows the effect size of dependent variable value between different values of
 #' confounders. Due to the different number of confounders for each dependent variable, there may be NAs in the table and they can
 #' simply be ignored. If the confounder table is totally empty, this means that there are no confounders detected.
+#'
+#' Randomized_control table (for user's reference)
+#'
+#' We assume that there shouldn't be positive results in the randomized control test, because all the rows in the original dataset are
+#' shuffled randomly. Therefore, any signal that showed significance here will be regarded as false positive. And if there's false
+#' positive in this randomized control result, longdat_disc will warn the user at the end of the run. This Randomized_control table is only
+#' generated when there is false positive in the randomized control test. It is intended to be a reference for users to see the effect size of
+#' false positive features.
+#'
+#'  1. The first column "Model_q" shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the negative-binomial models in the randomized
+#'     dataset. Only the features with Model_q lower than the defined model_q (default = 0.1) will be listed in this table.
+#'
+#'  2. Signal_a_b: The "a" and "b" here are the names of the time points. These columns describe if test_var is significant on each dependent variable between each time point based
+#'                 on the post-hoc test p values (listed right to Signal_a_b). "False positive" indicates that test_var is significant, while "Negative" indicates non-significance.
+#'                 The number of Signal_a_b columns depends on how many combinations of time points in the input data.
+#'
+#'  3. Posthoc_q_a_b: The "a" and "b" here are the names of the time points. These columns describe the multiple-comparison-adjusted p values from the post-hoc
+#'                     test of the model between time point b and a in the randomized control dataset. The number of Posthoc_q_a_b columns depends on how
+#'                     many combinations of time points in the input data.
+#'
+#'
+#'  4. Effect_size_a_b: The "a" and "b" here are the names of the time points. These columns describe the effect size (Cliff's delta) of each dependent variable between time point
+#'                     b and a in the randomized control dataset. The number of Effect_size_a_b columns depends on how many combinations of time points in the input data.
+#'
 #' @examples
 #' # Get the path of example dataset
 #' system.file("Fasting_disc.txt", package = "longdat")
@@ -645,6 +671,8 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
     rownames(Ps_neg_ctrl) <- gsub(".", "_", variables, fixed = TRUE)
     colnames(Ps_neg_ctrl) <- c("Neg_ctrl_model_p", "Signal_of_CI_signs")
     Theta_random <- c()
+    p_poho_neg_crtl <- data.frame(matrix(nrow = length(variables), ncol = ncol(case_pairs)))
+
     suppressWarnings(
       for (i in 1:N) { # loop through all variables
         aVariable = variables[i]
@@ -660,6 +688,13 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
 
           # Wald Chisq test
           Ps_neg_ctrl[i, 1] <- car::Anova(m3, type=c("II"),  test.statistic=c("Chisq"))$"Pr(>Chisq)"
+
+          # Post-hoc test
+          m_means_neg_ctrl <- emmeans(object = m3, specs = test_var)
+          e <- as.data.frame(pairs(m_means_neg_ctrl, adjust = "fdr", infer = c(F, T), reverse = F))
+          for (m in 1:ncol(case_pairs)) {
+            p_poho_neg_crtl[i, m] <- e$p.value[m]
+          }
 
           # Calculate confidence interval for test_var
           # Followed by the determination of the signs. For "- -" or "+ +", it means that the doesn't span 0.
@@ -685,6 +720,43 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
       rownames_to_column() %>%
       mutate(NB_theta = Theta_random) %>%
       column_to_rownames()
+    row.names(p_poho_neg_crtl) <- variables
+    case_pairs_name <- c()
+    for (i in 1:ncol(case_pairs)) {
+      cpn <- paste0(case_pairs[1, i], "_", case_pairs[2, i])
+      case_pairs_name <- c(case_pairs_name, cpn)
+    }
+    colnames(p_poho_neg_crtl) <-  paste0("p_", case_pairs_name)
+
+    ####### Effect size
+    case_pairs_random <- combn(x = sort(unique(melt_data_random[ , test_var])), m = 2)
+    delta_random <- data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl)), ncol = ncol(case_pairs_random)))
+    case_pairs_random_name <- c()
+    library(orddom)
+    for (i in 1:length(row.names(Ps_neg_ctrl))) { # loop through all variables
+      print(i)
+      cVariable = variables[i]
+      subdata_pre_random <- subset(melt_data_random, variable == cVariable)
+      counts_random <- subdata_pre_random %>% dplyr::count(Individual)
+      # Exclude the ones not having data points at ALL timepoints
+      exclude_random <- counts_random$Individual[which(counts_random$n != length(unique(data_randomized[ , test_var])))]
+      if (length(exclude_random) > 0) {
+        subdata2_random <- subset(subdata_pre_random, !Individual %in% exclude)
+      } else {
+        subdata2_random <- subdata_pre_random
+      }
+      for (k in 1:ncol(case_pairs_random)) { # loop through each case pair
+        sub5 <- subdata2_random[subdata2_random[ , test_var] == case_pairs_random[1,k], ]
+        sub6 <- subdata2_random[subdata2_random[ , test_var] == case_pairs_random[2,k], ]
+        d_random <- as.numeric(orddom::dmes(x = sub5$value, y = sub6$value)$dw)
+        delta_random[i, k] <- d_random
+        name_random <- paste(case_pairs_random[1,k], sep = "_", case_pairs_random[2,k])
+        case_pairs_random_name <- c(case_pairs_random_name, name_random)
+      }
+    }
+    row.names(delta_random) <- row.names(Ps_neg_ctrl)
+    colnames(delta_random) <- paste("effect_size", sep = "_", unique(case_pairs_random_name))
+
     #### Remove high theta and low prevalence ones from randomized result
     absolute_sparsity_random <- c()
     for (i in 1:ncol(value_random)) {
@@ -707,6 +779,16 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
       dplyr::filter(rowname %in% bac_include_random) %>%
       column_to_rownames()
 
+    delta_random_filtered <- delta_random %>%
+      rownames_to_column() %>%
+      dplyr::filter(rowname %in% bac_include_random) %>%
+      column_to_rownames()
+
+    p_poho_neg_crtl_filtered <- p_poho_neg_crtl %>%
+      rownames_to_column() %>%
+      dplyr::filter(rowname %in% bac_include_random) %>%
+      column_to_rownames()
+
     ####### FDR correction
     adjust_fun <- function(x) p.adjust(p = x, method = adjustMethod)
     Ps_neg_ctrl_fdr <- adjust_fun(Ps_neg_ctrl_filterd$Neg_ctrl_model_p)
@@ -714,6 +796,25 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
       rownames_to_column() %>%
       mutate(P_fdr = Ps_neg_ctrl_fdr) %>%
       column_to_rownames()
+
+    ####### Write randomized control table
+    if (sum(Ps_neg_ctrl_filterd$P_fdr < model_q) > 0) {
+      signal_neg_ctrl <- ifelse(p_poho_neg_crtl_filtered < posthoc_q,
+                                yes = "False_positive", no = "Negative")
+      signal_neg_ctrl_tbl <- data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl_filterd)), ncol = ncol(case_pairs_random),
+                                               data = signal_neg_ctrl, byrow = F))
+      colnames(signal_neg_ctrl_tbl) <- paste0("Signal_", case_pairs_name)
+      rownames(signal_neg_ctrl_tbl) <- rownames(Ps_neg_ctrl_filterd)
+      result_neg_ctrl <- cbind(Ps_neg_ctrl_filterd[ ,c(2, 5)], signal_neg_ctrl_tbl,
+                               p_poho_neg_crtl_filtered, delta_random_filtered)
+      colnames(result_neg_ctrl) <- c("Signal_of_CI_signs", "Model_q", paste0("Signal_", case_pairs_name),
+                                     paste0("Posthoc_q_", case_pairs_name), paste0("Effect_size_", case_pairs_name))
+      result_neg_ctrl_sig <- result_neg_ctrl %>%
+        filter(Model_q < model_q & Signal_of_CI_signs == "Good") %>%
+        dplyr::select(-1)
+      write.table(x = result_neg_ctrl_sig, file = paste0(output_tag, "_randomized_control.txt"), sep = "\t",
+                  row.names = T, col.names = NA, quote = F)
+    }
   }
 
   ################### Wilcoxon post-hoc test (conditional) ###################
@@ -721,7 +822,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
   # Count false positives
   if (data_type == "count") {
     false_pos <- Ps_neg_ctrl_filterd %>%
-      filter(P_fdr < 0.1) %>%
+      filter(P_fdr < model_q) %>%
       filter(Signal_of_CI_signs == "Good")
     false_pos_count <- nrow(false_pos)
 
@@ -877,12 +978,12 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
           c_type <- if (is.null(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) { # if Ps_conf_model_unlist is null
             print("Strictly deconfounded")
           } else { #Ps_conf_model_unlist isn't  null
-            if (Ps_conf_model_unlist[i, sel_fac[[i]][j]] < 0.05 & !is.na(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {# Confounding model p < 0.05
+            if (Ps_conf_model_unlist[i, sel_fac[[i]][j]] < posthoc_q & !is.na(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {# Confounding model p < posthoc_q
               print("Strictly deconfounded")
-            } else {# Confounding model p >= 0.05
-              if (Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]] < 0.05 & !is.na(Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]])) {# Inverse onfounding model p < 0.05
+            } else {# Confounding model p >= posthoc_q
+              if (Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]] < posthoc_q & !is.na(Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]])) {# Inverse onfounding model p < posthoc_q
                 print("Confounded")
-              } else {# Inverse onfounding model p >= 0.05
+              } else {# Inverse onfounding model p >= posthoc_q
                 print("Ambiguously deconfounded")
               }
             }}
@@ -1023,7 +1124,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
   print("Finished! The results are now in your directory.")
   if (data_type == "count") {
     if (false_pos_count > 0) {
-      print("Attention! Since there are false positives in randomized control test, it's better to check the wilcoxon post-hoc p values of significant signals in the output table to get a more conservative result. See documentation for more details.")
+      print("Attention! Since there are false positives in randomized control test, it's better to check the Wilcoxon post-hoc p values of significant signals in the output table to get a more conservative result. See documentation for more details.")
     }
   }
 }

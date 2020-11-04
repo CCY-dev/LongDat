@@ -63,7 +63,9 @@ will be filtered out. The default is 5.}
 }
 \value{
 The result table will be in your output directory. If there are confounders in the input,
-there will be another table called "confounders". The detailed description is as below.
+there will be another table called "confounders". For count mode, if there is false postive
+in the randomized control result, then another table named "randomized_control" will also be
+generated. The detailed description is as below.
 
 Result table
 
@@ -113,6 +115,29 @@ Then every 3 columns are a group. Confounder column shows the confounder's name;
 confounded with this confounder; Effect_size column shows the effect size of dependent variable value between different values of
 confounders. Due to the different number of confounders for each dependent variable, there may be NAs in the table and they can
 simply be ignored. If the confounder table is totally empty, this means that there are no confounders detected.
+
+Randomized_control table (for user's reference)
+
+We assume that there shouldn't be positive results in the randomized control test, because all the rows in the original dataset are
+shuffled randomly. Therefore, any signal that showed significance here will be regarded as false positive. And if there's false
+positive in this randomized control result, longdat_disc will warn the user at the end of the run. This Randomized_control table is only
+generated when there is false positive in the randomized control test. It is intended to be a reference for users to see the effect size of
+false positive features.
+
+ 1. The first column "Model_q" shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the negative-binomial models in the randomized
+    dataset. Only the features with Model_q lower than the defined model_q (default = 0.1) will be listed in this table.
+
+ 2. Signal_a_b: The "a" and "b" here are the names of the time points. These columns describe if test_var is significant on each dependent variable between each time point based
+                on the post-hoc test p values (listed right to Signal_a_b). "False positive" indicates that test_var is significant, while "Negative" indicates non-significance.
+                The number of Signal_a_b columns depends on how many combinations of time points in the input data.
+
+ 3. Posthoc_q_a_b: The "a" and "b" here are the names of the time points. These columns describe the multiple-comparison-adjusted p values from the post-hoc
+                    test of the model between time point b and a in the randomized control dataset. The number of Posthoc_q_a_b columns depends on how
+                    many combinations of time points in the input data.
+
+
+ 4. Effect_size_a_b: The "a" and "b" here are the names of the time points. These columns describe the effect size (Cliff's delta) of each dependent variable between time point
+                    b and a in the randomized control dataset. The number of Effect_size_a_b columns depends on how many combinations of time points in the input data.
 }
 \description{
 Longdat_disc calculates the p values, effect sizes and discover confounding effects of time variables from longitudinal data.
@@ -124,7 +149,7 @@ When there's no potential confounder in the input data (confounders are anything
 First, the model test tests the significance of test_var on dependent variables. Different generalized linear mixed effect models are implemented
 for different types of dependent variable. Negative binomial mixed model for "count", linear mixed model (dependent variables normalized first) for "measurement",
 beta mixed model for "proportion", Binary logistic mixed model for "binary", and proportional odds logistic mixed model for "ordinal". Then, post-hoc test (emmeans) on
-the model is done. While the data type is "count", a control model test will be run on randomized data. If there are false positive signals in this  control model
+the model is done. When the data type is "count" mode, a control model test will be run on randomized data (the rows are shuffled). If there are false positive signals in this control model
 test, then additional Wilcoxon post-hoc test will be done because it is more conservative.
 
 When there are potential confounders:
