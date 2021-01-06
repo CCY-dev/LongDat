@@ -17,7 +17,8 @@ longdat_disc(
   posthoc_q = 0.05,
   theta_cutoff = 2^20,
   nonzero_count_cutoff1 = 9,
-  nonzero_count_cutoff2 = 5
+  nonzero_count_cutoff2 = 5,
+  verbose = T
 )
 }
 \arguments{
@@ -60,6 +61,8 @@ will be filtered out if it doesn't meet the theta threshold either. The default 
 
 \item{nonzero_count_cutoff2}{Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
 will be filtered out. The default is 5.}
+
+\item{verbose}{A boolean vector indicating whether to print detailed message. The default is T.}
 }
 \value{
 The result table will be in your output directory. If there are confounders in the input,
@@ -155,6 +158,8 @@ test, then additional Wilcoxon post-hoc test will be done because it is more con
 When there are potential confounders:
 After the model test and post-hoc test described above, a confounding model test will be added to the work flow. The potential confounders will be added to the model
 one by one and test for its significance on each dependent variable. The rest are the same as the description above.
+
+Also, when your data type is count data, please use set.seed() before running longdat_disc() so that you can get reproducible randomized negative check.
 }
 \examples{
 # Get the path of example dataset

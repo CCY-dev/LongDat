@@ -13,7 +13,8 @@ theta_plot(
   output_tag,
   point_size = 1,
   x_interval_value = 5,
-  y_interval_value = 5
+  y_interval_value = 5,
+  verbose = T
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ This should be a number vector, and the default is NULL.}
 \item{x_interval_value}{The interval value for tick marks on x-axis. The default is 5.}
 
 \item{y_interval_value}{The interval value for tick marks on y-axis. The default is 5.}
+
+\item{verbose}{A boolean vector indicating whether to print detailed message. The default is T.}
 }
 \value{
 The "nonzero_count_vs_theta.pdf" will be in the output directory.

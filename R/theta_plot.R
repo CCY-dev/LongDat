@@ -12,6 +12,7 @@
 #' @param point_size The point size for plotting in ggplot2. The default is 1.
 #' @param x_interval_value The interval value for tick marks on x-axis. The default is 5.
 #' @param y_interval_value The interval value for tick marks on y-axis. The default is 5.
+#' @param verbose A boolean vector indicating whether to print detailed message. The default is T.
 #' @export
 #' @import tidyverse
 #' @import reshape2
@@ -35,7 +36,7 @@
 
 theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
                        output_tag, point_size = 1, x_interval_value = 5,
-                       y_interval_value = 5) {
+                       y_interval_value = 5, verbose = T) {
   if (missing(input)) {
     stop('Error! Necessary argument "input" is missing.')
   }
@@ -51,7 +52,6 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   if (missing(output_tag)) {
     stop('Error! Necessary argument "output_tag" is missing.')
   }
-
   library(lme4)
   library(tidyverse)
   library(reshape2)
@@ -59,8 +59,8 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   library(lmtest)
   library(glmmTMB)
 
+  if (verbose == T) {print("Start data preprocessing.")}
   data <- read.table (file = input, header = T, sep = "\t", check.names = F, stringsAsFactors = F)
-
   # Remove the features (bacteria) whose column sum is 0
   values <- as.data.frame(data[ , variable_col:ncol(data)])
   values <- as.data.frame(apply(values, 2, as.numeric))
@@ -78,7 +78,6 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   # Remove all dots in the bacteria name or it will cause problem
   melt_data$variable <- gsub(".", "_", melt_data$variable, fixed = TRUE)
 
-
   # Make sure that all the columns are in the right class
   # Columns mentioned in fac_var, and the second last column in melt data are factors
   # Columns not in fac_var, and the last column in melt data are numerical numbers
@@ -91,47 +90,44 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   for (i in num_var) {
     melt_data[ ,i] <- as.numeric(melt_data[ ,i])
   }
-
   # Remove the not-used columns in melt_data
   if (!is.null(not_used)) {
     melt_data <- melt_data %>% dplyr::select(-c(not_used))
   }
-
   # Change the first column name of melt_data to "Individual"
   colnames(melt_data)[1] <- "Individual"
-
   # Variables are all the bacteria taxanomies
   variables <- unique (melt_data$variable)
-
   # Extract all the column names from melt_data except for the last two columns
   # which are variables and values, and also exclude "Individual" and test_var
   factors <- colnames(melt_data)[-c(ncol(melt_data), ncol(melt_data)-1)]
   factors <- factors[-which(factors %in% c("Individual", test_var))]
   factor_columns <- match(factors, colnames(melt_data))
   N <- length (variables)
+  if (verbose == T) {print("Finish data preprocessing.")}
 
   ################## Negative binomial model #################
+  if (verbose == T) {print("Start running negative binomial models.")}
   Theta <- as.data.frame(matrix(data = NA, nrow = N, ncol = 1))
   for (i in 1:N) { # loop through all variables
     aVariable = variables[i]
-    print(i)
+    if (verbose == T) {print(i)}
     subdata <- subset(melt_data, variable == aVariable)
-
     tryCatch({
       fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
       m2 <- glmmTMB(formula = fmla2, data = subdata, family = nbinom2, REML = F)
-
       # Extract overdispersion theta out of model
       Theta[i, 1] <- sigma(m2)
     }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
   }
   rownames(Theta) <- gsub(".", "_", variables, fixed = TRUE)
   colnames(Theta) <- c("NB_theta")
-
   all_info <- cbind(Theta, non_zero_count)
   colnames(all_info)[2] <- "Nonzero_count"
+  if (verbose == T) {print("Finish running negative binomial models.")}
 
   ################## Plot nonzero count v.s. theta ##################
+  if (verbose == T) {print("Start plotting.")}
   suppressWarnings(
   ggplot(all_info, aes(x=Nonzero_count, y = log(NB_theta, base = 2))) +
     geom_point(size = point_size, alpha = 0.9, color = "dodgerblue2") + theme_light() +
@@ -143,7 +139,6 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
     scale_x_continuous(breaks = seq(0, nrow(data), by = x_interval_value)) +
     expand_limits(x = c(0, nrow(data)), y = c(-10, max(log(all_info$NB_theta, base = 2)) + 10)) +
     ggsave(filename = paste0(output_tag, "_nonzero_count_vs_theta.pdf"),
-           device = "pdf")
-  )
+           device = "pdf"))
   print("Finished! The results are now in your directory.")
 }
