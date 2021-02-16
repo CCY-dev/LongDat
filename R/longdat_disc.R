@@ -319,7 +319,8 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
 
   ################## FDR correction on p_wilcoxon (conditional) ###############
   suppressWarnings(
-    if (data_type == "count" & false_pos_count > 0 ) {
+    if (data_type == "count") {
+      if (false_pos_count > 0 ) {
       if (verbose == T) {print("Start multiple test correction on wilcoxon test p values.")}
       if (ncol(p_wilcox) > 1) {
         p_wilcox_t <- as.data.frame(t(p_wilcox))
@@ -335,6 +336,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
         colnames(p_wilcox_final) <- new_wilcox_name
       }
       if (verbose == T) {print("Finish multiple test correction on wilcoxon test p values.")}
+      }
     }
   )
 
