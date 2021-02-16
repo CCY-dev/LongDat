@@ -173,7 +173,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
 
   ####### Write randomized control table
     signal_neg_ctrl_tbl <- data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl_filterd)), ncol = ncol(case_pairs_random),
-                                             data = signal_neg_ctrl, byrow = F))
+                                             data = NA, byrow = F))
     colnames(signal_neg_ctrl_tbl) <- paste0("Signal_", case_pairs_name)
     rownames(signal_neg_ctrl_tbl) <- rownames(Ps_neg_ctrl_filterd)
     for (i in 1:nrow(p_poho_neg_crtl_filtered)) {

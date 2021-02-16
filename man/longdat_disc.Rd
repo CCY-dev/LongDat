@@ -127,19 +127,21 @@ positive in this randomized control result, longdat_disc will warn the user at t
 generated when there is false positive in the randomized control test. It is intended to be a reference for users to see the effect size of
 false positive features.
 
- 1. The first column "Model_q" shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the negative-binomial models in the randomized
+ 1. "Model_q": It shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the negative-binomial models in the randomized
     dataset. Only the features with Model_q lower than the defined model_q (default = 0.1) will be listed in this table.
 
- 2. Signal_a_b: The "a" and "b" here are the names of the time points. These columns describe if test_var is significant on each dependent variable between each time point based
+ 2. Final_signal: It show the overall signal being either false positive or negative. "False positive" indicates that test_var is significant, while "Negative" indicates non-significance.
+
+ 3. Signal_a_b: The "a" and "b" here are the names of the time points. These columns describe if test_var is significant on each dependent variable between each time point based
                 on the post-hoc test p values (listed right to Signal_a_b). "False positive" indicates that test_var is significant, while "Negative" indicates non-significance.
                 The number of Signal_a_b columns depends on how many combinations of time points in the input data.
 
- 3. Posthoc_q_a_b: The "a" and "b" here are the names of the time points. These columns describe the multiple-comparison-adjusted p values from the post-hoc
+ 4. Posthoc_q_a_b: The "a" and "b" here are the names of the time points. These columns describe the multiple-comparison-adjusted p values from the post-hoc
                     test of the model between time point b and a in the randomized control dataset. The number of Posthoc_q_a_b columns depends on how
                     many combinations of time points in the input data.
 
 
- 4. Effect_size_a_b: The "a" and "b" here are the names of the time points. These columns describe the effect size (Cliff's delta) of each dependent variable between time point
+ 5. Effect_size_a_b: The "a" and "b" here are the names of the time points. These columns describe the effect size (Cliff's delta) of each dependent variable between time point
                     b and a in the randomized control dataset. The number of Effect_size_a_b columns depends on how many combinations of time points in the input data.
 }
 \description{

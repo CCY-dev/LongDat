@@ -149,32 +149,33 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
     rownames_to_column() %>%
     mutate(P_fdr = Ps_neg_ctrl_fdr) %>%
     column_to_rownames()
-  p_poho_random_fdr <- adjust_fun(p_poho_random_filtered$`p_post-hoc`)
-  p_poho_random_filtered <- p_poho_random_filtered %>%
-    rownames_to_column() %>%
-    mutate(P_poho_fdr = p_poho_random_fdr) %>%
-    column_to_rownames()
-    false_pos <- Ps_neg_ctrl_filterd %>%
-      filter(P_fdr < model_q & Signal_of_CI_signs == "Good")
-    false_pos_count <- nrow(false_pos)
 
   ####### Write randomized control table
-  if (sum(Ps_neg_ctrl_filterd$P_fdr < model_q, na.rm = T) > 0) {
-    signal_neg_ctrl <- ifelse(p_poho_random_fdr < posthoc_q,
-                              yes = "False_positive", no = "Negative")
     signal_neg_ctrl_tbl <- data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl_filterd)), ncol = 1,
-                                             data = signal_neg_ctrl, byrow = F))
+                                             data = NA, byrow = F))
     colnames(signal_neg_ctrl_tbl) <- "Signal"
     rownames(signal_neg_ctrl_tbl) <- rownames(Ps_neg_ctrl_filterd)
+    for (i in 1:nrow(Ps_neg_ctrl_filterd)) {
+        signal_neg_ctrl_tbl[i, 1] <- ifelse(Ps_neg_ctrl_filterd$P_fdr[i] < model_q & p_poho_random_filtered$`p_post-hoc`[i] < posthoc_q & !is.na(Ps_neg_ctrl_filterd$P_fdr[i]) & !is.na(p_poho_random_filtered$`p_post-hoc`[i]),
+                                            yes = "False_positive", no = "Negative")
+      }
     result_neg_ctrl <- cbind(Ps_neg_ctrl_filterd[ ,c(2, 5)], signal_neg_ctrl_tbl,
-                             p_poho_random_filtered$P_poho_fdr, assoc_random_filtered)
+                             p_poho_random_filtered$`p_post-hoc`, assoc_random_filtered)
     colnames(result_neg_ctrl) <- c("Signal_of_CI_signs", "Model_q", "Signal",
                                    "Posthoc_q", "Effect_size")
+
+    # Change the rownames to avoid confusion for the users
+    rownames(result_neg_ctrl) <- paste0("Randomized_feature_", 1:nrow(result_neg_ctrl))
+
     result_neg_ctrl_sig <- result_neg_ctrl %>%
-      filter(Model_q < model_q & Signal_of_CI_signs == "Good") %>%
+      filter(Signal == "False_positive" & Signal_of_CI_signs == "Good") %>%
       dplyr::select(-1)
+    false_pos_count <- nrow(result_neg_ctrl_sig)
+
+    if (nrow(result_neg_ctrl_sig) > 0) {
     write.table(x = result_neg_ctrl_sig, file = paste0(output_tag, "_randomized_control.txt"), sep = "\t",
-                row.names = T, col.names = NA, quote = F)
+                row.names = T, col.names = NA, quote = F)}
+    return(list(result_neg_ctrl, false_pos_count))
   }
-  return(list(Ps_neg_ctrl_filterd, false_pos_count))
-}
+
+

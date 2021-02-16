@@ -15,6 +15,7 @@ factor_p_cal <- function(melt_data, variables, factor_columns, factors, data, N,
       if (verbose == T) {print(i)}
       print(aVariable)
       subdata <- subset(melt_data, variable == aVariable)
+      colnames(subdata) <- fix_name_fun(colnames(subdata))
 
       for (j in 1:length(factor_columns)) {# loop through all factor columns
 

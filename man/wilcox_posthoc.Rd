@@ -5,7 +5,7 @@
 \title{Wilcoxon post-hoc test}
 \usage{
 wilcox_posthoc(
-  Ps_neg_ctrl_filterd,
+  result_neg_ctrl,
   model_q,
   melt_data,
   test_var,

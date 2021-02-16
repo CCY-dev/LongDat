@@ -220,7 +220,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
     random_neg_ctrl_lists <- random_neg_ctrl_cont(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables, case_pairs,
                                                   adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
                                                   output_tag, verbose)
-    Ps_neg_ctrl_filterd <- random_neg_ctrl_lists[[1]]
+    result_neg_ctrl <- random_neg_ctrl_lists[[1]]
     false_pos_count <- random_neg_ctrl_lists[[2]]
     if (verbose == T) {print("Finish randomized negative control model test.")}
   }
