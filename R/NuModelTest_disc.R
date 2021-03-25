@@ -34,7 +34,7 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data, variables, verbo
           m2 <- glmmTMB(fmla2, data = subdata, family = "binomial", na.action = na.omit, REML = F)
         } else if (data_type == "ordinal") {
           fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +", test_var))
-          m2 <- polr(fmla2, data = subdata, method = "logistic")
+          m2 <- MASS::polr(fmla2, data = subdata, method = "logistic")
         }
 
         # Wald Chisq test

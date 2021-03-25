@@ -33,7 +33,7 @@ ConModelTest_disc <- function(N, variables, melt_data, sel_fac, data_type, test_
               m2 <- glmmTMB(fmla2, data = subdata, family = "binomial", na.action = na.omit, REML = F)
             } else if (data_type == "ordinal") {
               fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +" , fix_name_fun(sel_fac[[i]][k]), "+", test_var))
-              m2 <- polr(fmla2, data = subdata, method = "logistic")
+              m2 <- MASS::polr(fmla2, data = subdata, method = "logistic")
             }
 
             # Wald Chisq test
