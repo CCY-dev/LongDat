@@ -10,9 +10,9 @@
 #'        one of two mutually exclusive categories. Ordinal data consist of ranks. Any data that doesn't belong to the previous categories should be classified as "others".
 #' @param test_var The name of the independent variable you are testing for, should be a character vector (ex: c("Time"))
 #'        identical to its column name and make sure there is no space in it.
-#' @param variable_col The column number of the position where the dependent variable columns (ex: bacteria) start in the table
+#' @param variable_col The column number of the position where the dependent variable columns (ex: bacteria) start in the table.
 #' @param fac_var The column numbers of the position where the columns that aren't
-#'         numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7))
+#'         numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7)).
 #' @param not_used The column position of the columns not are irrevelant and can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.
 #' @param adjustMethod Multiple testing p value correction. Choices are the ones in p.adjust(), including
@@ -40,6 +40,9 @@
 #' @import emmeans
 #' @import bestNormalize
 #' @importFrom MASS polr
+#' @importFrom graphics pairs
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test filter
+#' @importFrom utils combn read.table write.table
 #' @details
 #' The brief workflow of longdat_disc() is as below:
 #'
@@ -66,9 +69,9 @@
 #'
 #' 1. The first column: The dependent variables in the input data. This can be used as row name when being imported into R.
 #'
-#' 2. Prevalence_percentage: The percentage of each dependent variable present across individuals and time points
+#' 2. Prevalence_percentage: The percentage of each dependent variable present across individuals and time points.
 #'
-#' 3. Mean_abundance: The mean value of each dependent variable across individuals and time points
+#' 3. Mean_abundance: The mean value of each dependent variable across individuals and time points.
 #'
 #' 4. Signal: The final decision of the significance of the test_var (independent variable) on each dependent variable.
 #'    NS: Non-significant, meaning there’s no effect of time.
@@ -137,12 +140,14 @@
 #'                     b and a in the randomized control dataset. The number of Effect_size_a_b columns depends on how many combinations of time points in the input data.
 #'
 #' @examples
+#'\dontrun{
 #' # Get the path of example dataset
 #' system.file("Fasting_disc.txt", package = "longdat")
 #' # Paste the directory to the input below
 #' longdat_disc(input = "your_path_to/Fasting_disc.txt", data_type = "count",
-#'              test_var = "Time_point", variable_col = 7, fac_var = c(1:3),
-#'              output_tag = "longdat_disc_example")
+#' test_var = "Time_point", variable_col = 7, fac_var = c(1:3),
+#' output_tag = "longdat_disc_example")
+#'}
 
 longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_used = NULL,
                          output_tag, adjustMethod = "fdr", model_q = 0.1,

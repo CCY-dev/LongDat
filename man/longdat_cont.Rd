@@ -37,7 +37,7 @@ identical to its column name and make sure there is no space in it.}
 \item{variable_col}{The column number of the position where the dependent variable columns (ex: bacteria) start in the table}
 
 \item{fac_var}{The column numbers of the position where the columns that aren't
-numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7))}
+numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7)).}
 
 \item{not_used}{The column position of the columns not are irrevelant and can be ignored when in the analysis.
 This should be a number vector, and the default is NULL.}
@@ -150,10 +150,12 @@ one by one and test for its significance on each dependent variable. The rest ar
 Also, when your data type is count data, please use set.seed() before running longdat_cont() so that you can get reproducible randomized negative check.
 }
 \examples{
+\dontrun{
 # Get the path of example dataset
 system.file("Fasting_cont.txt", package = "longdat")
 # Paste the directory to the input below
 longdat_cont(input = "your_path_to/Fasting_cont.txt", data_type = "count",
-             test_var = "Day", variable_col = 7, fac_var = c(1, 3),
-             output_tag = "longdat_cont_example")
+test_var = "Day", variable_col = 7, fac_var = c(1, 3),
+output_tag = "longdat_cont_example")
+}
 }

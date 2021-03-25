@@ -28,11 +28,13 @@
 #' @return
 #' The "nonzero_count_vs_theta.pdf" will be in the output directory.
 #' @examples
+#'\dontrun{
 #' # Get the path of example dataset
 #' system.file("Fasting_disc.txt", package = "longdat")
 #' # Paste the directory to the input below
 #' theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
 #'            variable_col = 7, fac_var = c(1:3), output_tag = "thetaplot_test")
+#'}
 
 theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
                        output_tag, point_size = 1, x_interval_value = 5,

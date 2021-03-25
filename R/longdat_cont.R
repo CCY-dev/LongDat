@@ -12,7 +12,7 @@
 #'        identical to its column name and make sure there is no space in it.
 #' @param variable_col The column number of the position where the dependent variable columns (ex: bacteria) start in the table
 #' @param fac_var The column numbers of the position where the columns that aren't
-#'         numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7))
+#'         numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7)).
 #' @param not_used The column position of the columns not are irrevelant and can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.
 #' @param adjustMethod Multiple testing p value correction. Choices are the ones in p.adjust(), including
@@ -39,6 +39,9 @@
 #' @import glmmTMB
 #' @import bestNormalize
 #' @importFrom MASS polr
+#' @importFrom graphics pairs
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test filter
+#' @importFrom utils combn read.table write.table
 #' @details
 #' The brief workflow of longdat_cont() is as below:
 #'
@@ -122,12 +125,14 @@
 #'  4. Effect_size: This column describes the correlation coeffecient (Spearman's rho) of each dependent variable between each dependent variable value and time.
 #'
 #' @examples
+#'\dontrun{
 #' # Get the path of example dataset
 #' system.file("Fasting_cont.txt", package = "longdat")
 #' # Paste the directory to the input below
 #' longdat_cont(input = "your_path_to/Fasting_cont.txt", data_type = "count",
-#'              test_var = "Day", variable_col = 7, fac_var = c(1, 3),
-#'              output_tag = "longdat_cont_example")
+#' test_var = "Day", variable_col = 7, fac_var = c(1, 3),
+#' output_tag = "longdat_cont_example")
+#'}
 
 longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_used = NULL,
                          output_tag, adjustMethod = "fdr", model_q = 0.1,

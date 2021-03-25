@@ -6,7 +6,7 @@ Author: Chia-Yu Chen <Chia-Yu.Chen@mdc-berlin.de>
 Maintainer: Chia-Yu Chen <Chia-Yu.Chen@mdc-berlin.de>
 Description: Longdat takes longitudinal dataset (in txt format) as input and analyze if there is significant 
              change of the features over time. The output table contains both p value 
-             effect size of features
+             effect size of features.
 License: GPL-2
 Encoding: UTF-8
 LazyData: fasle

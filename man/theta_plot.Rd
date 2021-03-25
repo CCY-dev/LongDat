@@ -58,9 +58,11 @@ from the test. The default value of theta_cutoff is set to 2^20 from the observa
 for several datasets. Users can change theta_cutoff value to fit their own data.
 }
 \examples{
+\dontrun{
 # Get the path of example dataset
 system.file("Fasting_disc.txt", package = "longdat")
 # Paste the directory to the input below
 theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
            variable_col = 7, fac_var = c(1:3), output_tag = "thetaplot_test")
+}
 }

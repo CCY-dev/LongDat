@@ -34,10 +34,10 @@ one of two mutually exclusive categories. Ordinal data consist of ranks. Any dat
 \item{test_var}{The name of the independent variable you are testing for, should be a character vector (ex: c("Time"))
 identical to its column name and make sure there is no space in it.}
 
-\item{variable_col}{The column number of the position where the dependent variable columns (ex: bacteria) start in the table}
+\item{variable_col}{The column number of the position where the dependent variable columns (ex: bacteria) start in the table.}
 
 \item{fac_var}{The column numbers of the position where the columns that aren't
-numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7))}
+numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7)).}
 
 \item{not_used}{The column position of the columns not are irrevelant and can be ignored when in the analysis.
 This should be a number vector, and the default is NULL.}
@@ -74,9 +74,9 @@ Result table
 
 1. The first column: The dependent variables in the input data. This can be used as row name when being imported into R.
 
-2. Prevalence_percentage: The percentage of each dependent variable present across individuals and time points
+2. Prevalence_percentage: The percentage of each dependent variable present across individuals and time points.
 
-3. Mean_abundance: The mean value of each dependent variable across individuals and time points
+3. Mean_abundance: The mean value of each dependent variable across individuals and time points.
 
 4. Signal: The final decision of the significance of the test_var (independent variable) on each dependent variable.
    NS: Non-significant, meaning there’s no effect of time.
@@ -164,10 +164,12 @@ one by one and test for its significance on each dependent variable. The rest ar
 Also, when your data type is count data, please use set.seed() before running longdat_disc() so that you can get reproducible randomized negative check.
 }
 \examples{
+\dontrun{
 # Get the path of example dataset
 system.file("Fasting_disc.txt", package = "longdat")
 # Paste the directory to the input below
 longdat_disc(input = "your_path_to/Fasting_disc.txt", data_type = "count",
-             test_var = "Time_point", variable_col = 7, fac_var = c(1:3),
-             output_tag = "longdat_disc_example")
+test_var = "Time_point", variable_col = 7, fac_var = c(1:3),
+output_tag = "longdat_disc_example")
+}
 }
