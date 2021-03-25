@@ -73,6 +73,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
         # Calculate confidence interval for test_var
         # Followed by the determination of the signs. For "- -" or "+ +", it means that the doesn't span 0.
         # But "- +" means that the CI spans 0. Here I sum the signs over the row, sum != 0 means it's OK.
+        remove(ci)
         ci <- as.data.frame(confint(m3))
         ci <- ci[str_detect(row.names(ci), test_var), 1:2]
         if (nrow(ci) > 1) {
