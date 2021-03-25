@@ -28,7 +28,7 @@ wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variab
         sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ]
         # Here use "paired wilcoxon test because it's longitudinal data
         suppressWarnings(
-          p_w <- wilcox.test(sub3$value, sub4$value, paired = T)$p.value)
+          p_w <- stats::wilcox.test(sub3$value, sub4$value, paired = T)$p.value)
         p_wilcox[i, k] <- p_w
         name <- paste(case_pairs[1,k], sep = "_", case_pairs[2,k])
         case_pairs_name <- c(case_pairs_name, name)

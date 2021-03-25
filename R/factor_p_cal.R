@@ -32,9 +32,9 @@ factor_p_cal <- function(melt_data, variables, factor_columns, factors, data, N,
 
           #If the factor has more than two kinds of values and is continuous (it's class is "numeric"), run spearman's correlation test
         } else if (length(unique(subdata[ , factor_columns[j]])) > 2 & class(subdata[ , factor_columns[j]]) == "numeric") {
-          p <- cor.test(subdata[ , factor_columns[j]], subdata$value, method = "spearman")$p.value
+          p <- stats::cor.test(subdata[ , factor_columns[j]], subdata$value, method = "spearman")$p.value
           Ps[i,j] <- p
-          d <- cor.test(subdata[ , factor_columns[j]], subdata$value, method = "spearman")$estimate
+          d <- stats::cor.test(subdata[ , factor_columns[j]], subdata$value, method = "spearman")$estimate
           Ps_effectsize[i, j] <- d
 
           # If the factor has more than two kinds of values and it's class is "factor" (not numeric), run kruskal-wallis test
