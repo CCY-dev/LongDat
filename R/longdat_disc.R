@@ -39,7 +39,7 @@
 #' @import glmmTMB
 #' @import emmeans
 #' @import bestNormalize
-#' @import MASS
+#' @importFrom MASS polr
 #' @details
 #' The brief workflow of longdat_disc() is as below:
 #'

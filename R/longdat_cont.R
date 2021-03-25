@@ -38,7 +38,7 @@
 #' @import lmtest
 #' @import glmmTMB
 #' @import bestNormalize
-#' @import MASS
+#' @importFrom MASS polr
 #' @details
 #' The brief workflow of longdat_cont() is as below:
 #'
