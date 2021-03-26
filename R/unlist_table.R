@@ -1,5 +1,7 @@
 #' Unlist confound and inverse confound tables, turn them into tables
 #' @param x The list to be unlisted and turned into table
+#' @param N Internal function argument.
+#' @param variables Internal function argument.
 
 unlist_table <- function(x, N, variables) {
   unlist = unlist(x, use.names=FALSE) # output only the numbers

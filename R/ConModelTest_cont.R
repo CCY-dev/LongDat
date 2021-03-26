@@ -1,5 +1,13 @@
 #' Confounding model test in longdat_cont() pipeline
-
+#' @param N Internal function argument.
+#' @param variables Internal function argument.
+#' @param melt_data Internal function argument.
+#' @param sel_fac Internal function argument.
+#' @param data_type Internal function argument.
+#' @param test_var Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
+#'
 ConModelTest_cont <- function(N, variables, melt_data, sel_fac, data_type, test_var, verbose) {
   Ps_conf_model <- list()
   Ps_inv_conf_model <- list()

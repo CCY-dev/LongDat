@@ -1,4 +1,12 @@
 #' Calculate the p values for every factor (used for selecting factors later)
+#' @param melt_data Internal function argument.
+#' @param variables Internal function argument.
+#' @param factor_columns Internal function argument.
+#' @param factors Internal function argument.
+#' @param data Internal function argument.
+#' @param N Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
 factor_p_cal <- function(melt_data, variables, factor_columns, factors, data, N, verbose) {
   if (length(factor_columns) != 0) {

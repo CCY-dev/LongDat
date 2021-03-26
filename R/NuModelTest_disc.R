@@ -1,4 +1,11 @@
 #' Null Model Test and post-hoc Test in longdat_disc() pipeline
+#' @param N Internal function argument.
+#' @param data_type Internal function argument.
+#' @param test_var Internal function argument.
+#' @param melt_data Internal function argument.
+#' @param variables Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
 NuModelTest_disc <- function(N, data_type, test_var, melt_data, variables, verbose) {
   Ps_null_model <- as.data.frame(matrix(data = NA, nrow = N, ncol = 2))

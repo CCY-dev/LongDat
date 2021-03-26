@@ -1,4 +1,10 @@
 #' Post-hoc test based on correlation test for longdat_cont().
+#' @param N Internal function argument.
+#' @param variables Internal function argument.
+#' @param melt_data Internal function argument.
+#' @param test_var Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
 correlation_posthoc <- function(variables, verbose, melt_data, test_var, N) {
   # Here uses Spearman's correlation

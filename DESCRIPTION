@@ -12,4 +12,4 @@ Encoding: UTF-8
 LazyData: fasle
 RoxygenNote: 7.1.1
 Depends: R (>= 4.0.2)
-Imports: lme4, tidyverse, reshape2, orddom, lmtest, glmmTMB, emmeans, bestNormalize, MASS
+Imports: lme4, tidyverse, reshape2, orddom, lmtest, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang
