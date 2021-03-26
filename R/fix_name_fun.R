@@ -24,6 +24,4 @@ fix_name_fun <- function(z) {
   n20 <- gsub(x = n19, pattern = ".", replacement = "_", fixed = T)
   n21 <- gsub(x = n20, pattern = "[", replacement = "_", fixed = T)
   n22 <- gsub(x = n21, pattern = "]", replacement = "_", fixed = T)
-  n23 <- gsub(x = n22, pattern = "__", replacement = "_", fixed = T)
-  n24 <- gsub(x = n23, pattern = "___", replacement = "_", fixed = T)
 }
