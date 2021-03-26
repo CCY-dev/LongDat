@@ -15,6 +15,23 @@ wilcox_posthoc(
   verbose
 )
 }
+\arguments{
+\item{result_neg_ctrl}{Internal function argument.}
+
+\item{model_q}{Internal function argument.}
+
+\item{melt_data}{Internal function argument.}
+
+\item{test_var}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{data}{Internal function argument.}
+
+\item{N}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+}
 \description{
 Wilcoxon post-hoc test
 }

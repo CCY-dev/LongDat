@@ -6,6 +6,19 @@
 \usage{
 NuModelTest_disc(N, data_type, test_var, melt_data, variables, verbose)
 }
+\arguments{
+\item{N}{Internal function argument.}
+
+\item{data_type}{Internal function argument.}
+
+\item{test_var}{Internal function argument.}
+
+\item{melt_data}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+}
 \description{
 Null Model Test and post-hoc Test in longdat_disc() pipeline
 }

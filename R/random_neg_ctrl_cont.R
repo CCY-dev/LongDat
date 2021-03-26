@@ -1,6 +1,25 @@
 #' Randomized negative control for count data in longdat_cont()
+#' @param test_var Internal function argument.
+#' @param variable_col Internal function argument.
+#' @param fac_var Internal function argument.
+#' @param not_used Internal function argument.
+#' @param factors Internal function argument.
+#' @param data Internal function argument.
+#' @param N Internal function argument.
+#' @param data_type Internal function argument.
+#' @param variables Internal function argument.
+#' @param adjustMethod Internal function argument.
+#' @param model_q Internal function argument.
+#' @param posthoc_q Internal function argument.
+#' @param theta_cutoff Internal function argument.
+#' @param nonzero_count_cutoff1 Internal function argument.
+#' @param nonzero_count_cutoff2 Internal function argument.
+#' @param output_tag Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
-random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables, case_pairs,
+
+random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables,
                             adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
                             output_tag, verbose) {
   ######### Randomize the raw data first
@@ -17,7 +36,7 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
   predictor_names <- (colnames(data_randomized))[1: (variable_col - 1)]
   melt_data_random <- reshape2::melt (data_randomized, id = predictor_names)
   # Omit the rows whose value column equals to NA
-  melt_data_random <- melt_data_random %>% tidyr::drop_na(value)
+  melt_data_random <- melt_data_random %>% tidyr::drop_na(.data$value)
   # Remove all dots in the bacteria name or it will cause problem
   melt_data_random$variable <- gsub(".", "_", melt_data_random$variable, fixed = TRUE)
 
@@ -130,17 +149,17 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
 
   Ps_neg_ctrl_filterd <- Ps_neg_ctrl %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include_random) %>%
+    dplyr::filter(.data$rowname %in% bac_include_random) %>%
     column_to_rownames()
 
   p_poho_random_filtered <- p_poho_random %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include_random) %>%
+    dplyr::filter(.data$rowname %in% bac_include_random) %>%
     column_to_rownames()
 
   assoc_random_filtered <- assoc_random %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include_random) %>%
+    dplyr::filter(.data$rowname %in% bac_include_random) %>%
     column_to_rownames()
 
   ####### FDR correction
@@ -169,7 +188,7 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
     rownames(result_neg_ctrl) <- paste0("Randomized_feature_", 1:nrow(result_neg_ctrl))
 
     result_neg_ctrl_sig <- result_neg_ctrl %>%
-      filter(Signal == "False_positive" & Signal_of_CI_signs == "Good") %>%
+      filter(.data$Signal == "False_positive" & .data$Signal_of_CI_signs == "Good") %>%
       dplyr::select(-1)
     false_pos_count <- nrow(result_neg_ctrl_sig)
 

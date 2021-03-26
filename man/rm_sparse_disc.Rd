@@ -18,6 +18,29 @@ rm_sparse_disc(
   delta
 )
 }
+\arguments{
+\item{values}{Internal function argument.}
+
+\item{data}{Internal function argument.}
+
+\item{nonzero_count_cutoff1}{Internal function argument.}
+
+\item{nonzero_count_cutoff2}{Internal function argument.}
+
+\item{theta_cutoff}{Internal function argument.}
+
+\item{Ps_null_model}{Internal function argument.}
+
+\item{prevalence}{Internal function argument.}
+
+\item{absolute_sparsity}{Internal function argument.}
+
+\item{mean_abundance}{Internal function argument.}
+
+\item{Ps_poho_fdr}{Internal function argument.}
+
+\item{delta}{Internal function argument.}
+}
 \description{
 Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_disc()
 }

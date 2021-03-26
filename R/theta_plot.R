@@ -17,6 +17,11 @@
 #' @import tidyverse
 #' @import reshape2
 #' @import glmmTMB
+#' @import ggplot2
+#' @import dplyr
+#' @import tibble
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom rlang .data
 #' @details
 #' This function outputs a plot that facilitates the setting of theta_cutoff in longdat_disc()
 #' and longdat_cont(). This only applies when the dependent variables are count data. Longdat_disc()
@@ -76,7 +81,7 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   predictor_names <- (colnames(data))[1: (variable_col - 1)]
   melt_data <- reshape2::melt (data, id = predictor_names)
   # Omit the rows whose value column equals to NA
-  melt_data <- melt_data %>% tidyr::drop_na(value)
+  melt_data <- melt_data %>% tidyr::drop_na(.data$value)
   # Remove all dots in the bacteria name or it will cause problem
   melt_data$variable <- gsub(".", "_", melt_data$variable, fixed = TRUE)
 

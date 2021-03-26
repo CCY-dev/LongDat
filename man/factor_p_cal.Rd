@@ -6,6 +6,21 @@
 \usage{
 factor_p_cal(melt_data, variables, factor_columns, factors, data, N, verbose)
 }
+\arguments{
+\item{melt_data}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{factor_columns}{Internal function argument.}
+
+\item{factors}{Internal function argument.}
+
+\item{data}{Internal function argument.}
+
+\item{N}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+}
 \description{
 Calculate the p values for every factor (used for selecting factors later)
 }

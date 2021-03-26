@@ -6,6 +6,19 @@
 \usage{
 cliff_cal(melt_data, Ps_poho_fdr, variables, test_var, data, verbose)
 }
+\arguments{
+\item{melt_data}{Internal function argument.}
+
+\item{Ps_poho_fdr}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{test_var}{Internal function argument.}
+
+\item{data}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+}
 \description{
 Effect size (Cliff's delta) calculation in longdat_disc() pipeline
 }

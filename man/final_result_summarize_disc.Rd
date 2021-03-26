@@ -29,6 +29,51 @@ final_result_summarize_disc(
   p_wilcox_final
 )
 }
+\arguments{
+\item{variable_col}{Internal function argument.}
+
+\item{N}{Internal function argument.}
+
+\item{Ps_conf_inv_model_unlist}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{sel_fac}{Internal function argument.}
+
+\item{Ps_conf_model_unlist}{Internal function argument.}
+
+\item{model_q}{Internal function argument.}
+
+\item{posthoc_q}{Internal function argument.}
+
+\item{Ps_null_model_fdr}{Internal function argument.}
+
+\item{Ps_null_model}{Internal function argument.}
+
+\item{delta}{Internal function argument.}
+
+\item{case_pairs}{Internal function argument.}
+
+\item{prevalence}{Internal function argument.}
+
+\item{mean_abundance}{Internal function argument.}
+
+\item{Ps_poho_fdr}{Internal function argument.}
+
+\item{not_used}{Internal function argument.}
+
+\item{Ps_effectsize}{Internal function argument.}
+
+\item{output_tag}{Internal function argument.}
+
+\item{case_pairs_name}{Internal function argument.}
+
+\item{data_type}{Internal function argument.}
+
+\item{false_pos_count}{Internal function argument.}
+
+\item{p_wilcox_final}{Internal function argument.}
+}
 \description{
 Generate result table as output in longdat_disc()
 }

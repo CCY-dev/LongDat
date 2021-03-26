@@ -1,4 +1,16 @@
 #'Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_cont()
+#' @param values Internal function argument.
+#' @param data Internal function argument.
+#' @param nonzero_count_cutoff1 Internal function argument.
+#' @param nonzero_count_cutoff2 Internal function argument.
+#' @param theta_cutoff Internal function argument.
+#' @param Ps_null_model Internal function argument.
+#' @param prevalence Internal function argument.
+#' @param absolute_sparsity Internal function argument.
+#' @param mean_abundance Internal function argument.
+#' @param p_poho Internal function argument.
+#' @param assoc Internal function argument.
+#' @importFrom rlang .data
 
 rm_sparse_cont <- function(values, data, nonzero_count_cutoff1, nonzero_count_cutoff2, theta_cutoff, Ps_null_model,
                       prevalence, absolute_sparsity, mean_abundance, p_poho, assoc) {
@@ -24,17 +36,17 @@ rm_sparse_cont <- function(values, data, nonzero_count_cutoff1, nonzero_count_cu
 
   Ps_null_model <- Ps_null_model %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include) %>%
+    dplyr::filter(.data$rowname %in% bac_include) %>%
     column_to_rownames()
 
   p_poho <- p_poho %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include) %>%
+    dplyr::filter(.data$rowname %in% bac_include) %>%
     column_to_rownames()
 
   assoc <- assoc %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include) %>%
+    dplyr::filter(.data$rowname %in% bac_include) %>%
     column_to_rownames()
 
   variables <- bac_include

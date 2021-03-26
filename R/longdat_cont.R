@@ -29,7 +29,6 @@
 #' @param nonzero_count_cutoff2 Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
 #'        will be filtered out. The default is 5.
 #' @param verbose A boolean vector indicating whether to print detailed message. The default is T.
-
 #' @export
 #' @import lme4
 #' @import tidyverse
@@ -37,11 +36,16 @@
 #' @import orddom
 #' @import lmtest
 #' @import glmmTMB
+#' @import utils
+#' @import graphics
+#' @import dplyr
+#' @import tibble
+#' @import magrittr
+#' @import stringr
 #' @import bestNormalize
-#' @importFrom MASS polr
-#' @importFrom graphics pairs
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test filter
-#' @importFrom utils combn read.table write.table
+#' @importFrom  MASS polr
+#' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
 #' @details
 #' The brief workflow of longdat_cont() is as below:
 #'
@@ -222,7 +226,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
   ######### Randomized negative control model test #########
   if (data_type == "count") {
     if (verbose == T) {print("Start randomized negative control model test.")}
-    random_neg_ctrl_lists <- random_neg_ctrl_cont(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables, case_pairs,
+    random_neg_ctrl_lists <- random_neg_ctrl_cont(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables,
                                                   adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
                                                   output_tag, verbose)
     result_neg_ctrl <- random_neg_ctrl_lists[[1]]
@@ -260,11 +264,11 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
       sel_fac <-  sel_fac[match(bac_include, table = names(sel_fac))]
       Ps_conf_model_unlist <- Ps_conf_model_unlist %>%
         rownames_to_column() %>%
-        dplyr::filter(rowname %in% bac_include) %>%
+        dplyr::filter(.data$rowname %in% bac_include) %>%
         column_to_rownames()
       Ps_conf_inv_model_unlist <- Ps_conf_inv_model_unlist %>%
         rownames_to_column() %>%
-        dplyr::filter(rowname %in% bac_include) %>%
+        dplyr::filter(.data$rowname %in% bac_include) %>%
         column_to_rownames()
     }
     if (verbose == T) {print("Finish removing the dependent variables to be exlcuded.")}
@@ -284,8 +288,8 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
   ############## Generate result table as output #################
   if (verbose == T) {print("Start generating result tables.")}
   final_result_summarize_cont(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
-                              model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, case_pairs, prevalence,
-                              mean_abundance, p_poho, not_used, Ps_effectsize, output_tag, case_pairs_name, data_type,
+                              model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, prevalence,
+                              mean_abundance, p_poho, not_used, Ps_effectsize, output_tag, data_type,
                               false_pos_count)
   print("Finished! The results are now in your directory.")
   if (data_type == "count") {

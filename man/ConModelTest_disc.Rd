@@ -14,6 +14,21 @@ ConModelTest_disc(
   verbose
 )
 }
+\arguments{
+\item{N}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{melt_data}{Internal function argument.}
+
+\item{sel_fac}{Internal function argument.}
+
+\item{data_type}{Internal function argument.}
+
+\item{test_var}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+}
 \description{
 Confounding model test in longdat_disc() pipeline
 }

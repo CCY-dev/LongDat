@@ -6,6 +6,17 @@
 \usage{
 data_preprocess(input, test_var, variable_col, fac_var, not_used)
 }
+\arguments{
+\item{input}{Internal function argument.}
+
+\item{test_var}{Internal function argument.}
+
+\item{variable_col}{Internal function argument.}
+
+\item{fac_var}{Internal function argument.}
+
+\item{not_used}{Internal function argument.}
+}
 \description{
 Data preprocessing
 }

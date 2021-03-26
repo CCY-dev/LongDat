@@ -25,6 +25,43 @@ random_neg_ctrl_disc(
   verbose
 )
 }
+\arguments{
+\item{test_var}{Internal function argument.}
+
+\item{variable_col}{Internal function argument.}
+
+\item{fac_var}{Internal function argument.}
+
+\item{not_used}{Internal function argument.}
+
+\item{factors}{Internal function argument.}
+
+\item{data}{Internal function argument.}
+
+\item{N}{Internal function argument.}
+
+\item{data_type}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{case_pairs}{Internal function argument.}
+
+\item{adjustMethod}{Internal function argument.}
+
+\item{model_q}{Internal function argument.}
+
+\item{posthoc_q}{Internal function argument.}
+
+\item{theta_cutoff}{Internal function argument.}
+
+\item{nonzero_count_cutoff1}{Internal function argument.}
+
+\item{nonzero_count_cutoff2}{Internal function argument.}
+
+\item{output_tag}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+}
 \description{
 Randomized negative control for count data in longdat_disc()
 }

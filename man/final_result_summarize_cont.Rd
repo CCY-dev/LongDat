@@ -16,17 +16,54 @@ final_result_summarize_cont(
   Ps_null_model_fdr,
   Ps_null_model,
   assoc,
-  case_pairs,
   prevalence,
   mean_abundance,
   p_poho,
   not_used,
   Ps_effectsize,
   output_tag,
-  case_pairs_name,
   data_type,
   false_pos_count
 )
+}
+\arguments{
+\item{variable_col}{Internal function argument.}
+
+\item{N}{Internal function argument.}
+
+\item{Ps_conf_inv_model_unlist}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
+
+\item{sel_fac}{Internal function argument.}
+
+\item{Ps_conf_model_unlist}{Internal function argument.}
+
+\item{model_q}{Internal function argument.}
+
+\item{posthoc_q}{Internal function argument.}
+
+\item{Ps_null_model_fdr}{Internal function argument.}
+
+\item{Ps_null_model}{Internal function argument.}
+
+\item{assoc}{Internal function argument.}
+
+\item{prevalence}{Internal function argument.}
+
+\item{mean_abundance}{Internal function argument.}
+
+\item{p_poho}{Internal function argument.}
+
+\item{not_used}{Internal function argument.}
+
+\item{Ps_effectsize}{Internal function argument.}
+
+\item{output_tag}{Internal function argument.}
+
+\item{data_type}{Internal function argument.}
+
+\item{false_pos_count}{Internal function argument.}
 }
 \description{
 Generate result table as output in longdat_cont()

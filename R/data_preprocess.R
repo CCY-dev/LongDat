@@ -1,4 +1,9 @@
 #' Data preprocessing
+#' @param input Internal function argument.
+#' @param test_var Internal function argument.
+#' @param variable_col Internal function argument.
+#' @param fac_var Internal function argument.
+#' @param not_used Internal function argument.
 
 data_preprocess <- function(input, test_var, variable_col, fac_var, not_used) {
 data <- read.table (file = input, header = T, sep = "\t", check.names = F, stringsAsFactors = F)
@@ -22,7 +27,7 @@ colnames(data)[variable_col:ncol(data)] <- fix_name_fun(colnames(data)[variable_
 predictor_names <- (colnames(data))[1: (variable_col - 1)]
 melt_data <- reshape2::melt (data, id = predictor_names)
 # Omit the rows whose value column equals to NA
-melt_data <- melt_data %>% tidyr::drop_na(value)
+melt_data <- melt_data %>% tidyr::drop_na(.data$value)
 
 # Remove the not-used columns in melt_data
 if (!is.null(not_used)) {
@@ -47,7 +52,7 @@ for (i in num_var) {
 colnames(melt_data)[1] <- "Individual"
 
 # Variables are all the bacteria taxanomies
-variables <- unique (melt_data$variable)
+variables <- unique(melt_data$variable)
 
 # Extract all the column names from melt_data except for the last two columns
 # which are variables and values, and also exclude "Individual" and test_var

@@ -1,4 +1,23 @@
 #' Randomized negative control for count data in longdat_disc()
+#' @param test_var Internal function argument.
+#' @param variable_col Internal function argument.
+#' @param fac_var Internal function argument.
+#' @param not_used Internal function argument.
+#' @param factors Internal function argument.
+#' @param data Internal function argument.
+#' @param N Internal function argument.
+#' @param data_type Internal function argument.
+#' @param variables Internal function argument.
+#' @param case_pairs Internal function argument.
+#' @param adjustMethod Internal function argument.
+#' @param model_q Internal function argument.
+#' @param posthoc_q Internal function argument.
+#' @param theta_cutoff Internal function argument.
+#' @param nonzero_count_cutoff1 Internal function argument.
+#' @param nonzero_count_cutoff2 Internal function argument.
+#' @param output_tag Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
 random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables, case_pairs,
                             adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
@@ -16,7 +35,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
   predictor_names <- (colnames(data_randomized))[1: (variable_col - 1)]
   melt_data_random <- reshape2::melt (data_randomized, id = predictor_names)
   # Omit the rows whose value column equals to NA
-  melt_data_random <- melt_data_random %>% tidyr::drop_na(value)
+  melt_data_random <- melt_data_random %>% tidyr::drop_na(.data$value)
   # Remove all dots in the bacteria name or it will cause problem
   melt_data_random$variable <- gsub(".", "_", melt_data_random$variable, fixed = TRUE)
 
@@ -51,7 +70,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
     for (i in 1:N) { # loop through all variables
       aVariable = variables[i]
       if (verbose == T) {print(i)}
-      subdata_random <- subset(melt_data_random, variable == aVariable)
+      subdata_random <- subset(melt_data_random, melt_data_random$variable == as.character(aVariable))
       tryCatch({
         # Negative binomial
         fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
@@ -111,8 +130,8 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
   for (i in 1:length(row.names(Ps_neg_ctrl))) { # loop through all variables
     if (verbose == T) {print(i)}
     cVariable = variables[i]
-    subdata_pre_random <- subset(melt_data_random, variable == cVariable)
-    counts_random <- subdata_pre_random %>% dplyr::count(Individual)
+    subdata_pre_random <- subset(melt_data_random, variable == as.character(cVariable))
+    counts_random <- subdata_pre_random %>% dplyr::count(.data$Individual)
     # Exclude the ones not having data points at ALL timepoints
     exclude_random <- counts_random$Individual[which(counts_random$n != length(unique(data_randomized[ , test_var])))]
     if (length(exclude_random) > 0) {
@@ -151,17 +170,17 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
 
   Ps_neg_ctrl_filterd <- Ps_neg_ctrl %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include_random) %>%
+    dplyr::filter(.data$rowname %in% bac_include_random) %>%
     column_to_rownames()
 
   delta_random_filtered <- delta_random %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include_random) %>%
+    dplyr::filter(.data$rowname %in% bac_include_random) %>%
     column_to_rownames()
 
   p_poho_neg_crtl_filtered <- p_poho_neg_crtl %>%
     rownames_to_column() %>%
-    dplyr::filter(rowname %in% bac_include_random) %>%
+    dplyr::filter(.data$rowname %in% bac_include_random) %>%
     column_to_rownames()
 
   ####### FDR correction
@@ -195,7 +214,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
     rownames(result_neg_ctrl) <- paste0("Randomized_feature_", 1:nrow(result_neg_ctrl))
 
      result_neg_ctrl_sig <- result_neg_ctrl %>%
-      filter(Final_signal == "False_positive" & Signal_of_CI_signs == "Good") %>%
+      filter(.data$Final_signal == "False_positive" & .data$Signal_of_CI_signs == "Good") %>%
       dplyr::select(-1)
      if (nrow(result_neg_ctrl_sig) > 0) {
        write.table(x = result_neg_ctrl_sig, file = paste0(output_tag, "_randomized_control.txt"), sep = "\t",

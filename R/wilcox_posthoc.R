@@ -1,9 +1,18 @@
 #' Wilcoxon post-hoc test
+#' @param result_neg_ctrl Internal function argument.
+#' @param model_q Internal function argument.
+#' @param melt_data Internal function argument.
+#' @param test_var Internal function argument.
+#' @param variables Internal function argument.
+#' @param data Internal function argument.
+#' @param N Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
 wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variables, data, N, verbose) {
   #Count false positives
   false_pos <- result_neg_ctrl %>%
-    filter(Final_signal == "False_positive" & Signal_of_CI_signs == "Good")
+    filter(.data$Final_signal == "False_positive" & .data$Signal_of_CI_signs == "Good")
   false_pos_count <- nrow(false_pos)
 
   #Do it if there are false positive in the randomized result
@@ -15,7 +24,7 @@ wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variab
       if (verbose == T) {print(i)}
       bVariable = variables[i]
       subdata_pre <- subset(melt_data, variable == bVariable)
-      counts <- subdata_pre %>% dplyr::count(Individual)
+      counts <- subdata_pre %>% dplyr::count(.data$Individual)
       # Exclude the samples that don't have value at all time points
       exclude <- counts$Individual[which(counts$n != length(unique(data[ , test_var])))]
       if (length(exclude) > 0) {

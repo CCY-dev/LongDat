@@ -8,6 +8,10 @@ unlist_table(x, N, variables)
 }
 \arguments{
 \item{x}{The list to be unlisted and turned into table}
+
+\item{N}{Internal function argument.}
+
+\item{variables}{Internal function argument.}
 }
 \description{
 Unlist confound and inverse confound tables, turn them into tables

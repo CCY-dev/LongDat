@@ -1,9 +1,28 @@
 #'Generate result table as output in longdat_cont()
+#' @param variable_col Internal function argument.
+#' @param N Internal function argument.
+#' @param Ps_conf_inv_model_unlist Internal function argument.
+#' @param variables Internal function argument.
+#' @param sel_fac Internal function argument.
+#' @param Ps_conf_model_unlist Internal function argument.
+#' @param model_q Internal function argument.
+#' @param posthoc_q Internal function argument.
+#' @param Ps_null_model_fdr Internal function argument.
+#' @param Ps_null_model Internal function argument.
+#' @param assoc Internal function argument.
+#' @param prevalence Internal function argument.
+#' @param mean_abundance Internal function argument.
+#' @param p_poho Internal function argument.
+#' @param not_used Internal function argument.
+#' @param Ps_effectsize Internal function argument.
+#' @param output_tag Internal function argument.
+#' @param data_type Internal function argument.
+#' @param false_pos_count Internal function argument.
+
 
 final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
-                                        model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, case_pairs, prevalence,
-                                        mean_abundance, p_poho, not_used, Ps_effectsize, output_tag, case_pairs_name, data_type,
-                                        false_pos_count) {
+                                        model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, prevalence,
+                                        mean_abundance, p_poho, not_used, Ps_effectsize, output_tag, data_type, false_pos_count) {
   if (variable_col-1-2-length(not_used) > 0) {# There are potential confounders in raw input data
     # Generate potential confounding factors as output
     # Find the max number of how many confounders each bacteria has
@@ -26,7 +45,7 @@ final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlis
 
     confs <- prep_conf %>%
       rownames_to_column("Bacteria") %>%
-      filter(sel_fac_length > 0 & Signal == "not_NS")
+      filter(.data$sel_fac_length > 0 & .data$Signal == "not_NS")
 
     confs_num <- match(confs$Bacteria, variables)
 

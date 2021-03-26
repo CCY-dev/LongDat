@@ -1,4 +1,11 @@
 #' Effect size (Cliff's delta) calculation in longdat_disc() pipeline
+#' @param melt_data Internal function argument.
+#' @param Ps_poho_fdr Internal function argument.
+#' @param variables Internal function argument.
+#' @param test_var Internal function argument.
+#' @param data Internal function argument.
+#' @param verbose Internal function argument.
+#' @importFrom rlang .data
 
 cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose) {
   case_pairs <- combn(sort(unique(melt_data[ , test_var])), m = 2)
@@ -9,7 +16,7 @@ cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose
     if (verbose == T) {print(i)}
     bVariable = variables[i]
     subdata_pre <- subset(melt_data, variable == bVariable)
-    counts <- subdata_pre %>% dplyr::count(Individual)
+    counts <- subdata_pre %>% dplyr::count(.data$Individual)
     # Exclude the ones not having data points at ALL timepoints
     exclude <- counts$Individual[which(counts$n != length(unique(data[ , test_var])))]
     if (length(exclude) > 0) {

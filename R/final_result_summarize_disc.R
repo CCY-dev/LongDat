@@ -1,4 +1,26 @@
 #'Generate result table as output in longdat_disc()
+#' @param variable_col Internal function argument.
+#' @param N Internal function argument.
+#' @param Ps_conf_inv_model_unlist Internal function argument.
+#' @param variables Internal function argument.
+#' @param sel_fac Internal function argument.
+#' @param Ps_conf_model_unlist Internal function argument.
+#' @param model_q Internal function argument.
+#' @param posthoc_q Internal function argument.
+#' @param Ps_null_model_fdr Internal function argument.
+#' @param Ps_null_model Internal function argument.
+#' @param delta Internal function argument.
+#' @param prevalence Internal function argument.
+#' @param mean_abundance Internal function argument.
+#' @param not_used Internal function argument.
+#' @param Ps_effectsize Internal function argument.
+#' @param output_tag Internal function argument.
+#' @param data_type Internal function argument.
+#' @param false_pos_count Internal function argument.
+#' @param case_pairs Internal function argument.
+#' @param case_pairs_name Internal function argument.
+#' @param p_wilcox_final Internal function argument.
+#' @param Ps_poho_fdr Internal function argument.
 
 final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
                                    model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, delta, case_pairs, prevalence,
@@ -26,7 +48,7 @@ final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlis
 
     confs <- prep_conf %>%
       rownames_to_column("Bacteria") %>%
-      filter(sel_fac_length >0 & Signal == "not_NS")
+      filter(.data$sel_fac_length > 0 & .data$Signal == "not_NS")
 
     confs_num <- match(confs$Bacteria, variables)
 

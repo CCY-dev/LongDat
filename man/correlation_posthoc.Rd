@@ -6,6 +6,17 @@
 \usage{
 correlation_posthoc(variables, verbose, melt_data, test_var, N)
 }
+\arguments{
+\item{variables}{Internal function argument.}
+
+\item{verbose}{Internal function argument.}
+
+\item{melt_data}{Internal function argument.}
+
+\item{test_var}{Internal function argument.}
+
+\item{N}{Internal function argument.}
+}
 \description{
 Post-hoc test based on correlation test for longdat_cont().
 }

@@ -38,11 +38,16 @@
 #' @import lmtest
 #' @import glmmTMB
 #' @import emmeans
+#' @import utils
+#' @import graphics
+#' @import dplyr
+#' @import tibble
+#' @import magrittr
+#' @import stringr
 #' @import bestNormalize
-#' @importFrom MASS polr
-#' @importFrom graphics pairs
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test filter
-#' @importFrom utils combn read.table write.table
+#' @importFrom  MASS polr
+#' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
 #' @details
 #' The brief workflow of longdat_disc() is as below:
 #'
@@ -293,17 +298,17 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
       sel_fac <-  sel_fac[match(bac_include, table = names(sel_fac))]
       Ps_conf_model_unlist <- Ps_conf_model_unlist %>%
         rownames_to_column() %>%
-        dplyr::filter(rowname %in% bac_include) %>%
+        dplyr::filter(.data$rowname %in% bac_include) %>%
         column_to_rownames()
       Ps_conf_inv_model_unlist <- Ps_conf_inv_model_unlist %>%
         rownames_to_column() %>%
-        dplyr::filter(rowname %in% bac_include) %>%
+        dplyr::filter(.data$rowname %in% bac_include) %>%
         column_to_rownames()
     }
     if (false_pos_count > 0) {
       p_wilcox <- p_wilcox %>%
         rownames_to_column() %>%
-        dplyr::filter(rowname %in% bac_include) %>%
+        dplyr::filter(.data$rowname %in% bac_include) %>%
         column_to_rownames()
     }
     if (verbose == T) {print("Finish removing the dependent variables to be exlcuded.")}
