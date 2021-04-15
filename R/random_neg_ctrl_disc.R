@@ -135,7 +135,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var, not_used, fact
     # Exclude the ones not having data points at ALL timepoints
     exclude_random <- counts_random$Individual[which(counts_random$n != length(unique(data_randomized[ , test_var])))]
     if (length(exclude_random) > 0) {
-      subdata2_random <- subset(subdata_pre_random, !Individual %in% exclude)
+      subdata2_random <- subset(subdata_pre_random, !Individual %in% exclude_random)
     } else {
       subdata2_random <- subdata_pre_random
     }
