@@ -20,7 +20,7 @@ NuModelTest_cont <- function(N, data_type, test_var, melt_data, variables, verbo
 
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
-          subdata <- subdata %>% mutate(value_norm = bestNormalize(value)$x.t)
+          subdata <- subdata %>% mutate(value_norm = bestNormalize(value, loo = T)$x.t)
         }
         if (data_type == "count") {
           # Negative binomial

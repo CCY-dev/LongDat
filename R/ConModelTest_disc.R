@@ -19,7 +19,7 @@ ConModelTest_disc <- function(N, variables, melt_data, sel_fac, data_type, test_
       colnames(subdata) <- fix_name_fun(colnames(subdata))
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
-          subdata <- subdata %>% mutate(value_norm = bestNormalize(value)$x.t)
+          subdata <- subdata %>% mutate(value_norm = bestNormalize(value, loo = T)$x.t)
         }}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
       ps_lm <- c()
       ps_lm_inv <- c()
