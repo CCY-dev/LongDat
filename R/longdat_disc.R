@@ -319,8 +319,13 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
   if (verbose == T) {print("Start multiple test correction on null model test p values.")}
   adjust_fun <- function(x) p.adjust(p = x, method = adjustMethod)
   suppressWarnings(
-    Ps_null_model_fdr <- apply(X = Ps_null_model, MARGIN = 2, FUN = adjust_fun))
-  Ps_null_model_fdr <- as.data.frame(Ps_null_model_fdr[ , 1])
+  Ps_null_model_fdr <- apply(X = Ps_null_model, MARGIN = 2, FUN = adjust_fun))
+  if (class(Ps_null_model_fdr)[1] != "numeric") {
+    Ps_null_model_fdr <- as.data.frame(Ps_null_model_fdr[ , 1])
+  } else {
+    Ps_null_model_fdr <- as.data.frame(Ps_null_model_fdr[1])
+    rownames(Ps_null_model_fdr) <- rownames(Ps_null_model)
+  }
   #Reorder the rows of p_lm_fdr to make it follow the order of variables
   Ps_null_model_fdr <- as.data.frame(Ps_null_model_fdr[match(variables,rownames(Ps_null_model_fdr)), ])
   rownames(Ps_null_model_fdr) <- variables

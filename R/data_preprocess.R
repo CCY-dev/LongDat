@@ -8,9 +8,10 @@
 data_preprocess <- function(input, test_var, variable_col, fac_var, not_used) {
 data <- read.table (file = input, header = T, sep = "\t", check.names = F, stringsAsFactors = F)
 # Remove the features (bacteria) whose column sum is 0
-values <- as.data.frame(data[ , variable_col:ncol(data)])
+values <- data %>% dplyr::select(all_of(variable_col:ncol(data)))
 values <- as.data.frame(apply(values, 2, as.numeric))
 values <- as.data.frame(values[ , colSums(values,  na.rm = T) > 0])
+colnames(values) <- colnames(data %>% dplyr::select(all_of(variable_col:ncol(data))))
 data <- as.data.frame(cbind(data[ , 1:(variable_col-1)], values))
 mean_abundance <- round(colSums(values, na.rm = T)/nrow(data), 3)
 prevalence <- c()
