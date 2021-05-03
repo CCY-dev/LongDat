@@ -10,8 +10,10 @@ data <- read.table (file = input, header = T, sep = "\t", check.names = F, strin
 # Remove the features (bacteria) whose column sum is 0
 values <- data %>% dplyr::select(all_of(variable_col:ncol(data)))
 values <- as.data.frame(apply(values, 2, as.numeric))
+zero_ones <- which(colSums(values,  na.rm = T) == 0)
 values <- as.data.frame(values[ , colSums(values,  na.rm = T) > 0])
-colnames(values) <- colnames(data %>% dplyr::select(all_of(variable_col:ncol(data))))
+colnames(values) <- colnames(data %>% dplyr::select(variable_col:ncol(data)) %>%
+                               dplyr::select(-all_of(zero_ones)))
 data <- as.data.frame(cbind(data[ , 1:(variable_col-1)], values))
 mean_abundance <- round(colSums(values, na.rm = T)/nrow(data), 3)
 prevalence <- c()
