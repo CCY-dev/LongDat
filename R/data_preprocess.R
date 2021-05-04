@@ -32,11 +32,6 @@ melt_data <- reshape2::melt (data, id = predictor_names)
 # Omit the rows whose value column equals to NA
 melt_data <- melt_data %>% tidyr::drop_na(.data$value)
 
-# Remove the not-used columns in melt_data
-if (!is.null(not_used)) {
-  melt_data <- melt_data %>% dplyr::select(-c(not_used))
-}
-
 # Make sure that all the columns are in the right class
 # Columns mentioned in fac_var, and the second last column in melt data are factors
 # Columns not in fac_var, and the last column in melt data are numerical numbers
@@ -50,6 +45,10 @@ for (i in num_var) {
   melt_data[ ,i] <- as.numeric(as.character(melt_data[ ,i]))
 }
 
+# Remove the not-used columns in melt_data
+if (!is.null(not_used)) {
+  melt_data <- melt_data %>% dplyr::select(-c(not_used))
+}
 
 # Change the first column name of melt_data to "Individual"
 colnames(melt_data)[1] <- "Individual"
