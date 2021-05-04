@@ -26,6 +26,8 @@ factor_p_cal <- function(melt_data, variables, factor_columns, factors, data, N,
       colnames(subdata) <- fix_name_fun(colnames(subdata))
 
       for (j in 1:length(factor_columns)) {# loop through all factor columns
+        # Remove NA rows in subdata[ ,factor_columns[j]] first, or else it will cause error
+        subdata <- subdata %>% drop_na(factor_columns[j])
 
         # If the factor has only two kinds of values, run wilcoxon test
         if (length(unique(subdata[ , factor_columns[j]])) == 2) {
