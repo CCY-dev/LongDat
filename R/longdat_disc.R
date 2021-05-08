@@ -44,7 +44,7 @@
 #' @import tibble
 #' @import magrittr
 #' @import stringr
-#' @import bestNormalize
+#' @import bestNormalize ((>= 1.7.0))
 #' @importFrom  MASS polr
 #' @importFrom rlang .data
 #' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
