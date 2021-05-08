@@ -186,13 +186,14 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
   if (verbose == T) {print("Finish data preprocessing.")}
 
   ########## Calculate the p values for every factor (used for selecting factors later)
-  if (verbose == T) {print("Start selecting potential confounders.")}
-  factor_p_lists <- suppressWarnings(factor_p_cal(melt_data, variables, factor_columns, factors, data, N, verbose))
-  Ps <- as.data.frame(factor_p_lists[[1]])
-  Ps_effectsize <- as.data.frame(factor_p_lists[[2]])
-  sel_fac <- factor_p_lists[[3]]
-  if (verbose == T) {print("Finished selecting potential confounders.")}
-
+  if (variable_col-1-2-length(not_used) > 0) {
+    if (verbose == T) {print("Start selecting potential confounders.")}
+    factor_p_lists <- suppressWarnings(factor_p_cal(melt_data, variables, factor_columns, factors, data, N, verbose))
+    Ps <- as.data.frame(factor_p_lists[[1]])
+    Ps_effectsize <- as.data.frame(factor_p_lists[[2]])
+    sel_fac <- factor_p_lists[[3]]
+    if (verbose == T) {print("Finished selecting potential confounders.")}
+  }
   ################## Null Model Test #################
   if (verbose == T) {print("Start null model test.")}
   Ps_null_model <- as.data.frame(NuModelTest_cont(N, data_type, test_var, melt_data, variables, verbose))
