@@ -156,10 +156,10 @@ final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlis
       if (Ps_null_model_fdr[i, 1] >= model_q | is.na(Ps_null_model_fdr[i, 1])) {# Null time model q >= model_q is NS
         final_sig[i, 1] = "NS"
       } else { # Null time model q < model_q
-        if ((p_poho[i, 1]) < posthoc_q & !is.na(p_poho[i, 1])) {# Post-hoc q >= posthoc_q
+        if (p_poho[i, 1] >= posthoc_q | is.na(p_poho[i, 1])) {# Post-hoc q >= posthoc_q
           final_sig[i, 1] = "NS"
-        } else {# At least one post-hoc q < posthoc_q
-          if (Ps_null_model[i, 2] == "Good") {# Proper confidence interval
+        } else {# Post-hoc q < posthoc_q
+          if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {# Proper confidence interval
             final_sig[i, 1] = "OK"
           } else {# Improper confidence interval
             final_sig[i, 1] = "OK but doubtful"
