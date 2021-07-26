@@ -3,9 +3,6 @@
 \name{NuModelTest_disc}
 \alias{NuModelTest_disc}
 \title{Null Model Test and post-hoc Test in longdat_disc() pipeline}
-\usage{
-NuModelTest_disc(N, data_type, test_var, melt_data, variables, verbose)
-}
 \arguments{
 \item{N}{Internal function argument.}
 

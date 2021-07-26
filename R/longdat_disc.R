@@ -29,23 +29,12 @@
 #' @param nonzero_count_cutoff2 Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
 #'        will be filtered out. The default is 5.
 #' @param verbose A boolean vector indicating whether to print detailed message. The default is T.
-#'
-#' @export
-#' @import lme4
-#' @import tidyverse
-#' @import reshape2
-#' @import orddom
-#' @import lmtest
-#' @import glmmTMB
-#' @import emmeans
+#' @name longdat_disc
 #' @import utils
 #' @import graphics
 #' @import dplyr
 #' @import tibble
-#' @import magrittr
-#' @import stringr
-#' @import bestNormalize
-#' @importFrom  MASS polr
+#' @importFrom magrittr '%>%'
 #' @importFrom rlang .data
 #' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
 #' @details
@@ -177,16 +166,6 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
     stop('Error! Necessary argument "output_tag" is missing.')
   }
 
-  library(lme4)
-  library(tidyverse)
-  library(reshape2)
-  library(orddom)
-  library(lmtest)
-  library(glmmTMB)
-  library(emmeans)
-  library(bestNormalize)
-  library(MASS)
-
   ############## Data preprocessing #################
   if (verbose == T) {print("Start data preprocessing.")}
   preprocess_lists <- data_preprocess(input, test_var, variable_col, fac_var, not_used)
@@ -299,19 +278,19 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
     if (variable_col-1-2-length(not_used) > 0) {
       sel_fac <-  sel_fac[match(bac_include, table = names(sel_fac))]
       Ps_conf_model_unlist <- Ps_conf_model_unlist %>%
-        rownames_to_column() %>%
+        tibble::rownames_to_column() %>%
         dplyr::filter(.data$rowname %in% bac_include) %>%
-        column_to_rownames()
+        tibble::column_to_rownames()
       Ps_conf_inv_model_unlist <- Ps_conf_inv_model_unlist %>%
-        rownames_to_column() %>%
+        tibble::rownames_to_column() %>%
         dplyr::filter(.data$rowname %in% bac_include) %>%
-        column_to_rownames()
+        tibble::column_to_rownames()
     }
     if (false_pos_count > 0) {
       p_wilcox <- p_wilcox %>%
-        rownames_to_column() %>%
+        tibble::rownames_to_column() %>%
         dplyr::filter(.data$rowname %in% bac_include) %>%
-        column_to_rownames()
+        tibble::column_to_rownames()
     }
     if (verbose == T) {print("Finish removing the dependent variables to be exlcuded.")}
   }

@@ -17,7 +17,17 @@
 #' @param output_tag Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
-
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom car Anova
+#' @importFrom magrittr '%>%'
+#' @import reshape2
+#' @import tidyr
+#' @import dplyr
+#' @import glmmTMB
+#' @import tibble
+#' @import dplyr
+#' @name random_neg_ctrl_cont
+utils::globalVariables(c("non_zero_count", "NB_theta"))
 
 random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables,
                             adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
@@ -74,10 +84,10 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
       tryCatch({
         # Negative binomial
         fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-        m3 <- glmmTMB(formula = fmla2, data = subdata_random, family = nbinom2, na.action = na.omit, REML = F)
+        m3 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata_random, family = nbinom2, na.action = na.omit, REML = F)
 
         # Extract dispersion theta out of model
-        Theta_random[i] <- sigma(m3)
+        Theta_random[i] <- glmmTMB::sigma(m3)
 
         # Wald Chisq test
         Ps_neg_ctrl[i, 1] <- car::Anova(m3, type=c("II"),  test.statistic=c("Chisq"))$"Pr(>Chisq)"
@@ -104,9 +114,9 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
       }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
     })
   Ps_neg_ctrl <- Ps_neg_ctrl %>%
-    rownames_to_column() %>%
-    mutate(NB_theta = Theta_random) %>%
-    column_to_rownames()
+    tibble::rownames_to_column() %>%
+    dplyr::mutate(NB_theta = Theta_random) %>%
+    tibble::column_to_rownames()
 
   ######### Post-hoc test and effect size
   # Here uses Spearman's correlation
@@ -138,9 +148,9 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
 
   non_zero_count_randomized <- nrow(data_randomized) - absolute_sparsity_random
   Ps_neg_ctrl <- Ps_neg_ctrl %>%
-    rownames_to_column() %>%
-    mutate(non_zero_count = non_zero_count_randomized) %>%
-    column_to_rownames()
+    tibble::rownames_to_column() %>%
+    dplyr::mutate(non_zero_count = non_zero_count_randomized) %>%
+    tibble::column_to_rownames()
 
   bac_exclude_1_random <- subset(Ps_neg_ctrl, non_zero_count <= nonzero_count_cutoff1 & NB_theta >= theta_cutoff)
   bac_exclude_2_random <- subset(Ps_neg_ctrl, non_zero_count <= nonzero_count_cutoff2)
@@ -148,27 +158,27 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
   bac_include_random <- rownames(Ps_neg_ctrl)[!rownames(Ps_neg_ctrl) %in% bac_exclude_random]
 
   Ps_neg_ctrl_filterd <- Ps_neg_ctrl %>%
-    rownames_to_column() %>%
+    tibble::rownames_to_column() %>%
     dplyr::filter(.data$rowname %in% bac_include_random) %>%
-    column_to_rownames()
+    tibble::column_to_rownames()
 
   p_poho_random_filtered <- p_poho_random %>%
-    rownames_to_column() %>%
+    tibble::rownames_to_column() %>%
     dplyr::filter(.data$rowname %in% bac_include_random) %>%
-    column_to_rownames()
+    tibble::column_to_rownames()
 
   assoc_random_filtered <- assoc_random %>%
-    rownames_to_column() %>%
+    tibble::rownames_to_column() %>%
     dplyr::filter(.data$rowname %in% bac_include_random) %>%
-    column_to_rownames()
+    tibble::column_to_rownames()
 
   ####### FDR correction
   adjust_fun <- function(x) p.adjust(p = x, method = adjustMethod)
   Ps_neg_ctrl_fdr <- adjust_fun(Ps_neg_ctrl_filterd$Neg_ctrl_model_p)
   Ps_neg_ctrl_filterd <- Ps_neg_ctrl_filterd %>%
-    rownames_to_column() %>%
-    mutate(P_fdr = Ps_neg_ctrl_fdr) %>%
-    column_to_rownames()
+    tibble::rownames_to_column() %>%
+    dplyr::mutate(P_fdr = Ps_neg_ctrl_fdr) %>%
+    tibble::column_to_rownames()
 
   ####### Write randomized control table
     signal_neg_ctrl_tbl <- data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl_filterd)), ncol = 1,
@@ -188,7 +198,7 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
     rownames(result_neg_ctrl) <- paste0("Randomized_feature_", 1:nrow(result_neg_ctrl))
 
     result_neg_ctrl_sig <- result_neg_ctrl %>%
-      filter(.data$Signal == "False_positive" & .data$Signal_of_CI_signs == "Good") %>%
+      dplyr::filter(.data$Signal == "False_positive" & .data$Signal_of_CI_signs == "Good") %>%
       dplyr::select(-1)
     false_pos_count <- nrow(result_neg_ctrl_sig)
 

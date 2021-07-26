@@ -3,27 +3,6 @@
 \name{random_neg_ctrl_cont}
 \alias{random_neg_ctrl_cont}
 \title{Randomized negative control for count data in longdat_cont()}
-\usage{
-random_neg_ctrl_cont(
-  test_var,
-  variable_col,
-  fac_var,
-  not_used,
-  factors,
-  data,
-  N,
-  data_type,
-  variables,
-  adjustMethod,
-  model_q,
-  posthoc_q,
-  theta_cutoff,
-  nonzero_count_cutoff1,
-  nonzero_count_cutoff2,
-  output_tag,
-  verbose
-)
-}
 \arguments{
 \item{test_var}{Internal function argument.}
 

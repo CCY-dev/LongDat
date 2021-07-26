@@ -3,17 +3,6 @@
 \name{ConModelTest_cont}
 \alias{ConModelTest_cont}
 \title{Confounding model test in longdat_cont() pipeline}
-\usage{
-ConModelTest_cont(
-  N,
-  variables,
-  melt_data,
-  sel_fac,
-  data_type,
-  test_var,
-  verbose
-)
-}
 \arguments{
 \item{N}{Internal function argument.}
 

@@ -3,20 +3,6 @@
 \name{theta_plot}
 \alias{theta_plot}
 \title{Plot theta values of negative binomial models versus non-zero count for count data}
-\usage{
-theta_plot(
-  input,
-  test_var,
-  variable_col,
-  fac_var,
-  not_used = NULL,
-  output_tag,
-  point_size = 1,
-  x_interval_value = 5,
-  y_interval_value = 5,
-  verbose = T
-)
-}
 \arguments{
 \item{input}{A character vector. This is the path to a txt file with the first column as "Individual", and all the dependent variables (ex: bacteria)
 should be at the end of the table.}
@@ -43,7 +29,7 @@ This should be a number vector, and the default is NULL.}
 \item{verbose}{A boolean vector indicating whether to print detailed message. The default is T.}
 }
 \value{
-The "nonzero_count_vs_theta.pdf" will be in the output directory.
+a plot
 }
 \description{
 Plot theta values of negative binomial models versus non-zero count for count data
@@ -56,6 +42,7 @@ NB model gets too high, then the p value of it will be extremely low regardless 
 or not. Therefore, the highest threshold of theta value is set and any variable beyond the threshold will be excluded
 from the test. The default value of theta_cutoff is set to 2^20 from the observation that 2^20 is a clear cutoff line
 for several datasets. Users can change theta_cutoff value to fit their own data.
+The "nonzero_count_vs_theta.pdf" will be in the output directory.
 }
 \examples{
 \dontrun{

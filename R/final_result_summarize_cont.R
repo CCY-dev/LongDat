@@ -18,7 +18,12 @@
 #' @param output_tag Internal function argument.
 #' @param data_type Internal function argument.
 #' @param false_pos_count Internal function argument.
-
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @importFrom rlang .data
+#' @import tibble
+#' @import dplyr
+#' @name final_result_summarize_cont
 
 final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
                                         model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, prevalence,
@@ -44,8 +49,8 @@ final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlis
     }
 
     confs <- prep_conf %>%
-      rownames_to_column("Bacteria") %>%
-      filter(.data$sel_fac_length > 0 & .data$Signal == "not_NS")
+      tibble::rownames_to_column("Bacteria") %>%
+      dplyr::filter(.data$sel_fac_length > 0 & .data$Signal == "not_NS")
 
     confs_num <- match(confs$Bacteria, variables)
 

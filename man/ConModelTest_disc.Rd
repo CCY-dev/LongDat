@@ -3,17 +3,6 @@
 \name{ConModelTest_disc}
 \alias{ConModelTest_disc}
 \title{Confounding model test in longdat_disc() pipeline}
-\usage{
-ConModelTest_disc(
-  N,
-  variables,
-  melt_data,
-  sel_fac,
-  data_type,
-  test_var,
-  verbose
-)
-}
 \arguments{
 \item{N}{Internal function argument.}
 

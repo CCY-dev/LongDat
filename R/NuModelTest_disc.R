@@ -6,6 +6,18 @@
 #' @param variables Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
+#' @importFrom  MASS polr
+#' @importFrom car Anova
+#' @import glmmTMB
+#' @import lme4
+#' @import tibble
+#' @import dplyr
+#' @import emmeans
+#' @import bestNormalize
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @name NuModelTest_disc
+utils::globalVariables(c("value"))
 
 NuModelTest_disc <- function(N, data_type, test_var, melt_data, variables, verbose) {
   Ps_null_model <- as.data.frame(matrix(data = NA, nrow = N, ncol = 2))
@@ -22,23 +34,23 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data, variables, verbo
 
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
-          subdata <- subdata %>% mutate(value_norm = bestNormalize(value, loo = T)$x.t)
+          subdata <- subdata %>% mutate(value_norm = bestNormalize::bestNormalize(value, loo = T)$x.t)
         }
         if (data_type == "count") {
           # Negative binomial
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-          m2 <- glmmTMB(formula = fmla2, data = subdata, family = nbinom2, na.action = na.omit, REML = F)
+          m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata, family = nbinom2, na.action = na.omit, REML = F)
           # Extract dispersion theta out of model
-          Theta[i] <- sigma(m2)
+          Theta[i] <- glmmTMB::sigma(m2)
         } else if (data_type == "proportion") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-          m2 <- glmmTMB(fmla2, data = subdata, family = beta_family(), na.action = na.omit, REML = F)
+          m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = beta_family(), na.action = na.omit, REML = F)
         } else if (data_type %in% c("measurement", "others")) {
           fmla2 <- as.formula(paste("value_norm ~ (1|Individual) +", test_var))
           m2 <- lme4::lmer(data = subdata, fmla2, REML = F)
         } else if (data_type == "binary") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-          m2 <- glmmTMB(fmla2, data = subdata, family = "binomial", na.action = na.omit, REML = F)
+          m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = "binomial", na.action = na.omit, REML = F)
         } else if (data_type == "ordinal") {
           fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +", test_var))
           m2 <- MASS::polr(fmla2, data = subdata, method = "logistic")
@@ -48,7 +60,7 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data, variables, verbo
         Ps_null_model[i, 1] <- car::Anova(m2, type=c("II"),  test.statistic=c("Chisq"))$"Pr(>Chisq)"
 
         # Post-hoc test
-        m_means <- emmeans(object = m2, specs = test_var)
+        m_means <- emmeans::emmeans(object = m2, specs = test_var)
         b <- as.data.frame(pairs(m_means, adjust = "fdr", infer = c(F, T), reverse = F))
         for (m in 1:ncol(case_pairs)) {
           p_poho[i, m] <- b$p.value[m]
@@ -87,9 +99,9 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data, variables, verbo
   Ps_poho_fdr <- p_poho
   if (data_type == "count") {
     Ps_null_model <- Ps_null_model %>%
-      rownames_to_column() %>%
-      mutate(NB_theta = Theta) %>%
-      column_to_rownames()
+      tibble::rownames_to_column() %>%
+      dplyr::mutate(NB_theta = Theta) %>%
+      tibble::column_to_rownames()
   }
   return(list(Ps_null_model, p_poho, case_pairs_name))
 }

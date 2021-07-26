@@ -11,6 +11,12 @@
 #' @param Ps_poho_fdr Internal function argument.
 #' @param delta Internal function argument.
 #' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @import tibble
+#' @import dplyr
+#' @name rm_sparse_disc
+utils::globalVariables(c("NB_theta"))
 
 rm_sparse_disc <- function(values, data, nonzero_count_cutoff1, nonzero_count_cutoff2, theta_cutoff, Ps_null_model,
                       prevalence, absolute_sparsity, mean_abundance, Ps_poho_fdr, delta) {
@@ -20,9 +26,9 @@ rm_sparse_disc <- function(values, data, nonzero_count_cutoff1, nonzero_count_cu
   }
   non_zero_count <- nrow(data) - absolute_sparsity
   Ps_null_model <- Ps_null_model %>%
-    rownames_to_column() %>%
-    mutate(non_zero_count = non_zero_count) %>%
-    column_to_rownames()
+    tibble::rownames_to_column() %>%
+    dplyr::mutate(non_zero_count = non_zero_count) %>%
+    tibble::column_to_rownames()
 
   bac_exclude_1 <- subset(Ps_null_model, non_zero_count <= nonzero_count_cutoff1 & NB_theta >= theta_cutoff)
   bac_exclude_2 <- subset(Ps_null_model, non_zero_count <= nonzero_count_cutoff2)
@@ -34,19 +40,19 @@ rm_sparse_disc <- function(values, data, nonzero_count_cutoff1, nonzero_count_cu
   mean_abundance <- mean_abundance[match(bac_include, table = rownames(Ps_null_model))]
 
   Ps_null_model <- Ps_null_model %>%
-    rownames_to_column() %>%
+    tibble::rownames_to_column() %>%
     dplyr::filter(.data$rowname %in% bac_include) %>%
-    column_to_rownames()
+    tibble::column_to_rownames()
 
   Ps_poho_fdr <- Ps_poho_fdr %>%
-    rownames_to_column() %>%
+    tibble::rownames_to_column() %>%
     dplyr::filter(.data$rowname %in% bac_include) %>%
-    column_to_rownames()
+    tibble::column_to_rownames()
 
   delta <- delta %>%
-    rownames_to_column() %>%
+    tibble::rownames_to_column() %>%
     dplyr::filter(.data$rowname %in% bac_include) %>%
-    column_to_rownames()
+    tibble::column_to_rownames()
 
   variables <- bac_include
 

@@ -3,9 +3,6 @@
 \name{NuModelTest_cont}
 \alias{NuModelTest_cont}
 \title{Null Model Test and post-hoc Test in longdat_cont() pipeline}
-\usage{
-NuModelTest_cont(N, data_type, test_var, melt_data, variables, verbose)
-}
 \arguments{
 \item{N}{Internal function argument.}
 

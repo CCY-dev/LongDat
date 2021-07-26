@@ -2,6 +2,11 @@
 #' @param x The list to be unlisted and turned into table
 #' @param N Internal function argument.
 #' @param variables Internal function argument.
+#' @import stringr
+#' @import reshape2
+#' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @name unlist_table
 
 unlist_table <- function(x, N, variables) {
   unlist = unlist(x, use.names=FALSE) # output only the numbers
@@ -25,7 +30,6 @@ unlist_table <- function(x, N, variables) {
   ps_lm_m[ , 2] <- unlist
 
   # Split the names of each p_lm, ex: Actinobacteria.PPI becomes "Actinobacteria" "PPI"
-  library(stringr)
   out <- stringr::str_split_fixed(ps_lm_m$name, pattern = stringr::fixed("."), n = 2)
   # Add the 2 new columns with split names to the matrix
   ps_lm_m2 <- cbind(out, ps_lm_m)

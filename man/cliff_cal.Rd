@@ -3,9 +3,6 @@
 \name{cliff_cal}
 \alias{cliff_cal}
 \title{Effect size (Cliff's delta) calculation in longdat_disc() pipeline}
-\usage{
-cliff_cal(melt_data, Ps_poho_fdr, variables, test_var, data, verbose)
-}
 \arguments{
 \item{melt_data}{Internal function argument.}
 

@@ -8,11 +8,15 @@
 #' @param N Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @import dplyr
+#' @name wilcox_posthoc
 
 wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variables, data, N, verbose) {
   #Count false positives
   false_pos <- result_neg_ctrl %>%
-    filter(.data$Final_signal == "False_positive" & .data$Signal_of_CI_signs == "Good")
+    dplyr::filter(.data$Final_signal == "False_positive" & .data$Signal_of_CI_signs == "Good")
   false_pos_count <- nrow(false_pos)
 
   #Do it if there are false positive in the randomized result

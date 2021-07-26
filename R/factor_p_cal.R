@@ -7,6 +7,12 @@
 #' @param N Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @import tidyr
+#' @import orddom
+#' @import rstatix
+#' @name factor_p_cal
 
 factor_p_cal <- function(melt_data, variables, factor_columns, factors, data, N, verbose) {
   if (length(factor_columns) != 0) {
@@ -27,7 +33,8 @@ factor_p_cal <- function(melt_data, variables, factor_columns, factors, data, N,
 
       for (j in 1:length(factor_columns)) {# loop through all factor columns
         # Remove NA rows in subdata[ ,factor_columns[j]] first, or else it will cause error
-        subdata <- subdata %>% drop_na(factor_columns[j])
+        subdata <- subdata %>%
+          tidyr::drop_na(factor_columns[j])
 
         # If the factor has only two kinds of values, run wilcoxon test
         if (length(unique(subdata[ , factor_columns[j]])) == 2) {

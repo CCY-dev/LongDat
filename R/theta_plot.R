@@ -14,7 +14,7 @@
 #' @param y_interval_value The interval value for tick marks on y-axis. The default is 5.
 #' @param verbose A boolean vector indicating whether to print detailed message. The default is T.
 #' @export
-#' @import tidyverse
+#' @import tidyr
 #' @import reshape2
 #' @import glmmTMB
 #' @import ggplot2
@@ -22,6 +22,9 @@
 #' @import tibble
 #' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
 #' @importFrom rlang .data
+#' @importFrom magrittr '%>%'
+#' @name theta_plot
+#' @return a plot
 #' @details
 #' This function outputs a plot that facilitates the setting of theta_cutoff in longdat_disc()
 #' and longdat_cont(). This only applies when the dependent variables are count data. Longdat_disc()
@@ -30,7 +33,6 @@
 #' or not. Therefore, the highest threshold of theta value is set and any variable beyond the threshold will be excluded
 #' from the test. The default value of theta_cutoff is set to 2^20 from the observation that 2^20 is a clear cutoff line
 #' for several datasets. Users can change theta_cutoff value to fit their own data.
-#' @return
 #' The "nonzero_count_vs_theta.pdf" will be in the output directory.
 #' @examples
 #'\dontrun{
@@ -40,6 +42,7 @@
 #' theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
 #'            variable_col = 7, fac_var = c(1:3), output_tag = "thetaplot_test")
 #'}
+utils::globalVariables(c("values", "NB_theta", "Nonzero_count"))
 
 theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
                        output_tag, point_size = 1, x_interval_value = 5,
@@ -59,12 +62,6 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   if (missing(output_tag)) {
     stop('Error! Necessary argument "output_tag" is missing.')
   }
-  library(lme4)
-  library(tidyverse)
-  library(reshape2)
-  library(orddom)
-  library(lmtest)
-  library(glmmTMB)
 
   if (verbose == T) {print("Start data preprocessing.")}
   data <- read.table (file = input, header = T, sep = "\t", check.names = F, stringsAsFactors = F)
@@ -122,9 +119,9 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
     subdata <- subset(melt_data, variable == aVariable)
     tryCatch({
       fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-      m2 <- glmmTMB(formula = fmla2, data = subdata, family = nbinom2, REML = F)
+      m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata, family = nbinom2, REML = F)
       # Extract overdispersion theta out of model
-      Theta[i, 1] <- sigma(m2)
+      Theta[i, 1] <- glmmTMB::sigma(m2)
     }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
   }
   rownames(Theta) <- gsub(".", "_", variables, fixed = TRUE)
@@ -136,16 +133,16 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   ################## Plot nonzero count v.s. theta ##################
   if (verbose == T) {print("Start plotting.")}
   suppressWarnings(
-  ggplot(all_info, aes(x=Nonzero_count, y = log(NB_theta, base = 2))) +
-    geom_point(size = point_size, alpha = 0.9, color = "dodgerblue2") + theme_light() +
-    scale_y_discrete(limits = seq(-10, max(log(all_info$NB_theta, base = 2)) + 10, by = y_interval_value)) +
-    ggtitle("Non-zero count vs negative binomial theta") +
-    theme(plot.title = element_text(size = 18, face = "plain")) +
-    xlab("Non-zero count") +
-    ylab("log(Theta, base = 2)") +
-    scale_x_continuous(breaks = seq(0, nrow(data), by = x_interval_value)) +
-    expand_limits(x = c(0, nrow(data)), y = c(-10, max(log(all_info$NB_theta, base = 2)) + 10)) +
-    ggsave(filename = paste0(output_tag, "_nonzero_count_vs_theta.pdf"),
-           device = "pdf"))
+    ggplot2::ggplot(all_info, aes(x=Nonzero_count, y = log(NB_theta, base = 2))) +
+      geom_point(size = point_size, alpha = 0.9, color = "dodgerblue2") + theme_light() +
+      scale_y_discrete(limits = seq(-10, max(log(all_info$NB_theta, base = 2)) + 10, by = y_interval_value)) +
+      ggtitle("Non-zero count vs negative binomial theta") +
+      theme(plot.title = element_text(size = 18, face = "plain")) +
+      xlab("Non-zero count") +
+      ylab("log(Theta, base = 2)") +
+      scale_x_continuous(breaks = seq(0, nrow(data), by = x_interval_value)) +
+      expand_limits(x = c(0, nrow(data)), y = c(-10, max(log(all_info$NB_theta, base = 2)) + 10)) +
+      ggsave(filename = paste0(output_tag, "_nonzero_count_vs_theta.pdf"),
+             device = "pdf"))
   print("Finished! The results are now in your directory.")
 }

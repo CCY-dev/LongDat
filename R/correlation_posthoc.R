@@ -5,6 +5,8 @@
 #' @param test_var Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @name correlation_posthoc
 
 correlation_posthoc <- function(variables, verbose, melt_data, test_var, N) {
   # Here uses Spearman's correlation

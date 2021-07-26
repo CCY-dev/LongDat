@@ -3,21 +3,6 @@
 \name{rm_sparse_disc}
 \alias{rm_sparse_disc}
 \title{Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_disc()}
-\usage{
-rm_sparse_disc(
-  values,
-  data,
-  nonzero_count_cutoff1,
-  nonzero_count_cutoff2,
-  theta_cutoff,
-  Ps_null_model,
-  prevalence,
-  absolute_sparsity,
-  mean_abundance,
-  Ps_poho_fdr,
-  delta
-)
-}
 \arguments{
 \item{values}{Internal function argument.}
 

@@ -4,6 +4,13 @@
 #' @param variable_col Internal function argument.
 #' @param fac_var Internal function argument.
 #' @param not_used Internal function argument.
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @importFrom rlang .data
+#' @import dplyr
+#' @import reshape2
+#' @import tidyr
+#' @name data_preprocess
 
 data_preprocess <- function(input, test_var, variable_col, fac_var, not_used) {
 data <- read.table (file = input, header = T, sep = "\t", check.names = F, stringsAsFactors = F)
@@ -30,7 +37,8 @@ colnames(data)[variable_col:ncol(data)] <- fix_name_fun(colnames(data)[variable_
 predictor_names <- (colnames(data))[1: (variable_col - 1)]
 melt_data <- reshape2::melt (data, id = predictor_names)
 # Omit the rows whose value column equals to NA
-melt_data <- melt_data %>% tidyr::drop_na(.data$value)
+melt_data <- melt_data %>%
+  tidyr::drop_na(.data$value)
 
 # Make sure that all the columns are in the right class
 # Columns mentioned in fac_var, and the second last column in melt data are factors
@@ -47,7 +55,8 @@ for (i in num_var) {
 
 # Remove the not-used columns in melt_data
 if (!is.null(not_used)) {
-  melt_data <- melt_data %>% dplyr::select(-c(not_used))
+  melt_data <- melt_data %>%
+    dplyr::select(-c(not_used))
 }
 
 # Change the first column name of melt_data to "Individual"

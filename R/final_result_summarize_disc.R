@@ -21,6 +21,12 @@
 #' @param case_pairs_name Internal function argument.
 #' @param p_wilcox_final Internal function argument.
 #' @param Ps_poho_fdr Internal function argument.
+#' @import dplyr
+#' @import stringr
+#' @importFrom rlang .data
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom magrittr '%>%'
+#' @name final_result_summarize_disc
 
 final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
                                    model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, delta, case_pairs, prevalence,
@@ -48,7 +54,7 @@ final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlis
 
     confs <- prep_conf %>%
       rownames_to_column("Bacteria") %>%
-      filter(.data$sel_fac_length > 0 & .data$Signal == "not_NS")
+      dplyr::filter(.data$sel_fac_length > 0 & .data$Signal == "not_NS")
 
     confs_num <- match(confs$Bacteria, variables)
 
@@ -105,10 +111,10 @@ final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlis
           } else {# There are sel_fac, so decide the signal based on confound table
             subconfound <- as.data.frame(confound[str_which(string = rownames(confound), pattern = as.character(variables[i])), ])
             subconfound_columns <- subconfound[ , str_which(string = colnames(confound), pattern = "Confounding_type")]
-            if (sum(str_detect(string = subconfound_columns, pattern = "Confounded"), na.rm = T) > 0) { # There is "confounding" signals
+            if (sum(stringr::str_detect(string = subconfound_columns, pattern = "Confounded"), na.rm = T) > 0) { # There is "confounding" signals
               final_sig[i, 1] = "Confounded"
-            } else if(sum(str_detect(string = subconfound_columns, pattern = "Confounded"), na.rm = T) == 0){ # There isn't "confounding" signals
-              if (sum(str_detect(string = subconfound_columns, pattern = "Ambiguously deconfounded"), na.rm = T) > 0) { # If there is "ambiguously deconfounded" signals
+            } else if(sum(stringr::str_detect(string = subconfound_columns, pattern = "Confounded"), na.rm = T) == 0){ # There isn't "confounding" signals
+              if (sum(stringr::str_detect(string = subconfound_columns, pattern = "Ambiguously deconfounded"), na.rm = T) > 0) { # If there is "ambiguously deconfounded" signals
                 final_sig[i, 1] = "Ambiguously deconfounded"
               } else { # There isn't "ambiguously deconfounded" signals
                 final_sig[i, 1] = "OK and strictly deconfounded"
