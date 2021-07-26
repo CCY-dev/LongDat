@@ -8,7 +8,7 @@ fix_name_fun <- function(z) {
   n4 <- gsub(x = n3, pattern = "*", replacement = "_", fixed = T)
   n5 <- gsub(x = n4, pattern = "(", replacement = "_", fixed = T)
   n6 <- gsub(x = n5, pattern = ")", replacement = "", fixed = T)
-  n7 <- gsub(x = n6, pattern = "‰", replacement = "permille", fixed = T)
+  n7 <- gsub(x = n6, pattern = "~", replacement = "to", fixed = T)
   n8 <- gsub(x = n7, pattern = ".", replacement = "_", fixed = T)
   n9 <- gsub(x = n8, pattern = "&", replacement = "and", fixed = T)
   n10 <- gsub(x = n9, pattern = "$", replacement = "_", fixed = T)
@@ -23,6 +23,10 @@ fix_name_fun <- function(z) {
   n19 <- gsub(x = n18, pattern = "]", replacement = "_", fixed = T)
   n20 <- gsub(x = n19, pattern = "[", replacement = "_", fixed = T)
   n21 <- gsub(x = n20, pattern = " ", replacement = "_",fixed = T)
+  n22 <- gsub(x = n21, pattern = ":", replacement = "_",fixed = T)
+  n23 <- gsub(x = n22, pattern = ";", replacement = "_",fixed = T)
+  n24 <- gsub(x = n23, pattern = "=", replacement = "_",fixed = T)
+  n25 <- gsub(x = n24, pattern = "^", replacement = "_",fixed = T)
 }
 
 
