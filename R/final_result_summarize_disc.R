@@ -14,7 +14,6 @@
 #' @param mean_abundance Internal function argument.
 #' @param not_used Internal function argument.
 #' @param Ps_effectsize Internal function argument.
-#' @param output_tag Internal function argument.
 #' @param data_type Internal function argument.
 #' @param false_pos_count Internal function argument.
 #' @param case_pairs Internal function argument.
@@ -30,7 +29,7 @@
 
 final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
                                    model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, delta, case_pairs, prevalence,
-                                   mean_abundance, Ps_poho_fdr, not_used, Ps_effectsize, output_tag, case_pairs_name, data_type,
+                                   mean_abundance, Ps_poho_fdr, not_used, Ps_effectsize, case_pairs_name, data_type,
                                    false_pos_count, p_wilcox_final) {
   if (variable_col-1-2-length(not_used) > 0) {# There are potential confounders in raw input data
     # Generate potential confounding factors as output
@@ -84,8 +83,8 @@ final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlis
         }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
       }
     }
-    write.table(x = confound, file = paste0(output_tag, "_confounders.txt"), sep = "\t",
-                row.names = T, col.names = NA, quote = F)
+    #write.table(x = confound, file = paste0(output_tag, "_confounders.txt"), sep = "\t",
+    #            row.names = T, col.names = NA, quote = F)
 
     # Create the result table
     result_table <- data.frame(matrix(nrow = length(variables), ncol = ncol(case_pairs)))
@@ -210,6 +209,11 @@ final_result_summarize_disc <- function(variable_col, N, Ps_conf_inv_model_unlis
       }
     }
   }
-  write.table(x = result_table, file = paste0(output_tag, "_result_table.txt"), sep = "\t",
-              row.names = T, col.names = NA, quote = F)
+  #write.table(x = result_table, file = paste0(output_tag, "_result_table.txt"), sep = "\t",
+  #            row.names = T, col.names = NA, quote = F)
+  if (variable_col-1-2-length(not_used) > 0) {
+    return(list(confound, result_table))
+  } else if (variable_col-1-2-length(not_used) == 0) {
+    return(result_table)
+  }
 }

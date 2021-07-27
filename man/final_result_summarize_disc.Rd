@@ -22,7 +22,6 @@ final_result_summarize_disc(
   Ps_poho_fdr,
   not_used,
   Ps_effectsize,
-  output_tag,
   case_pairs_name,
   data_type,
   false_pos_count,
@@ -63,8 +62,6 @@ final_result_summarize_disc(
 \item{not_used}{Internal function argument.}
 
 \item{Ps_effectsize}{Internal function argument.}
-
-\item{output_tag}{Internal function argument.}
 
 \item{case_pairs_name}{Internal function argument.}
 

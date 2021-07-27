@@ -21,7 +21,6 @@ final_result_summarize_cont(
   p_poho,
   not_used,
   Ps_effectsize,
-  output_tag,
   data_type,
   false_pos_count
 )
@@ -58,8 +57,6 @@ final_result_summarize_cont(
 \item{not_used}{Internal function argument.}
 
 \item{Ps_effectsize}{Internal function argument.}
-
-\item{output_tag}{Internal function argument.}
 
 \item{data_type}{Internal function argument.}
 

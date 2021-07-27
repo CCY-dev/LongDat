@@ -21,7 +21,6 @@
 #'                The default is 0.1.
 #' @param posthoc_q The threshold for significance of post-hoc test of the model after multiple testing correction.
 #'                The default is 0.05.
-#' @param output_tag The name tag for the output files. This should be a character vector.
 #' @param theta_cutoff Required when the data type is set as "count". Variable with theta value from negative binomial regression
 #'        larger than or equal to the cutoff will be filtered out if it also doesn't meet the non-zero count threshold. The default is 2^20.
 #' @param nonzero_count_cutoff1 Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
@@ -30,6 +29,7 @@
 #'        will be filtered out. The default is 5.
 #' @param verbose A boolean vector indicating whether to print detailed message. The default is T.
 #' @name longdat_disc
+#' @export
 #' @import utils
 #' @import graphics
 #' @import dplyr
@@ -54,12 +54,12 @@
 #' Also, when your data type is count data, please use set.seed() before running longdat_disc() so that you can get reproducible randomized negative check.
 #'
 #' @return
-#' The result table will be in your output directory. If there are confounders in the input,
-#' there will be another table called "confounders". For count mode, if there is false postive
-#' in the randomized control result, then another table named "randomized_control" will also be
+#' The "Result_table" will be in the output. If there are confounders in the input,
+#' there will be another table called "Confounder_table". For count mode, if there is false postive
+#' in the randomized control result, then another table named "Randomized_control_table" will also be
 #' generated. The detailed description is as below.
 #'
-#' Result table
+#' Result_table
 #'
 #' 1. The first column: The dependent variables in the input data. This can be used as row name when being imported into R.
 #'
@@ -100,7 +100,7 @@
 #'                   in the model test on randomized data. Wilcoxon test are more conservative than the default post-hoc test (emmeans), and thus it is a
 #'                   good reference for getting a more conservative result of the significant outcomes.
 #'
-#' Confounder table
+#' Confounder_table
 #'
 #' The first column contains the dependent variables in the input data. This can be used as row name when being imported into R.
 #' Then every 3 columns are a group. Confounder column shows the confounder's name; Confounding_type column shows how test_var is
@@ -108,7 +108,7 @@
 #' confounders. Due to the different number of confounders for each dependent variable, there may be NAs in the table and they can
 #' simply be ignored. If the confounder table is totally empty, this means that there are no confounders detected.
 #'
-#' Randomized_control table (for user's reference)
+#' Randomized_control_table (for user's reference)
 #'
 #' We assume that there shouldn't be positive results in the randomized control test, because all the rows in the original dataset are
 #' shuffled randomly. Therefore, any signal that showed significance here will be regarded as false positive. And if there's false
@@ -134,17 +134,16 @@
 #'                     b and a in the randomized control dataset. The number of Effect_size_a_b columns depends on how many combinations of time points in the input data.
 #'
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' # Get the path of example dataset
 #' system.file("Fasting_disc.txt", package = "longdat")
 #' # Paste the directory to the input below
-#' longdat_disc(input = "your_path_to/Fasting_disc.txt", data_type = "count",
-#' test_var = "Time_point", variable_col = 7, fac_var = c(1:3),
-#' output_tag = "longdat_disc_example")
+#' test_disc <- longdat_disc(input = "your_path_to/Fasting_disc.txt", data_type = "count",
+#' test_var = "Time_point", variable_col = 7, fac_var = c(1:3))
 #'}
 
 longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_used = NULL,
-                         output_tag, adjustMethod = "fdr", model_q = 0.1,
+                         adjustMethod = "fdr", model_q = 0.1,
                          posthoc_q = 0.05, theta_cutoff = 2^20, nonzero_count_cutoff1 = 9,
                          nonzero_count_cutoff2 = 5, verbose = T) {
   if (missing(input)) {
@@ -161,9 +160,6 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
   }
   if (missing(fac_var)) {
     stop('Error! Necessary argument "fac_var" is missing.')
-  }
-  if (missing(output_tag)) {
-    stop('Error! Necessary argument "output_tag" is missing.')
   }
 
   ############## Data preprocessing #################
@@ -229,7 +225,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
     if (verbose == T) {print("Start randomized negative control model test.")}
     result_neg_ctrl <- random_neg_ctrl_disc(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables, case_pairs,
                                                 adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
-                                                output_tag, verbose)
+                                                verbose)
     if (verbose == T) {print("Finish randomized negative control model test.")}
   }
 
@@ -338,14 +334,36 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var, not_
 
   ############## Generate result table as output #################
   if (verbose == T) {print("Start generating result tables.")}
-  final_result_summarize_disc(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
-                         model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, delta, case_pairs, prevalence,
-                         mean_abundance, Ps_poho_fdr, not_used, Ps_effectsize, output_tag, case_pairs_name, data_type,
-                         false_pos_count, p_wilcox_final)
-  print("Finished! The results are now in your directory.")
+  final_result <- final_result_summarize_disc(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
+                                              model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, delta, case_pairs, prevalence,
+                                              mean_abundance, Ps_poho_fdr, not_used, Ps_effectsize, case_pairs_name, data_type,
+                                              false_pos_count, p_wilcox_final)
+  if (variable_col-1-2-length(not_used) > 0) {
+    Confounder_table = final_result[[1]]
+    Result_table = final_result[[2]]
+  } else if (variable_col-1-2-length(not_used) == 0) {
+    Result_table = final_result[[1]]
+  }
+  if (data_type == "count") {
+    if (nrow(result_neg_ctrl) > 0 & variable_col-1-2-length(not_used) > 0) {
+      return(list(Result_table = Result_table, Confounder_table = Confounder_table, Randomized_control_table = result_neg_ctrl))
+    } else if (nrow(result_neg_ctrl) > 0 & variable_col-1-2-length(not_used) == 0) {
+      return(list(Result_table = Result_table, Randomized_control_table = result_neg_ctrl))
+    } else if (nrow(result_neg_ctrl) == 0 & variable_col-1-2-length(not_used) > 0) {
+      return(list(Result_table = Result_table, Confounder_table = Confounder_table))
+    } else if (nrow(result_neg_ctrl) == 0 & variable_col-1-2-length(not_used) == 0) {
+      return(list(Result_table = Result_table))}
+  } else if(data_type != "count") {
+    if (variable_col-1-2-length(not_used) > 0) {
+      return(list(Result_table = Result_table, Confounder_table = Confounder_table))
+    } else if (variable_col-1-2-length(not_used) == 0) {
+      return(Result_table = Result_table)
+    }
+  }
+  print("Finished successfully!")
   if (data_type == "count") {
     if (false_pos_count > 0) {
-      print("Attention! Since there are false positives in randomized control test, it's better to check the Wilcoxon post-hoc p values of significant signals in the output table to get a more conservative result. See documentation for more details.")
+      print("Attention! Since there are false positives in randomized control test, it's better to check the Wilcoxon post-hoc p values of significant signals in the Result_table to get a more conservative result. See documentation for more details.")
     }
   }
 }

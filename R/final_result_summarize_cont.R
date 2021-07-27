@@ -15,7 +15,6 @@
 #' @param p_poho Internal function argument.
 #' @param not_used Internal function argument.
 #' @param Ps_effectsize Internal function argument.
-#' @param output_tag Internal function argument.
 #' @param data_type Internal function argument.
 #' @param false_pos_count Internal function argument.
 #' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
@@ -27,7 +26,7 @@
 
 final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
                                         model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, prevalence,
-                                        mean_abundance, p_poho, not_used, Ps_effectsize, output_tag, data_type, false_pos_count) {
+                                        mean_abundance, p_poho, not_used, Ps_effectsize, data_type, false_pos_count) {
   if (variable_col-1-2-length(not_used) > 0) {# There are potential confounders in raw input data
     # Generate potential confounding factors as output
     # Find the max number of how many confounders each bacteria has
@@ -80,8 +79,8 @@ final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlis
         }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
       }
     }
-    write.table(x = confound, file = paste0(output_tag, "_confounders.txt"), sep = "\t",
-                row.names = T, col.names = NA, quote = F)
+    #write.table(x = confound, file = paste0(output_tag, "_confounders.txt"), sep = "\t",
+    #            row.names = T, col.names = NA, quote = F)
 
     # Create the result table
     result_table <- data.frame(matrix(nrow = length(variables), ncol = 1))
@@ -146,8 +145,6 @@ final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlis
     result_table <- cbind(prevalence, mean_abundance, final_sig, effect_type, assoc, Ps_null_model_fdr, p_poho)
     colnames(result_table) <- c("Prevalence_percentage", "Mean_abundance", "Signal", "Effect", "Effect_size", "Null_time_model_q", "Post-hoc_q")
 
-
-
   } else if (variable_col-1-2-length(not_used) == 0) {
     result_table <- data.frame(matrix(nrow = length(variables), ncol = 1))
     row.names(result_table) <- variables
@@ -195,6 +192,11 @@ final_result_summarize_cont <- function(variable_col, N, Ps_conf_inv_model_unlis
     result_table <- cbind(prevalence, mean_abundance, final_sig, effect_type, assoc, Ps_null_model_fdr, p_poho)
     colnames(result_table) <- c("Prevalence_percentage", "Mean_abundance", "Signal", "Effect", "Effect_size", "Null_time_model_q", "Post-hoc_q")
   }
-  write.table(x = result_table, file = paste0(output_tag, "_result_table.txt"), sep = "\t",
-              row.names = T, col.names = NA, quote = F)
+  #write.table(x = result_table, file = paste0(output_tag, "_result_table.txt"), sep = "\t",
+  #           row.names = T, col.names = NA, quote = F)
+  if (variable_col-1-2-length(not_used) > 0) {
+    return(list(confound, result_table))
+  } else if (variable_col-1-2-length(not_used) == 0) {
+    return(result_table)
+  }
 }

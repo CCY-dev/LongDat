@@ -21,7 +21,6 @@
 #'                The default is 0.1.
 #' @param posthoc_q The threshold for significance of post-hoc test after multiple testing correction.
 #'                The default is 0.05.
-#' @param output_tag The name tag for the output files. This should be a character vector.
 #' @param theta_cutoff Required when the data type is set as "count". Variable with theta value from negative binomial regression
 #'        larger than or equal to the cutoff will be filtered out if it also doesn't meet the non-zero count threshold. The default is 2^20.
 #' @param nonzero_count_cutoff1 Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
@@ -56,12 +55,12 @@
 #' Also, when your data type is count data, please use set.seed() before running longdat_cont() so that you can get reproducible randomized negative check.
 #'
 #' @return
-#' The result table will be in your output directory. If there are confounders in the input,
-#' there will be another table called "confounders". For count mode, if there is false postive
-#' in the randomized control result, then another table named "randomized_control" will also be
+#' The "Result_table" will be in your output directory. If there are confounders in the input,
+#' there will be another table called "Confounder_table". For count mode, if there is false postive
+#' in the randomized control result, then another table named "Randomized_control_table" will also be
 #' generated. The detailed description is as below.
 #'
-#' Result table
+#' Result_table
 #'
 #' 1. The first column: The dependent variables in the input data. This can be used as row name when being imported into R.
 #'
@@ -95,7 +94,7 @@
 #' 8. Post-hoc_q: These are the multiple-comparison-adjusted p values from the post-hoc test (Spearman's correlation test) of the model.
 #'
 #'
-#' Confounder table
+#' Confounder_table
 #'
 #' The first column contains the dependent variables in the input data. This can be used as row name when being imported into R.
 #' Then every 3 columns are a group. Confounder column shows the confounder's name; Confounding_type column shows how test_var is
@@ -103,7 +102,7 @@
 #' confounders. Due to the different number of confounders for each dependent variable, there may be NAs in the table and they can
 #' simply be ignored. If the confounder table is totally empty, this means that there are no confounders detected.
 #'
-#' Randomized_control table (for user's reference)
+#' Randomized_control_table (for user's reference)
 #'
 #' We assume that there shouldn't be positive results in the randomized control test, because all the rows in the original dataset are
 #' shuffled randomly. Therefore, any signal that showed significance here will be regarded as false positive. And if there's false
@@ -122,17 +121,16 @@
 #'  4. Effect_size: This column describes the correlation coeffecient (Spearman's rho) of each dependent variable between each dependent variable value and time.
 #'
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' # Get the path of example dataset
 #' system.file("Fasting_cont.txt", package = "longdat")
 #' # Paste the directory to the input below
-#' longdat_cont(input = "your_path_to/Fasting_cont.txt", data_type = "count",
-#' test_var = "Day", variable_col = 7, fac_var = c(1, 3),
-#' output_tag = "longdat_cont_example")
+#' test_cont <- longdat_cont(input = "your_path_to/Fasting_cont.txt", data_type = "count",
+#' test_var = "Day", variable_col = 7, fac_var = c(1, 3))
 #'}
 
 longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_used = NULL,
-                         output_tag, adjustMethod = "fdr", model_q = 0.1,
+                         adjustMethod = "fdr", model_q = 0.1,
                          posthoc_q = 0.05, theta_cutoff = 2^20, nonzero_count_cutoff1 = 9,
                          nonzero_count_cutoff2 = 5, verbose = T) {
   if (missing(input)) {
@@ -149,9 +147,6 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
   }
   if (missing(fac_var)) {
     stop('Error! Necessary argument "fac_var" missing.')
-  }
-  if (missing(output_tag)) {
-    stop('Error! Necessary argument "output_tag" missing.')
   }
 
   ############## Data preprocessing #################
@@ -213,7 +208,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
     if (verbose == T) {print("Start randomized negative control model test.")}
     random_neg_ctrl_lists <- random_neg_ctrl_cont(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables,
                                                   adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
-                                                  output_tag, verbose)
+                                                  verbose)
     result_neg_ctrl <- random_neg_ctrl_lists[[1]]
     false_pos_count <- random_neg_ctrl_lists[[2]]
     if (verbose == T) {print("Finish randomized negative control model test.")}
@@ -277,16 +272,44 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var, not_
 
   ############## Generate result table as output #################
   if (verbose == T) {print("Start generating result tables.")}
-  final_result_summarize_cont(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
-                              model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, prevalence,
-                              mean_abundance, p_poho, not_used, Ps_effectsize, output_tag, data_type,
-                              false_pos_count)
-  print("Finished! The results are now in your directory.")
+  final_result <- final_result_summarize_cont(variable_col, N, Ps_conf_inv_model_unlist, variables, sel_fac, Ps_conf_model_unlist,
+                                              model_q, posthoc_q, Ps_null_model_fdr, Ps_null_model, assoc, prevalence,
+                                              mean_abundance, p_poho, not_used, Ps_effectsize, data_type,
+                                              false_pos_count)
+  if (variable_col-1-2-length(not_used) > 0) {
+    Confounder_table = final_result[[1]]
+    Result_table = final_result[[2]]
+  } else if (variable_col-1-2-length(not_used) == 0) {
+    Result_table = final_result[[1]]
+  }
+
+  if (data_type == "count") {
+    if (false_pos_count > 0 & variable_col-1-2-length(not_used) > 0) {
+      result_neg_ctrl_sig <- result_neg_ctrl %>%
+        dplyr::filter(.data$Signal == "False_positive" & .data$Signal_of_CI_signs == "Good") %>%
+        dplyr::select(-1)
+      return(list(Result_table = Result_table, Confounder_table = Confounder_table, Randomized_control_table = result_neg_ctrl_sig))
+    } else if (false_pos_count > 0 & variable_col-1-2-length(not_used) == 0) {
+      result_neg_ctrl_sig <- result_neg_ctrl %>%
+        dplyr::filter(.data$Signal == "False_positive" & .data$Signal_of_CI_signs == "Good") %>%
+        dplyr::select(-1)
+      return(list(Result_table = Result_table, Randomized_control_table = result_neg_ctrl_sig))
+    } else if (false_pos_count == 0 & variable_col-1-2-length(not_used) > 0) {
+      return(list(Result_table = Result_table, Confounder_table = Confounder_table))
+    } else if (false_pos_count == 0 & variable_col-1-2-length(not_used) == 0) {
+      return(list(Result_table = Result_table))}
+  } else if(data_type != "count") {
+    if (variable_col-1-2-length(not_used) > 0) {
+      return(list(Result_table = Result_table, Confounder_table = Confounder_table))
+    } else if (variable_col-1-2-length(not_used) == 0) {
+      return(Result_table = Result_table)
+    }
+  }
+
+  print("Finished successfully!")
   if (data_type == "count") {
     if (false_pos_count > 0) {
       print("Attention! Since there are false positives in randomized control test, it's better to check the effect sizes significant signals and rule out the ones with low effect sizes. See documentation for more details.")
     }
   }
 }
-
-

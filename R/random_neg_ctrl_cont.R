@@ -14,7 +14,6 @@
 #' @param theta_cutoff Internal function argument.
 #' @param nonzero_count_cutoff1 Internal function argument.
 #' @param nonzero_count_cutoff2 Internal function argument.
-#' @param output_tag Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
 #' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
@@ -31,11 +30,10 @@ utils::globalVariables(c("non_zero_count", "NB_theta"))
 
 random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, factors, data, N, data_type, variables,
                             adjustMethod, model_q, posthoc_q, theta_cutoff, nonzero_count_cutoff1, nonzero_count_cutoff2,
-                            output_tag, verbose) {
+                            verbose) {
   ######### Randomize the raw data first
   # Shuffle the rows randomly
   value_for_random <- data[ , variable_col:ncol(data)]
-  set.seed(143)
   value_random <- value_for_random[sample(nrow(value_for_random)), ]
   data_randomized <- as.data.frame(cbind(data[ , 1:(variable_col-1)], value_random))
 
@@ -203,8 +201,9 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used, fact
     false_pos_count <- nrow(result_neg_ctrl_sig)
 
     if (nrow(result_neg_ctrl_sig) > 0) {
-    write.table(x = result_neg_ctrl_sig, file = paste0(output_tag, "_randomized_control.txt"), sep = "\t",
-                row.names = T, col.names = NA, quote = F)}
+    #write.table(x = result_neg_ctrl_sig, file = paste0("_randomized_control.txt"), sep = "\t",
+    #            row.names = T, col.names = NA, quote = F)
+    }
     return(list(result_neg_ctrl, false_pos_count))
   }
 

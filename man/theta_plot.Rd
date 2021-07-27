@@ -18,8 +18,6 @@ numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a 
 \item{not_used}{The column position of the columns not are irrevelant and can be ignored when in the analysis.
 This should be a number vector, and the default is NULL.}
 
-\item{output_tag}{The name tag for the output files. This should be a character vector.}
-
 \item{point_size}{The point size for plotting in ggplot2. The default is 1.}
 
 \item{x_interval_value}{The interval value for tick marks on x-axis. The default is 5.}
@@ -29,7 +27,7 @@ This should be a number vector, and the default is NULL.}
 \item{verbose}{A boolean vector indicating whether to print detailed message. The default is T.}
 }
 \value{
-a plot
+a ggplot object
 }
 \description{
 Plot theta values of negative binomial models versus non-zero count for count data
@@ -45,11 +43,11 @@ for several datasets. Users can change theta_cutoff value to fit their own data.
 The "nonzero_count_vs_theta.pdf" will be in the output directory.
 }
 \examples{
-\dontrun{
+\donttest{
 # Get the path of example dataset
 system.file("Fasting_disc.txt", package = "longdat")
 # Paste the directory to the input below
-theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
-           variable_col = 7, fac_var = c(1:3), output_tag = "thetaplot_test")
+test_theta <- theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
+           variable_col = 7, fac_var = c(1:3))
 }
 }

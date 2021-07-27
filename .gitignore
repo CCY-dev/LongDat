@@ -2,4 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-cast.poho_fdr_m2
+README.md
+.gitignore
+.Rbuildignore

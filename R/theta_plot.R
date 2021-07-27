@@ -8,7 +8,6 @@
 #'         numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7))
 #' @param not_used The column position of the columns not are irrevelant and can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.
-#' @param output_tag The name tag for the output files. This should be a character vector.
 #' @param point_size The point size for plotting in ggplot2. The default is 1.
 #' @param x_interval_value The interval value for tick marks on x-axis. The default is 5.
 #' @param y_interval_value The interval value for tick marks on y-axis. The default is 5.
@@ -24,7 +23,7 @@
 #' @importFrom rlang .data
 #' @importFrom magrittr '%>%'
 #' @name theta_plot
-#' @return a plot
+#' @return a ggplot object
 #' @details
 #' This function outputs a plot that facilitates the setting of theta_cutoff in longdat_disc()
 #' and longdat_cont(). This only applies when the dependent variables are count data. Longdat_disc()
@@ -35,17 +34,17 @@
 #' for several datasets. Users can change theta_cutoff value to fit their own data.
 #' The "nonzero_count_vs_theta.pdf" will be in the output directory.
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' # Get the path of example dataset
 #' system.file("Fasting_disc.txt", package = "longdat")
 #' # Paste the directory to the input below
-#' theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
-#'            variable_col = 7, fac_var = c(1:3), output_tag = "thetaplot_test")
+#' test_theta <- theta_plot(input = "your_path_to/Fasting_disc.txt", test_var = "Time_point",
+#'            variable_col = 7, fac_var = c(1:3))
 #'}
 utils::globalVariables(c("values", "NB_theta", "Nonzero_count"))
 
 theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
-                       output_tag, point_size = 1, x_interval_value = 5,
+                      point_size = 1, x_interval_value = 5,
                        y_interval_value = 5, verbose = T) {
   if (missing(input)) {
     stop('Error! Necessary argument "input" is missing.')
@@ -58,9 +57,6 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   }
   if (missing(fac_var)) {
     stop('Error! Necessary argument "fac_var" is missing.')
-  }
-  if (missing(output_tag)) {
-    stop('Error! Necessary argument "output_tag" is missing.')
   }
 
   if (verbose == T) {print("Start data preprocessing.")}
@@ -133,7 +129,7 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   ################## Plot nonzero count v.s. theta ##################
   if (verbose == T) {print("Start plotting.")}
   suppressWarnings(
-    ggplot2::ggplot(all_info, aes(x=Nonzero_count, y = log(NB_theta, base = 2))) +
+    plot <- ggplot2::ggplot(all_info, aes(x=Nonzero_count, y = log(NB_theta, base = 2))) +
       geom_point(size = point_size, alpha = 0.9, color = "dodgerblue2") + theme_light() +
       scale_y_discrete(limits = seq(-10, max(log(all_info$NB_theta, base = 2)) + 10, by = y_interval_value)) +
       ggtitle("Non-zero count vs negative binomial theta") +
@@ -141,8 +137,7 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
       xlab("Non-zero count") +
       ylab("log(Theta, base = 2)") +
       scale_x_continuous(breaks = seq(0, nrow(data), by = x_interval_value)) +
-      expand_limits(x = c(0, nrow(data)), y = c(-10, max(log(all_info$NB_theta, base = 2)) + 10)) +
-      ggsave(filename = paste0(output_tag, "_nonzero_count_vs_theta.pdf"),
-             device = "pdf"))
-  print("Finished! The results are now in your directory.")
+      expand_limits(x = c(0, nrow(data)), y = c(-10, max(log(all_info$NB_theta, base = 2)) + 10)))
+  return(plot)
+  print("Finished successfully!")
 }

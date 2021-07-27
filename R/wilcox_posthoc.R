@@ -15,9 +15,7 @@
 
 wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variables, data, N, verbose) {
   #Count false positives
-  false_pos <- result_neg_ctrl %>%
-    dplyr::filter(.data$Final_signal == "False_positive" & .data$Signal_of_CI_signs == "Good")
-  false_pos_count <- nrow(false_pos)
+  false_pos_count <- nrow(result_neg_ctrl)
 
   #Do it if there are false positive in the randomized result
   if (false_pos_count > 0) {

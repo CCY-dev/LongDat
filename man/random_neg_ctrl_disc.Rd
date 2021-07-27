@@ -36,8 +36,6 @@
 
 \item{nonzero_count_cutoff2}{Internal function argument.}
 
-\item{output_tag}{Internal function argument.}
-
 \item{verbose}{Internal function argument.}
 }
 \description{
