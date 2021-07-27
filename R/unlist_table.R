@@ -5,7 +5,8 @@
 #' @import stringr
 #' @import reshape2
 #' @importFrom rlang .data
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit
+#'             p.adjust wilcox.test
 #' @name unlist_table
 
 unlist_table <- function(x, N, variables) {
@@ -29,8 +30,10 @@ unlist_table <- function(x, N, variables) {
   ps_lm_m[ , 1] <- unique(unlist_name)
   ps_lm_m[ , 2] <- unlist
 
-  # Split the names of each p_lm, ex: Actinobacteria.PPI becomes "Actinobacteria" "PPI"
-  out <- stringr::str_split_fixed(ps_lm_m$name, pattern = stringr::fixed("."), n = 2)
+  # Split the names of each p_lm, ex:
+  # Actinobacteria.PPI becomes "Actinobacteria" "PPI"
+  out <- stringr::str_split_fixed(ps_lm_m$name,
+                                  pattern = stringr::fixed("."), n = 2)
   # Add the 2 new columns with split names to the matrix
   ps_lm_m2 <- cbind(out, ps_lm_m)
   # Remove the original unsplit name column, and then name the columns
@@ -45,6 +48,8 @@ unlist_table <- function(x, N, variables) {
   cast.ps_lm_m2$feature <- NULL
   Ps_conf_model_unlist <- cast.ps_lm_m2
   #Reorder the rows to make it follow the order of variables
-  Ps_conf_model_unlist <- as.data.frame(Ps_conf_model_unlist[match(variables,rownames(Ps_conf_model_unlist)), ])
+  Ps_conf_model_unlist <-
+    as.data.frame(Ps_conf_model_unlist[match(
+      variables,rownames(Ps_conf_model_unlist)), ])
   return(Ps_conf_model_unlist)
   }

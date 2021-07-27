@@ -5,7 +5,8 @@
 #' @param test_var Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom stats as.formula confint cor.test kruskal.test
+#'             na.omit p.adjust wilcox.test
 #' @name correlation_posthoc
 
 correlation_posthoc <- function(variables, verbose, melt_data, test_var, N) {
@@ -15,11 +16,12 @@ correlation_posthoc <- function(variables, verbose, melt_data, test_var, N) {
 
   for (i in 1:N) { # loop through all variables
     if (verbose == T) {print(i)}
-    bVariable = variables[i]
+    bVariable <- variables[i]
     subdata <- subset(melt_data, variable == bVariable)
     # Here set the "test_var" to numeric
     subdata[ , test_var] <- as.numeric(subdata[ , test_var])
-    c <- stats::cor.test(subdata[ , test_var], subdata$value, method = "spearman")
+    c <- stats::cor.test(subdata[ , test_var], subdata$value,
+                         method = "spearman")
     p_c <- c$p.value
     a_c <- c$estimate
     p_poho[i, 1] <- p_c

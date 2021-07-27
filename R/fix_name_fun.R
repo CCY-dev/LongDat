@@ -1,5 +1,6 @@
 #' Replace the symbols in variable and confounder names in raw input
-#' @param z A character vector. This is the character vector that needs to be changed.
+#' @param z A character vector. This is the character vector
+#'          that needs to be changed.
 #' @importFrom rlang .data
 #' @name fix_name_fun
 

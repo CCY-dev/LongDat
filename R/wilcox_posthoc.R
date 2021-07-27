@@ -8,19 +8,22 @@
 #' @param N Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom stats as.formula confint cor.test kruskal.test
+#'             na.omit p.adjust wilcox.test
 #' @importFrom magrittr '%>%'
 #' @import dplyr
 #' @name wilcox_posthoc
 
-wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variables, data, N, verbose) {
+wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data,
+                           test_var, variables, data, N, verbose) {
   #Count false positives
   false_pos_count <- nrow(result_neg_ctrl)
 
   #Do it if there are false positive in the randomized result
   if (false_pos_count > 0) {
     case_pairs <- combn(x = sort(unique(melt_data[ , test_var])), m = 2)
-    p_wilcox <- data.frame(matrix(nrow = length(variables), ncol = ncol(case_pairs)))
+    p_wilcox <- data.frame(matrix(nrow = length(variables),
+                                  ncol = ncol(case_pairs)))
     case_pairs_name <- c()
     for (i in 1:N) { # loop through all variables
       if (verbose == T) {print(i)}
@@ -28,7 +31,9 @@ wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variab
       subdata_pre <- subset(melt_data, variable == bVariable)
       counts <- subdata_pre %>% dplyr::count(.data$Individual)
       # Exclude the samples that don't have value at all time points
-      exclude <- counts$Individual[which(counts$n != length(unique(data[ , test_var])))]
+      exclude <-
+        counts$Individual[which(counts$n !=
+                                  length(unique(data[ , test_var])))]
       if (length(exclude) > 0) {
         subdata2 <- subset(subdata_pre, !Individual %in% exclude)
       } else {
@@ -39,7 +44,8 @@ wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data, test_var, variab
         sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ]
         # Here use "paired wilcoxon test because it's longitudinal data
         suppressWarnings(
-          p_w <- stats::wilcox.test(sub3$value, sub4$value, paired = T)$p.value)
+          p_w <-
+            stats::wilcox.test(sub3$value, sub4$value, paired = T)$p.value)
         p_wilcox[i, k] <- p_w
         name <- paste(case_pairs[1,k], sep = "_", case_pairs[2,k])
         case_pairs_name <- c(case_pairs_name, name)

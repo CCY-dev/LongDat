@@ -13,12 +13,14 @@
 #' @import lme4
 #' @import tibble
 #' @import bestNormalize
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom stats as.formula confint cor.test
+#'             kruskal.test na.omit p.adjust wilcox.test
 #' @importFrom magrittr '%>%'
 #' @name NuModelTest_cont
 utils::globalVariables(c("value"))
 
-NuModelTest_cont <- function(N, data_type, test_var, melt_data, variables, verbose) {
+NuModelTest_cont <- function(N, data_type, test_var, melt_data,
+                             variables, verbose) {
   Ps_null_model <- as.data.frame(matrix(data = NA, nrow = N, ncol = 2))
   if (data_type == "count") {
     Theta <- c()
@@ -32,34 +34,43 @@ NuModelTest_cont <- function(N, data_type, test_var, melt_data, variables, verbo
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
           subdata <- subdata %>%
-            dplyr::mutate(value_norm = bestNormalize::bestNormalize(value, loo = T)$x.t)
+            dplyr::mutate(value_norm =
+                            bestNormalize::bestNormalize(value, loo = T)$x.t)
         }
         if (data_type == "count") {
           # Negative binomial
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-          m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata, family = nbinom2, na.action = na.omit, REML = F)
+          m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata,
+                                 family = nbinom2, na.action = na.omit,
+                                 REML = F)
           # Extract dispersion theta out of model
           Theta[i] <- glmmTMB::sigma(m2)
         } else if (data_type == "proportion") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-          m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = beta_family(), na.action = na.omit, REML = F)
+          m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = beta_family(),
+                                 na.action = na.omit, REML = F)
         } else if (data_type %in% c("measurement", "others")) {
           fmla2 <- as.formula(paste("value_norm ~ (1|Individual) +", test_var))
           m2 <- lme4::lmer(data = subdata, fmla2, REML = F)
         } else if (data_type == "binary") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
-          m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = "binomial", na.action = na.omit, REML = F)
+          m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = "binomial",
+                                 na.action = na.omit, REML = F)
         } else if (data_type == "ordinal") {
-          fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +", test_var))
+          fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +",
+                                    test_var))
           m2 <- MASS::polr(fmla2, data = subdata, method = "logistic")
         }
 
         # Wald Chisq test
-        Ps_null_model[i, 1] <- car::Anova(m2, type=c("II"),  test.statistic=c("Chisq"))$"Pr(>Chisq)"
+        Ps_null_model[i, 1] <-
+          car::Anova(m2, type=c("II"),  test.statistic=c("Chisq"))$"Pr(>Chisq)"
 
         # Calculate confidence interval for test_var
-        # Followed by the determination of the signs. For "- -" or "+ +", it means that the doesn't span 0.
-        # But "- +" means that the CI spans 0. Here I sum the signs over the row, sum != 0 means it's OK.
+        # Followed by the determination of the signs. For "- -" or "+ +",
+        # it means that the doesn't span 0.
+        # But "- +" means that the CI spans 0.
+        # Here I sum the signs over the row, sum != 0 means it's OK.
         remove(ci)
         ci <- as.data.frame(confint(m2))
         ci <- ci[str_detect(row.names(ci), test_var), 1:2]

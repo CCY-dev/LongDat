@@ -6,7 +6,8 @@
 #' @param data Internal function argument.
 #' @param verbose Internal function argument.
 #' @importFrom rlang .data
-#' @importFrom stats as.formula confint cor.test kruskal.test na.omit p.adjust wilcox.test
+#' @importFrom stats as.formula confint cor.test kruskal.test na.omit
+#'             p.adjust wilcox.test
 #' @import dplyr
 #' @import orddom
 #' @importFrom magrittr '%>%'
@@ -15,15 +16,17 @@ utils::globalVariables(c("variable", "Individual"))
 
 cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose) {
   case_pairs <- combn(sort(unique(melt_data[ , test_var])), m = 2)
-  delta <- data.frame(matrix(nrow = length(row.names(Ps_poho_fdr)), ncol = ncol(case_pairs)))
+  delta <- data.frame(matrix(nrow = length(row.names(Ps_poho_fdr)),
+                             ncol = ncol(case_pairs)))
   case_pairs_name <- c()
   for (i in 1:length(row.names(Ps_poho_fdr))) { # loop through all variables
     if (verbose == T) {print(i)}
-    bVariable = variables[i]
+    bVariable <- variables[i]
     subdata_pre <- subset(melt_data, variable == bVariable)
     counts <- subdata_pre %>% dplyr::count(.data$Individual)
     # Exclude the ones not having data points at ALL timepoints
-    exclude <- counts$Individual[which(counts$n != length(unique(data[ , test_var])))]
+    exclude <- counts$Individual[which(counts$n !=
+                                         length(unique(data[ , test_var])))]
     if (length(exclude) > 0) {
       subdata2 <- subset(subdata_pre, !Individual %in% exclude)
     } else {

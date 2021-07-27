@@ -7,7 +7,8 @@
 fix_name_fun(z)
 }
 \arguments{
-\item{z}{A character vector. This is the character vector that needs to be changed.}
+\item{z}{A character vector. This is the character vector
+that needs to be changed.}
 }
 \description{
 Replace the symbols in variable and confounder names in raw input

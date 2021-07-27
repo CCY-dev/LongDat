@@ -21,137 +21,208 @@ longdat_cont(
 )
 }
 \arguments{
-\item{input}{A character vector. This is the path to a txt file with the first column as "Individual", and all the dependent variables (ex: bacteria)
-should be at the end of the table. The time variable here should be continuous, if time is discrete, please apply longdat_disc() instead.
-Please avoid symbols in the names of potential confounders (confounders are any column apart from individual, test_var and dependent variables).}
+\item{input}{A character vector. This is the path to a txt file with the
+first column as "Individual", and all the dependent variables (ex: bacteria)
+        should be at the end of the table. The time variable here should be
+        continuous, if time is discrete, please apply longdat_disc() instead.
+        Please avoid symbols in the names of potential confounders
+        (confounders are any column apart from individual, test_var and
+        dependent variables).}
 
-\item{data_type}{The data type of the dependent variable. Can either be "proportion", "measurement", "count", "binary", "ordinal" or "others".
-Proportion (or ratio) data range from 0 to 1. Measurement data are continuous and can be measured at finer and finer scale.
-Count data consist of discrete non-negative integers resulted from counting. Binary data are the data of sorting things into
-one of two mutually exclusive categories. Ordinal data consist of ranks. Any data that doesn't belong to the previous categories should be classified as "others".}
+\item{data_type}{The data type of the dependent variable. Can either
+be "proportion", "measurement", "count", "binary", "ordinal" or "others".
+      Proportion (or ratio) data range from 0 to 1. Measurement data are
+      continuous and can be measured at finer and finer scale.
+      Count data consist of discrete non-negative integers resulted from
+      counting. Binary data are the data of sorting things into
+      one of two mutually exclusive categories. Ordinal data consist of
+      ranks. Any data that doesn't belong to the previous categories
+      should be classified as "others".}
 
-\item{test_var}{The name of the independent variable you are testing for, should be a character vector (ex: c("Time"))
-identical to its column name and make sure there is no space in it.}
+\item{test_var}{The name of the independent variable you are testing for,
+should be a character vector (ex: c("Time")) identical to its column name
+and make sure there is no space in it.}
 
-\item{variable_col}{The column number of the position where the dependent variable columns (ex: bacteria) start in the table}
+\item{variable_col}{The column number of the position where the dependent
+variable columns (ex: bacteria) start in the table}
 
-\item{fac_var}{The column numbers of the position where the columns that aren't
-numerical  (e.g. characters, categorical numbers, ordinal numbers), should be a numerical vector (ex: c(1, 2, 5:7)).}
+\item{fac_var}{The column numbers of the position where the columns that
+aren't numerical  (e.g. characters, categorical numbers, ordinal numbers),
+should be a numerical vector (ex: c(1, 2, 5:7)).}
 
-\item{not_used}{The column position of the columns not are irrevelant and can be ignored when in the analysis.
-This should be a number vector, and the default is NULL.}
+\item{not_used}{The column position of the columns not are irrevelant and
+can be ignored when in the analysis.
+       This should be a number vector, and the default is NULL.}
 
-\item{adjustMethod}{Multiple testing p value correction. Choices are the ones in p.adjust(), including
-"holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr". The default is "fdr".}
+\item{adjustMethod}{Multiple testing p value correction. Choices are
+the ones in p.adjust(), including
+        "holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr".
+        The default is "fdr".}
 
-\item{model_q}{The threshold for significance of model test after multiple testing correction.
-The default is 0.1.}
+\item{model_q}{The threshold for significance of model test after multiple
+testing correction.
+              The default is 0.1.}
 
-\item{posthoc_q}{The threshold for significance of post-hoc test after multiple testing correction.
-The default is 0.05.}
+\item{posthoc_q}{The threshold for significance of post-hoc test after
+multiple testing correction.
+               The default is 0.05.}
 
-\item{theta_cutoff}{Required when the data type is set as "count". Variable with theta value from negative binomial regression
-larger than or equal to the cutoff will be filtered out if it also doesn't meet the non-zero count threshold. The default is 2^20.}
+\item{theta_cutoff}{Required when the data type is set as "count".
+Variable with theta value from negative binomial regression
+       larger than or equal to the cutoff will be filtered out if it
+       also doesn't meet the non-zero count threshold. The default is 2^20.}
 
-\item{nonzero_count_cutoff1}{Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
-will be filtered out if it also doesn't meet the theta threshold. The default is 9.}
+\item{nonzero_count_cutoff1}{Required when the data type is set as "count".
+Variable with non-zero counts lower than or equal to this value
+       will be filtered out if it also doesn't meet the theta threshold.
+       The default is 9.}
 
-\item{nonzero_count_cutoff2}{Required when the data type is set as "count". Variable with non-zero counts lower than or equal to this value
-will be filtered out. The default is 5.}
+\item{nonzero_count_cutoff2}{Required when the data type is set as "count".
+Variable with non-zero counts lower than or equal to this value
+       will be filtered out. The default is 5.}
 
-\item{verbose}{A boolean vector indicating whether to print detailed message. The default is T.}
+\item{verbose}{A boolean vector indicating whether to print detailed message.
+The default is TRUE.}
 }
 \value{
-The "Result_table" will be in your output directory. If there are confounders in the input,
-there will be another table called "Confounder_table". For count mode, if there is false postive
-in the randomized control result, then another table named "Randomized_control_table" will also be
+The "Result_table" will be in your output directory. If there are
+ confounders in the input, there will be another table called
+ "Confounder_table". For count mode, if there is false postive
+in the randomized control result, then another table named
+"Randomized_control_table" will also be
 generated. The detailed description is as below.
 
 Result_table
 
-1. The first column: The dependent variables in the input data. This can be used as row name when being imported into R.
+1. The first column: The dependent variables in the input data.
+This can be used as row name when being imported into R.
 
-2. Prevalence_percentage: The percentage of each dependent variable present across individuals and time points
+2. Prevalence_percentage: The percentage of each dependent
+variable present across individuals and time points
 
-3. Mean_abundance: The mean value of each dependent variable across individuals and time points
+3. Mean_abundance: The mean value of each dependent variable
+ across individuals and time points
 
-4. Signal: The final decision of the significance of the test_var (independent variable) on each dependent variable.
+4. Signal: The final decision of the significance of the test_var
+(independent variable) on each dependent variable.
    NS: Non-significant, meaning there’s no effect of time.
 
    OK: There’s an effect of time and there’s no potential confounder.
 
-   OK but doubtful: There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var
-                            estimate in the model test covers zero, and thus it is doubtful of this signal.
+   OK but doubtful: There’s an effect of time and there’s no potential
+    confounder, however the confidence interval of the test_var estimate
+    in the model test covers zero, and thus it is doubtful of this signal.
 
-   OK and strictly deconfounded: There are potential confounders, however there’s an effect of time and
-                                         it is independent of those of confounders.
+   OK and strictly deconfounded: There are potential confounders,
+   however there’s an effect of time and it is independent of
+   those of confounders.
 
-   Ambiguously deconfounded: There are potential confounders, and it isn’t possible to conclude
-                                     whether the effect is resulted from time or confounders.
+   Ambiguously deconfounded: There are potential confounders, and it isn’t
+    possible to conclude whether the effect is resulted from time or
+    confounders.
 
-   Confounded: There’s an effect of time, but it can be reduced to the confounder effects.
+   Confounded: There’s an effect of time, but it can be reduced to the
+   confounder effects.
 
-5. Effect: This column contains the value of each dependent variable decreases/increases/NS(non-significant) along the time. A positive correlation between
-            with time dependent variable value yields "increase", while a negative correlation yields "decrease". NS means no significant correlation.
+5. Effect: This column contains the value of each dependent variable
+decreases/increases/NS(non-significant) along the time.
+A positive correlation between with time dependent variable value yields
+"increase", while a negative correlation yields "decrease".
+NS means no significant correlation.
 
-6. EffectSize: This column reports the correlation coeffecient (Spearman's rho) between each dependent variable value and time.
+6. EffectSize: This column reports the correlation coeffecient
+(Spearman's rho) between each dependent variable value and time.
 
-7. Null_time_model_q: This column shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the models.
+7. Null_time_model_q: This column shows the multiple-comparison-adjusted
+p values (Wald test) of the significance of test_var in the models.
 
-8. Post-hoc_q: These are the multiple-comparison-adjusted p values from the post-hoc test (Spearman's correlation test) of the model.
+8. Post-hoc_q: These are the multiple-comparison-adjusted p values
+from the post-hoc test (Spearman's correlation test) of the model.
 
 
 Confounder_table
 
-The first column contains the dependent variables in the input data. This can be used as row name when being imported into R.
-Then every 3 columns are a group. Confounder column shows the confounder's name; Confounding_type column shows how test_var is
-confounded with this confounder; Effect_size column shows the effect size of dependent variable value between different values of
-confounders. Due to the different number of confounders for each dependent variable, there may be NAs in the table and they can
-simply be ignored. If the confounder table is totally empty, this means that there are no confounders detected.
+The first column contains the dependent variables in the input data.
+This can be used as row name when being imported into R.
+Then every 3 columns are a group. Confounder column shows the confounder's
+name; Confounding_type column shows how test_var is
+confounded with this confounder; Effect_size column shows the effect size of
+dependent variable value between different values of
+confounders. Due to the different number of confounders for each
+dependent variable, there may be NAs in the table and they can
+simply be ignored. If the confounder table is totally empty,
+this means that there are no confounders detected.
 
 Randomized_control_table (for user's reference)
 
-We assume that there shouldn't be positive results in the randomized control test, because all the rows in the original dataset are
-shuffled randomly. Therefore, any signal that showed significance here will be regarded as false positive. And if there's false
-positive in this randomized control result, longdat_disc will warn the user at the end of the run. This Randomized_control table is only
-generated when there is false positive in the randomized control test. It is intended to be a reference for users to see the effect size of
+We assume that there shouldn't be positive results in the randomized
+ control test, because all the rows in the original dataset are
+shuffled randomly. Therefore, any signal that showed significance here
+ will be regarded as false positive. And if there's false
+positive in this randomized control result, longdat_disc will warn the
+user at the end of the run. This Randomized_control table is only
+generated when there is false positive in the randomized control test.
+It is intended to be a reference for users to see the effect size of
 false positive features.
 
- 1. The first column "Model_q" shows the multiple-comparison-adjusted p values (Wald test) of the significance of test_var in the negative-binomial models in the randomized
-    dataset. Only the features with Model_q lower than the defined model_q (default = 0.1) will be listed in this table.
+ 1. The first column "Model_q" shows the multiple-comparison-adjusted
+  p values (Wald test) of the significance of test_var in the negative-
+  binomial models in the randomized
+    dataset. Only the features with Model_q lower than the defined model_q
+    (default = 0.1) will be listed in this table.
 
- 2. Signal: This column describes if test_var is significant on each dependent variable based
-                on the post-hoc test p values (Spearman's correlation test). "False positive" indicates that test_var is significant, while "Negative" indicates non-significance.
+ 2. Signal: This column describes if test_var is significant on each
+  dependent variable based on the post-hoc test p values
+   (Spearman's correlation test).
+  "False positive" indicates that test_var is significant, while
+  "Negative" indicates non-significance.
 
- 3. Posthoc_q: This column describes the multiple-comparison-adjusted p values from the post-hoc test (Spearman's correlation test) of the model in the randomized control dataset.
+ 3. Posthoc_q: This column describes the multiple-comparison-adjusted
+  p values from the post-hoc test (Spearman's correlation test) of the
+   model in the randomized control dataset.
 
- 4. Effect_size: This column describes the correlation coeffecient (Spearman's rho) of each dependent variable between each dependent variable value and time.
+ 4. Effect_size: This column describes the correlation coeffecient
+ (Spearman's rho) of each dependent variable between each dependent
+ variable value and time.
 }
 \description{
-Longdat_cont calculates the p values, effect sizes and discover confounding effects of time variables from longitudinal data.
+Longdat_cont calculates the p values, effect sizes and discover confounding
+effects of time variables from longitudinal data.
 }
 \details{
 The brief workflow of longdat_cont() is as below:
 
-When there's no potential confounder in the input data (confounders are anything apart from individual, test_var and dependent variables):
-First, the model test tests the significance of test_var on dependent variables. Different generalized linear mixed effect models are implemented
-for different types of dependent variable. Negative binomial mixed model for "count", linear mixed model (dependent variables normalized first) for "measurement",
-beta mixed model for "proportion", Binary logistic mixed model for "binary", and proportional odds logistic mixed model for "ordinal". Then, post-hoc test
-(Spearman's correlation test) on the model is done. When the data type is "count" mode, a control model test will be run on randomized data (the rows are shuffled).
-If there are false positive signals in this control model test, users will get a warning at the end of the run.
+When there's no potential confounder in the input data (confounders are
+anything apart from individual, test_var and dependent variables):
+First, the model test tests the significance of test_var on dependent
+variables. Different generalized linear mixed effect models are implemented
+for different types of dependent variable. Negative binomial mixed model for
+ "count", linear mixed model (dependent variables normalized first) for
+ "measurement", beta mixed model for "proportion", Binary logistic mixed model
+ for "binary", and proportional odds logistic mixed model for "ordinal".
+ Then, post-hoc test (Spearman's correlation test) on the model is done.
+ When the data type is "count" mode, a control model test will be run on
+ randomized data (the rows are shuffled). If there are false positive
+ signals in this control model test, users will get a warning
+ at the end of the run.
 
 When there are potential confounders:
-After the model test and post-hoc test described above, a confounding model test will be added to the work flow. The potential confounders will be added to the model
-one by one and test for its significance on each dependent variable. The rest are the same as the description above.
+After the model test and post-hoc test described above, a confounding
+model test will be added to the work flow. The potential confounders
+will be added to the model one by one and test for its significance
+on each dependent variable. The rest are the same as the description above.
 
-Also, when your data type is count data, please use set.seed() before running longdat_cont() so that you can get reproducible randomized negative check.
+Also, when your data type is count data, please use set.seed()
+before running longdat_cont() so that you can get reproducible
+randomized negative check.
 }
 \examples{
 \dontrun{
 # Get the path of example dataset
 system.file("Fasting_cont.txt", package = "longdat")
 # Paste the directory to the input below
-test_cont <- longdat_cont(input = "your_path_to/Fasting_cont.txt", data_type = "count",
+test_cont <- longdat_cont(input = "your_path_to/Fasting_cont.txt",
+data_type = "count",
 test_var = "Day", variable_col = 7, fac_var = c(1, 3))
 }
 }
