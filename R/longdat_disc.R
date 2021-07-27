@@ -134,7 +134,7 @@
 #'                     b and a in the randomized control dataset. The number of Effect_size_a_b columns depends on how many combinations of time points in the input data.
 #'
 #' @examples
-#'\donttest{
+#'\dontrun{
 #' # Get the path of example dataset
 #' system.file("Fasting_disc.txt", package = "longdat")
 #' # Paste the directory to the input below

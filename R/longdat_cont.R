@@ -121,7 +121,7 @@
 #'  4. Effect_size: This column describes the correlation coeffecient (Spearman's rho) of each dependent variable between each dependent variable value and time.
 #'
 #' @examples
-#'\donttest{
+#'\dontrun{
 #' # Get the path of example dataset
 #' system.file("Fasting_cont.txt", package = "longdat")
 #' # Paste the directory to the input below

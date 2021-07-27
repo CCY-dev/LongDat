@@ -43,7 +43,7 @@ for several datasets. Users can change theta_cutoff value to fit their own data.
 The "nonzero_count_vs_theta.pdf" will be in the output directory.
 }
 \examples{
-\donttest{
+\dontrun{
 # Get the path of example dataset
 system.file("Fasting_disc.txt", package = "longdat")
 # Paste the directory to the input below

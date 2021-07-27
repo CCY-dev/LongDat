@@ -161,7 +161,7 @@ one by one and test for its significance on each dependent variable. The rest ar
 Also, when your data type is count data, please use set.seed() before running longdat_disc() so that you can get reproducible randomized negative check.
 }
 \examples{
-\donttest{
+\dontrun{
 # Get the path of example dataset
 system.file("Fasting_disc.txt", package = "longdat")
 # Paste the directory to the input below
