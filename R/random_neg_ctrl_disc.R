@@ -26,7 +26,6 @@
 #' @import glmmTMB
 #' @import emmeans
 #' @import tibble
-#' @import orddom
 #' @importFrom magrittr '%>%'
 #' @name random_neg_ctrl_disc
 utils::globalVariables(c("non_zero_count", "NB_theta"))
@@ -35,7 +34,8 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var,
                                  not_used, factors, data, N, data_type,
                                  variables, case_pairs, adjustMethod, model_q,
                                  posthoc_q, theta_cutoff,
-                                 nonzero_count_cutoff1, nonzero_count_cutoff2,
+                                 nonzero_count_cutoff1,
+                                 nonzero_count_cutoff2,
                                  verbose) {
   ######### Randomize the raw data first
   # Shuffle the rows randomly
@@ -92,8 +92,7 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var,
     for (i in 1:N) { # loop through all variables
       aVariable = variables[i]
       if (verbose == T) {print(i)}
-      subdata_random <-
-        subset(melt_data_random,
+      subdata_random <- subset(melt_data_random,
                melt_data_random$variable == as.character(aVariable))
       tryCatch({
         # Negative binomial

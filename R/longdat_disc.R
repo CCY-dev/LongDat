@@ -412,8 +412,9 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
     rownames(Ps_null_model_fdr) <- rownames(Ps_null_model)
   }
   #Reorder the rows of p_lm_fdr to make it follow the order of variables
-  Ps_null_model_fdr <- as.data.frame
-  (Ps_null_model_fdr[match(variables,rownames(Ps_null_model_fdr)), ])
+  Ps_null_model_fdr <-
+    as.data.frame(Ps_null_model_fdr[match(variables,
+                                          rownames(Ps_null_model_fdr)), ])
   rownames(Ps_null_model_fdr) <- variables
   colnames(Ps_null_model_fdr) <- c("Ps_null_model_fdr")
   if (verbose == T) {print(

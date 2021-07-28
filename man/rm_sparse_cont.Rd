@@ -2,7 +2,8 @@
 % Please edit documentation in R/rm_sparse_cont.R
 \name{rm_sparse_cont}
 \alias{rm_sparse_cont}
-\title{Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_cont()}
+\title{Remove the dependent variables that are below the threshold of
+sparsity when the data type is count data in longdat_cont()}
 \arguments{
 \item{values}{Internal function argument.}
 
@@ -27,5 +28,6 @@
 \item{assoc}{Internal function argument.}
 }
 \description{
-Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_cont()
+Remove the dependent variables that are below the threshold of
+sparsity when the data type is count data in longdat_cont()
 }

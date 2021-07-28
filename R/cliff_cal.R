@@ -9,7 +9,6 @@
 #' @importFrom stats as.formula confint cor.test kruskal.test na.omit
 #'             p.adjust wilcox.test
 #' @import dplyr
-#' @import orddom
 #' @importFrom magrittr '%>%'
 #' @name cliff_cal
 utils::globalVariables(c("variable", "Individual"))
@@ -19,24 +18,29 @@ cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose
   delta <- data.frame(matrix(nrow = length(row.names(Ps_poho_fdr)),
                              ncol = ncol(case_pairs)))
   case_pairs_name <- c()
-  for (i in 1:length(row.names(Ps_poho_fdr))) { # loop through all variables
+  for (i in 1:length(row.names(Ps_poho_fdr))) {# loop through all variables
     if (verbose == T) {print(i)}
     bVariable <- variables[i]
     subdata_pre <- subset(melt_data, variable == bVariable)
     counts <- subdata_pre %>% dplyr::count(.data$Individual)
     # Exclude the ones not having data points at ALL timepoints
-    exclude <- counts$Individual[which(counts$n !=
-                                         length(unique(data[ , test_var])))]
+    exclude <-
+      counts$Individual[which(counts$n != length(unique(data[ , test_var])))]
     if (length(exclude) > 0) {
       subdata2 <- subset(subdata_pre, !Individual %in% exclude)
     } else {
       subdata2 <- subdata_pre
     }
     for (k in 1:ncol(case_pairs)) { # loop through each case pair
-      sub3 <- subdata2[subdata2[ , test_var] == case_pairs[1,k], ]
-      sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ]
-      d <- as.numeric(orddom::dmes(x = sub3$value, y = sub4$value)$dw)
-      delta[i, k] <- d
+      sub3 <- subdata2[subdata2[ , test_var] == case_pairs[1,k], ] %>%
+        dplyr::arrange(Individual)
+      sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ] %>%
+        dplyr::arrange(Individual)
+      #d <- as.numeric(orddom::dmes(x = sub3$value, y = sub4$value)$dw)
+      #delta[i, k] <- d
+      ### Orddom is outdated, so calculate Cliff's delta as below:
+      #Note that the order is treatment - control
+      delta[i, k] <- mean(sign(sub4$value-sub3$value), na.rm = T)
       name <- paste(case_pairs[1,k], sep = "_", case_pairs[2,k])
       case_pairs_name <- c(case_pairs_name, name)
     }

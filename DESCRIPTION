@@ -15,15 +15,15 @@ Description: This package takes longitudinal dataset as input and analyzes if th
              for confounders at the same time. It is able to take in several data types as input, 
              including count, proportion, binary, ordinal and continuous data. The output table contains 
               p values, effect sizes and confounders of each feature, making the downstream analysis easy.
-BugReports: https://github.com
-License: GPL-2
+License: GPL-2 or later
 Encoding: UTF-8
 Language: en-US
-LazyData: fasle
+LazyData: Fasle
 URL: https://github.com/CCY-dev/longdat
+BugReports: https://github.com/CCY-dev/longdat/issues
 RoxygenNote: 7.1.1
 Depends: R (>= 4.0.0)
-Imports: lme4, reshape2, orddom, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, tidyr
+Imports: lme4, reshape2, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, tidyr
 Suggests: 
     rmarkdown,
     knitr
