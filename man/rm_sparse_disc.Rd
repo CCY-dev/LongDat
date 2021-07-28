@@ -2,7 +2,8 @@
 % Please edit documentation in R/rm_sparse_disc.R
 \name{rm_sparse_disc}
 \alias{rm_sparse_disc}
-\title{Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_disc()}
+\title{Remove the dependent variables that are below the threshold
+of sparsity when the data type is count data in longdat_disc()}
 \arguments{
 \item{values}{Internal function argument.}
 
@@ -27,5 +28,6 @@
 \item{delta}{Internal function argument.}
 }
 \description{
-Remove the dependent variables that are below the threshold of sparsity when the data type is count data in longdat_disc()
+Remove the dependent variables that are below the threshold
+of sparsity when the data type is count data in longdat_disc()
 }
