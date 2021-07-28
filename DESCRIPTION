@@ -23,7 +23,11 @@ URL: https://github.com/CCY-dev/longdat
 BugReports: https://github.com/CCY-dev/longdat/issues
 RoxygenNote: 7.1.1
 Depends: R (>= 4.0.0)
+<<<<<<< HEAD
 Imports: lme4, reshape2, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, effsize, tidyr
+=======
+Imports: lme4, reshape2, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, tidyr
+>>>>>>> 65910bddad33f536e26a4bb77da183c72473d511
 Suggests: 
     rmarkdown,
     knitr
