@@ -49,7 +49,7 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
                                   unique(subdata[ , factor_columns[j]])[2]),]
           p <- wilcox.test(sub1$value, sub2$value, paired = F)$p.value
           Ps[i,j] <- p
-          #d <- as.numeric(orddom::dmes(x = sub1$value, y = sub2$value)$dc)
+          #d <- as.numeric(dmes(x = sub1$value, y = sub2$value)$dc)
           # Orddom is outdated. Replace it with effsize
           # The order is treatment and then control in effsize::cliff.delta()
           d <- as.numeric(effsize::cliff.delta(sub2$value, sub1$value)$estimate)

@@ -36,7 +36,7 @@ cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose
         dplyr::arrange(Individual)
       sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ] %>%
         dplyr::arrange(Individual)
-      #d <- as.numeric(orddom::dmes(x = sub3$value, y = sub4$value)$dw)
+      #d <- as.numeric(dmes(x = sub3$value, y = sub4$value)$dw)
       #delta[i, k] <- d
       ### Orddom is outdated, so calculate Cliff's delta as below:
       #Note that the order is treatment - control

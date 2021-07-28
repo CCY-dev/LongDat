@@ -176,11 +176,12 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var,
     for (k in 1:ncol(case_pairs_random)) { # loop through each case pair
       sub5 <-
         subdata2_random[subdata2_random[ , test_var] ==
-                          case_pairs_random[1,k], ]
+                          case_pairs_random[1,k], ] %>%
+        dplyr::arrange(Individual)
       sub6 <- subdata2_random[subdata2_random[ , test_var] ==
-                                case_pairs_random[2,k], ]
-      d_random <- as.numeric(orddom::dmes(x = sub5$value,
-                                          y = sub6$value)$dw)
+                                case_pairs_random[2,k], ] %>%
+        dplyr::arrange(Individual)
+      d_random <- mean(sign(sub6$value-sub5$value), na.rm = T)
       delta_random[i, k] <- d_random
       name_random <- paste(case_pairs_random[1,k], sep = "_",
                            case_pairs_random[2,k])
