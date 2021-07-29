@@ -12,10 +12,10 @@
 #' that aren't
 #'         numerical  (e.g. characters, categorical numbers, ordinal numbers),
 #'         should be a numerical vector (ex: c(1, 2, 5:7))
-#' @param not_used The column position of the columns not are irrevelant and
+#' @param not_used The column position of the columns not are irrelevant and
 #' can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.
-#' @param point_size The point size for plotting in ggplot2. The default is 1.
+#' @param point_size The point size for plotting in 'ggplot2'. The default is 1.
 #' @param x_interval_value The interval value for tick marks on x-axis.
 #' The default is 5.
 #' @param y_interval_value The interval value for tick marks on y-axis.
@@ -35,13 +35,12 @@
 #' @importFrom rlang .data
 #' @importFrom magrittr '%>%'
 #' @name theta_plot
-#' @return a ggplot object
+#' @return a 'ggplot' object
 #' @details
 #' This function outputs a plot that facilitates the setting of theta_cutoff
-#' in longdat_disc()
-#' and longdat_cont(). This only applies when the dependent variables are count
-#'  data. Longdat_disc()
-#' and longdat_cont() implements negative binomial (NB) model for count data,
+#' in longdat_disc() and longdat_cont(). This only applies when the dependent
+#' variables are count data. longdat_disc() and longdat_cont() implements
+#' negative binomial (NB) model for count data,
 #' and if the theta (dispersion parameter) of
 #' NB model gets too high, then the p value of it will be extremely low
 #' regardless of whether there is real significance
@@ -55,7 +54,7 @@
 #' @examples
 #'\dontrun{
 #' # Get the path of example dataset
-#' system.file("Fasting_disc.txt", package = "longdat")
+#' system.file("Fasting_disc.txt", package = "LongDat")
 #' # Paste the directory to the input below
 #' test_theta <- theta_plot(input = "your_path_to/Fasting_disc.txt",
 #'  test_var = "Time_point", variable_col = 7, fac_var = c(1:3))
@@ -64,7 +63,7 @@ utils::globalVariables(c("values", "NB_theta", "Nonzero_count"))
 
 theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
                       point_size = 1, x_interval_value = 5,
-                       y_interval_value = 5, verbose = T) {
+                       y_interval_value = 5, verbose = TRUE) {
   if (missing(input)) {
     stop('Error! Necessary argument "input" is missing.')
   }
@@ -88,7 +87,7 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   values <- values[ , colSums(values) > 0]
   data <- as.data.frame(cbind(data[ , 1:(variable_col-1)], values))
   non_zero_count <- c()
-  for (i in 1:ncol(values)) {
+  for (i in seq_len(ncol(values))) {
     non_zero_count[i] <- sum(values[ , i] != 0)
   }
   # Here value column is defined by the user
@@ -127,19 +126,19 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   factors <- factors[-which(factors %in% c("Individual", test_var))]
   factor_columns <- match(factors, colnames(melt_data))
   N <- length (variables)
-  if (verbose == T) {print("Finish data preprocessing.")}
+  if (verbose == TRUE) {print("Finish data preprocessing.")}
 
   ################## Negative binomial model #################
-  if (verbose == T) {print("Start running negative binomial models.")}
+  if (verbose == TRUE) {print("Start running negative binomial models.")}
   Theta <- as.data.frame(matrix(data = NA, nrow = N, ncol = 1))
   for (i in 1:N) { # loop through all variables
-    aVariable = variables[i]
-    if (verbose == T) {print(i)}
+    aVariable <- variables[i]
+    if (verbose == TRUE) {print(i)}
     subdata <- subset(melt_data, variable == aVariable)
     tryCatch({
       fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
       m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata,
-                             family = nbinom2, REML = F)
+                             family = nbinom2, REML = FALSE)
       # Extract overdispersion theta out of model
       Theta[i, 1] <- glmmTMB::sigma(m2)
     }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
@@ -148,10 +147,10 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   colnames(Theta) <- c("NB_theta")
   all_info <- cbind(Theta, non_zero_count)
   colnames(all_info)[2] <- "Nonzero_count"
-  if (verbose == T) {print("Finish running negative binomial models.")}
+  if (verbose == TRUE) {print("Finish running negative binomial models.")}
 
   ################## Plot nonzero count v.s. theta ##################
-  if (verbose == T) {print("Start plotting.")}
+  if (verbose == TRUE) {print("Start plotting.")}
   suppressWarnings(
     plot <- ggplot2::ggplot(all_info, aes(x=Nonzero_count,
                                           y = log(NB_theta, base = 2))) +

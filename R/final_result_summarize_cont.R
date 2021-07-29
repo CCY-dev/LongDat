@@ -45,7 +45,7 @@ final_result_summarize_cont <- function(variable_col, N,
     prep_conf <- data.frame(matrix(NA, nrow = length(variables), ncol = 2))
     rownames(prep_conf) <-variables
     colnames(prep_conf) <- c("sel_fac_length", "Signal")
-    for (i in 1:length(variables)) {
+    for (i in seq_len(length(variables))) {
       prep_conf[i, 1] <- length(sel_fac[[i]])
       if (Ps_null_model_fdr[i, 1] >= model_q | is.na(Ps_null_model_fdr[i, 1]) |
           (p_poho[i, 1]) >= posthoc_q | is.na(p_poho[i, 1])) {
@@ -71,7 +71,8 @@ final_result_summarize_cont <- function(variable_col, N,
     for (i in confs_num) {
       # loop through only the ones that do have confounding effect
       # (Strictly/Ambiguously/Completely confounded/deconfounded)
-      for (j in 1:length(sel_fac[[i]])) {# loop through different confounders
+      for (j in seq_len(length(sel_fac[[i]]))) {
+        # loop through different confounders
         tryCatch({
           c_name <- sel_fac[[i]][j]
           c_effectsize <- Ps_effectsize[i, c_name]
@@ -114,19 +115,19 @@ final_result_summarize_cont <- function(variable_col, N,
     for (i in 1:N) {
       if (Ps_null_model_fdr[i, 1] >= model_q | is.na(Ps_null_model_fdr[i, 1])){
         # Null time model q >= model_q is NS
-        final_sig[i, 1] = "NS"
+        final_sig[i, 1] <- "NS"
       } else { # Null time model q < model_q
         if ((p_poho[i, 1]) >= posthoc_q | is.na(p_poho[i, 1])) {
           # Post-hoc q >= posthoc_q
-          final_sig[i, 1] = "NS"
+          final_sig[i, 1] <- "NS"
         } else {# Post-hoc q < posthoc_q
           if (length(sel_fac[[i]]) == 0) {
             # No sel_fac, meaning no confounding effect
             if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {
               # Proper confidence interval
-              final_sig[i, 1] = "OK"
+              final_sig[i, 1] <- "OK"
             } else {# Improper confidence interval
-              final_sig[i, 1] = "OK but doubtful"
+              final_sig[i, 1] <- "OK but doubtful"
             }
           } else {
             # There are sel_fac, so decide the signal based on confound table
@@ -137,19 +138,20 @@ final_result_summarize_cont <- function(variable_col, N,
               subconfound[ , str_which(string = colnames(confound),
                                        pattern = "Confounding_type")]
             if (sum(str_detect(string = subconfound_columns,
-                               pattern = "Confounded"), na.rm = T) > 0) {
+                               pattern = "Confounded"), na.rm = TRUE) > 0) {
               # There is "confounding" signals
-              final_sig[i, 1] = "Confounded"
+              final_sig[i, 1] <- "Confounded"
             } else if(sum(str_detect(string = subconfound_columns,
-                                     pattern = "Confounded"), na.rm = T) == 0){
+                                     pattern = "Confounded"),
+                          na.rm = TRUE) == 0){
               # There isn't "confounding" signals
               if (sum(str_detect(string = subconfound_columns,
                                  pattern = "Ambiguously deconfounded"),
-                      na.rm = T) > 0) {
+                      na.rm = TRUE) > 0) {
                 # If there is "ambiguously deconfounded" signals
-                final_sig[i, 1] = "Ambiguously deconfounded"
+                final_sig[i, 1] <- "Ambiguously deconfounded"
               } else { # There isn't "ambiguously deconfounded" signals
-                final_sig[i, 1] = "OK and strictly deconfounded"
+                final_sig[i, 1] <- "OK and strictly deconfounded"
               }
             }
           }
@@ -168,16 +170,16 @@ final_result_summarize_cont <- function(variable_col, N,
           # Post-hoc q < posthoc_q and isn't NA
           if (assoc[i, 1] > 0 & !is.na(assoc[i, 1])) {
             # Assoc > 0 and isn't NA
-            effect_type[i, 1] = "Enriched"
+            effect_type[i, 1] <- "Enriched"
           } else if (assoc[i, 1] < 0 & !is.na(assoc[i, 1])) {
             # Assoc < 0 and isn't NA
-            effect_type[i, 1] = "Decreased"
+            effect_type[i, 1] <- "Decreased"
           }
         } else {
-          effect_type[i, 1] = "NS"
+          effect_type[i, 1] <- "NS"
         }
       } else {
-        effect_type[i, 1] = "NS"
+        effect_type[i, 1] <- "NS"
       }
     }
 
@@ -200,17 +202,17 @@ final_result_summarize_cont <- function(variable_col, N,
     for (i in 1:N) {
       if (Ps_null_model_fdr[i, 1] >= model_q | is.na(Ps_null_model_fdr[i, 1])){
         # Null time model q >= model_q is NS
-        final_sig[i, 1] = "NS"
+        final_sig[i, 1] <- "NS"
       } else { # Null time model q < model_q
         if (p_poho[i, 1] >= posthoc_q | is.na(p_poho[i, 1])) {
           # Post-hoc q >= posthoc_q
-          final_sig[i, 1] = "NS"
+          final_sig[i, 1] <- "NS"
         } else {# Post-hoc q < posthoc_q
           if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {
             # Proper confidence interval
-            final_sig[i, 1] = "OK"
+            final_sig[i, 1] <- "OK"
           } else {# Improper confidence interval
-            final_sig[i, 1] = "OK but doubtful"
+            final_sig[i, 1] <- "OK but doubtful"
           }
         }
       }
@@ -225,16 +227,16 @@ final_result_summarize_cont <- function(variable_col, N,
         if (p_poho[i, 1] < posthoc_q & !is.na(p_poho[i, 1])) {
           # Post-hoc q < posthoc_q and isn't NA
           if (assoc[i, 1] > 0 & !is.na(assoc[i, 1])) {# Assoc > 0 and isn't NA
-            effect_type[i, 1] = "Enriched"
+            effect_type[i, 1] <- "Enriched"
           } else if (assoc[i, 1] < 0 & !is.na(assoc[i, 1])) {
             # Assoc < 0 and isn't NA
-            effect_type[i, 1] = "Decreased"
+            effect_type[i, 1] <- "Decreased"
           }
         } else {
-          effect_type[i, 1] = "NS"
+          effect_type[i, 1] <- "NS"
         }
       } else {
-        effect_type[i, 1] = "NS"
+        effect_type[i, 1] <- "NS"
       }
     }
     # Bind the columns together

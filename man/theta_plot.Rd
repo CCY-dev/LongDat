@@ -21,11 +21,11 @@ that aren't
         numerical  (e.g. characters, categorical numbers, ordinal numbers),
         should be a numerical vector (ex: c(1, 2, 5:7))}
 
-\item{not_used}{The column position of the columns not are irrevelant and
+\item{not_used}{The column position of the columns not are irrelevant and
 can be ignored when in the analysis.
        This should be a number vector, and the default is NULL.}
 
-\item{point_size}{The point size for plotting in ggplot2. The default is 1.}
+\item{point_size}{The point size for plotting in 'ggplot2'. The default is 1.}
 
 \item{x_interval_value}{The interval value for tick marks on x-axis.
 The default is 5.}
@@ -38,7 +38,7 @@ message.
 The default is TRUE.}
 }
 \value{
-a ggplot object
+a 'ggplot' object
 }
 \description{
 Plot theta values of negative binomial models versus non-zero count
@@ -46,10 +46,9 @@ for count data
 }
 \details{
 This function outputs a plot that facilitates the setting of theta_cutoff
-in longdat_disc()
-and longdat_cont(). This only applies when the dependent variables are count
- data. Longdat_disc()
-and longdat_cont() implements negative binomial (NB) model for count data,
+in longdat_disc() and longdat_cont(). This only applies when the dependent
+variables are count data. longdat_disc() and longdat_cont() implements
+negative binomial (NB) model for count data,
 and if the theta (dispersion parameter) of
 NB model gets too high, then the p value of it will be extremely low
 regardless of whether there is real significance
@@ -64,7 +63,7 @@ The "nonzero_count_vs_theta.pdf" will be in the output directory.
 \examples{
 \dontrun{
 # Get the path of example dataset
-system.file("Fasting_disc.txt", package = "longdat")
+system.file("Fasting_disc.txt", package = "LongDat")
 # Paste the directory to the input below
 test_theta <- theta_plot(input = "your_path_to/Fasting_disc.txt",
  test_var = "Time_point", variable_col = 7, fac_var = c(1:3))

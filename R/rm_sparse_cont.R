@@ -27,7 +27,7 @@ rm_sparse_cont <- function(values, data, nonzero_count_cutoff1,
                            p_poho, assoc) {
 
   absolute_sparsity <- c()
-  for (i in 1:ncol(values)) {
+  for (i in seq_len(ncol(values))) {
     absolute_sparsity[i] <- sum(values[ , i] == 0)
   }
   non_zero_count <- nrow(data) - absolute_sparsity

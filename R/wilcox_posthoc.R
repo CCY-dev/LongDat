@@ -26,8 +26,8 @@ wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data,
                                   ncol = ncol(case_pairs)))
     case_pairs_name <- c()
     for (i in 1:N) { # loop through all variables
-      if (verbose == T) {print(i)}
-      bVariable = variables[i]
+      if (verbose == TRUE) {print(i)}
+      bVariable <- variables[i]
       subdata_pre <- subset(melt_data, variable == bVariable)
       counts <- subdata_pre %>% dplyr::count(.data$Individual)
       # Exclude the samples that don't have value at all time points
@@ -39,13 +39,13 @@ wilcox_posthoc <- function(result_neg_ctrl, model_q, melt_data,
       } else {
         subdata2 <- subdata_pre
       }
-      for (k in 1:ncol(case_pairs)) { # loop through each case pair
+      for (k in seq_len(ncol(case_pairs))) { # loop through each case pair
         sub3 <- subdata2[subdata2[ , test_var] == case_pairs[1,k], ]
         sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ]
         # Here use "paired wilcoxon test because it's longitudinal data
         suppressWarnings(
           p_w <-
-            stats::wilcox.test(sub3$value, sub4$value, paired = T)$p.value)
+            stats::wilcox.test(sub3$value, sub4$value, paired = TRUE)$p.value)
         p_wilcox[i, k] <- p_w
         name <- paste(case_pairs[1,k], sep = "_", case_pairs[2,k])
         case_pairs_name <- c(case_pairs_name, name)

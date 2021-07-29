@@ -10,10 +10,10 @@
 #' @name unlist_table
 
 unlist_table <- function(x, N, variables) {
-  unlist = unlist(x, use.names=FALSE) # output only the numbers
+  unlist <- unlist(x, use.names=FALSE) # output only the numbers
   mode(unlist) <- "numeric" # it's numeric now!
   unlist_noNA <-unlist[!is.na(unlist)] # Exclude NA in unlist
-  unlist_withname = unlist(x) # numbers with names
+  unlist_withname <- unlist(x) # numbers with names
   unlist_name <- names(unlist_withname) # outputs the name of every element
   # if there's NA, then remove names of NA value
   if (TRUE %in% is.na(unlist)) {
@@ -37,7 +37,7 @@ unlist_table <- function(x, N, variables) {
   # Add the 2 new columns with split names to the matrix
   ps_lm_m2 <- cbind(out, ps_lm_m)
   # Remove the original unsplit name column, and then name the columns
-  ps_lm_m2 $name = NULL
+  ps_lm_m2$name <- NULL
   colnames(ps_lm_m2) <- c("feature", "factor", "p_lm")
   # Reshaping the matrix so that can do fdr correction in the next step
   cast.ps_lm_m2 <- reshape2::dcast(data = ps_lm_m2, feature ~ factor)

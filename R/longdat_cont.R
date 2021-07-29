@@ -1,6 +1,6 @@
 #' Longitudinal analysis with time as continuous variable
 #' @description
-#' Longdat_cont calculates the p values, effect sizes and discover confounding
+#' longdat_cont calculates the p values, effect sizes and discover confounding
 #' effects of time variables from longitudinal data.
 #' @param input A character vector. This is the path to a txt file with the
 #' first column as "Individual", and all the dependent variables (ex: bacteria)
@@ -26,13 +26,13 @@
 #' @param fac_var The column numbers of the position where the columns that
 #' aren't numerical  (e.g. characters, categorical numbers, ordinal numbers),
 #' should be a numerical vector (ex: c(1, 2, 5:7)).
-#' @param not_used The column position of the columns not are irrevelant and
+#' @param not_used The column position of the columns not are irrelevant and
 #' can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.
 #' @param adjustMethod Multiple testing p value correction. Choices are
 #' the ones in p.adjust(), including
-#'         "holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr".
-#'         The default is "fdr".
+#'         'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY' and 'fdr.'
+#'         The default is 'fdr'.
 #' @param model_q The threshold for significance of model test after multiple
 #'  testing correction.
 #'                The default is 0.1.
@@ -72,8 +72,9 @@
 #' variables. Different generalized linear mixed effect models are implemented
 #' for different types of dependent variable. Negative binomial mixed model for
 #'  "count", linear mixed model (dependent variables normalized first) for
-#'  "measurement", beta mixed model for "proportion", Binary logistic mixed model
-#'  for "binary", and proportional odds logistic mixed model for "ordinal".
+#'  "measurement", beta mixed model for "proportion",
+#'  binary logistic mixed model for "binary",
+#'  and proportional odds logistic mixed model for "ordinal".
 #'  Then, post-hoc test (Spearman's correlation test) on the model is done.
 #'  When the data type is "count" mode, a control model test will be run on
 #'  randomized data (the rows are shuffled). If there are false positive
@@ -93,7 +94,7 @@
 #' @return
 #' The "Result_table" will be in your output directory. If there are
 #'  confounders in the input, there will be another table called
-#'  "Confounder_table". For count mode, if there is false postive
+#'  "Confounder_table". For count mode, if there is false positive
 #' in the randomized control result, then another table named
 #' "Randomized_control_table" will also be
 #' generated. The detailed description is as below.
@@ -136,7 +137,7 @@
 #' "increase", while a negative correlation yields "decrease".
 #' NS means no significant correlation.
 #'
-#' 6. EffectSize: This column reports the correlation coeffecient
+#' 6. 'EffectSize': This column reports the correlation coefficient
 #' (Spearman's rho) between each dependent variable value and time.
 #'
 #' 7. Null_time_model_q: This column shows the multiple-comparison-adjusted
@@ -183,18 +184,18 @@
 #'   "False positive" indicates that test_var is significant, while
 #'   "Negative" indicates non-significance.
 #'
-#'  3. Posthoc_q: This column describes the multiple-comparison-adjusted
+#'  3. 'Posthoc_q': This column describes the multiple-comparison-adjusted
 #'   p values from the post-hoc test (Spearman's correlation test) of the
 #'    model in the randomized control dataset.
 #'
-#'  4. Effect_size: This column describes the correlation coeffecient
+#'  4. Effect_size: This column describes the correlation coefficient
 #'  (Spearman's rho) of each dependent variable between each dependent
 #'  variable value and time.
 #'
 #' @examples
 #'\dontrun{
 #' # Get the path of example dataset
-#' system.file("Fasting_cont.txt", package = "longdat")
+#' system.file("Fasting_cont.txt", package = "LongDat")
 #' # Paste the directory to the input below
 #' test_cont <- longdat_cont(input = "your_path_to/Fasting_cont.txt",
 #' data_type = "count",
@@ -205,7 +206,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
                          not_used = NULL, adjustMethod = "fdr", model_q = 0.1,
                          posthoc_q = 0.05, theta_cutoff = 2^20,
                          nonzero_count_cutoff1 = 9,
-                         nonzero_count_cutoff2 = 5, verbose = T) {
+                         nonzero_count_cutoff2 = 5, verbose = TRUE) {
   if (missing(input)) {
     stop('Error! Necessary argument "input" missing.')
   }
@@ -223,7 +224,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
   }
 
   ############## Data preprocessing #################
-  if (verbose == T) {print("Start data preprocessing.")}
+  if (verbose == TRUE) {print("Start data preprocessing.")}
   preprocess_lists <- data_preprocess(input, test_var, variable_col,
                                       fac_var, not_used)
   mean_abundance <- preprocess_lists[[1]]
@@ -236,61 +237,63 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
   data <- preprocess_lists[[8]]
   values <- preprocess_lists[[9]]
   N <- length (variables)
-  if (verbose == T) {print("Finish data preprocessing.")}
+  if (verbose == TRUE) {print("Finish data preprocessing.")}
 
   ########## Calculate the p values for every factor
   #         (used for selecting factors later)
   if (variable_col-1-2-length(not_used) > 0) {
-    if (verbose == T) {print("Start selecting potential confounders.")}
+    if (verbose == TRUE) {print("Start selecting potential confounders.")}
     factor_p_lists <- suppressWarnings(factor_p_cal(melt_data, variables,
-                                                    factor_columns, factors, data,
-                                                    N, verbose))
+                                                    factor_columns, factors,
+                                                    data, N, verbose))
     Ps <- as.data.frame(factor_p_lists[[1]])
     Ps_effectsize <- as.data.frame(factor_p_lists[[2]])
     sel_fac <- factor_p_lists[[3]]
-    if (verbose == T) {print("Finished selecting potential confounders.")}
+    if (verbose == TRUE) {print("Finished selecting potential confounders.")}
   }
   ################## Null Model Test #################
-  if (verbose == T) {print("Start null model test.")}
+  if (verbose == TRUE) {print("Start null model test.")}
   Ps_null_model <- as.data.frame(NuModelTest_cont(N, data_type, test_var,
                                                   melt_data, variables,
                                                   verbose))
-  if (verbose == T) {print("Finish null model test.")}
+  if (verbose == TRUE) {print("Finish null model test.")}
 
   ################## Confounding model test ###############
   if (variable_col-1-2-length(not_used) > 0) {
-    if (verbose == T) {print("Start confounding model test.")}
+    if (verbose == TRUE) {print("Start confounding model test.")}
     ConModel_lists <- ConModelTest_cont(N, variables, melt_data, sel_fac,
                                         data_type, test_var, verbose)
     Ps_conf_model <- ConModel_lists[[1]]
     Ps_inv_conf_model <-ConModel_lists[[2]]
-    if (verbose == T) {print("Finish confounding model test.")}
+    if (verbose == TRUE) {print("Finish confounding model test.")}
   }
 
   ####### Unlist the Ps_conf_model and Ps_inv_conf_model ########
   suppressWarnings(
     if (variable_col-1-2-length(not_used) > 0) {
-      if (verbose == T) {print("Start unlisting tables from
+      if (verbose == TRUE) {print("Start unlisting tables from
                                confounding model result.")}
       Ps_conf_model_unlist <- unlist_table(Ps_conf_model, N, variables)
       Ps_conf_inv_model_unlist <- unlist_table(Ps_inv_conf_model, N, variables)
-      if (verbose == T) {print("Finish unlisting tables from
+      if (verbose == TRUE) {print("Finish unlisting tables from
                                confounding model result.")}
     })
 
   ############## Post-hoc test (p value and association) #################
-  if (verbose == T) {print("Finished post-hoc correlation test.")}
+  if (verbose == TRUE) {print("Finished post-hoc correlation test.")}
   correlation_poho_lists <- correlation_posthoc(variables, verbose,
                                                 melt_data, test_var, N)
   p_poho <- correlation_poho_lists[[1]]
   assoc <- correlation_poho_lists[[2]]
-  if (verbose == T) {print("Finished post-hoc correlation test.")}
+  if (verbose == TRUE) {print("Finished post-hoc correlation test.")}
 
   ######### Randomized negative control model test #########
   if (data_type == "count") {
-    if (verbose == T) {print("Start randomized negative control model test.")}
-    random_neg_ctrl_lists <- random_neg_ctrl_cont(test_var, variable_col, fac_var,
-                                                  not_used, factors, data, N,
+    if (verbose == TRUE) {print(
+      "Start randomized negative control model test.")}
+    random_neg_ctrl_lists <- random_neg_ctrl_cont(test_var, variable_col,
+                                                  fac_var, not_used,
+                                                  factors, data, N,
                                                   data_type, variables,
                                                   adjustMethod, model_q,
                                                   posthoc_q, theta_cutoff,
@@ -299,7 +302,8 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
                                                   verbose)
     result_neg_ctrl <- random_neg_ctrl_lists[[1]]
     false_pos_count <- random_neg_ctrl_lists[[2]]
-    if (verbose == T) {print("Finish randomized negative control model test.")}
+    if (verbose == TRUE) {print(
+      "Finish randomized negative control model test.")}
   }
 
   ##### Reset the variable names and confounder names to oringinal ####
@@ -316,7 +320,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
 
   ######################### Remove the excluded ones #########################
   if (data_type == "count") {
-    if (verbose == T) {print(
+    if (verbose == TRUE) {print(
       "Start removing the dependent variables to be exlcuded.")}
     rm_sparse_lists <- rm_sparse_cont(values, data, nonzero_count_cutoff1,
                                       nonzero_count_cutoff2, theta_cutoff,
@@ -343,7 +347,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
         dplyr::filter(.data$rowname %in% bac_include) %>%
         tibble::column_to_rownames()
     }
-    if (verbose == T) {print(
+    if (verbose == TRUE) {print(
       "Finish removing the dependent variables to be exlcuded.")}
   }
 
@@ -366,7 +370,7 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
   colnames(Ps_null_model_fdr) <- c("Ps_null_model_fdr")
 
   ############## Generate result table as output #################
-  if (verbose == T) {print("Start generating result tables.")}
+  if (verbose == TRUE) {print("Start generating result tables.")}
   final_result <-
     final_result_summarize_cont(variable_col, N, Ps_conf_inv_model_unlist,
                                 variables, sel_fac, Ps_conf_model_unlist,
@@ -376,10 +380,10 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
                                 Ps_effectsize, data_type,
                                 false_pos_count)
   if (variable_col-1-2-length(not_used) > 0) {
-    Confounder_table = final_result[[1]]
-    Result_table = final_result[[2]]
+    Confounder_table <- final_result[[1]]
+    Result_table <- final_result[[2]]
   } else if (variable_col-1-2-length(not_used) == 0) {
-    Result_table = final_result[[1]]
+    Result_table <- final_result[[1]]
   }
 
   if (data_type == "count") {

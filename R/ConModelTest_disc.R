@@ -26,44 +26,46 @@ ConModelTest_disc <- function(N, variables, melt_data, sel_fac,
   suppressWarnings(
     for (i in 1:N) { # loop through all variables
       aVariable <- variables[i]
-      if (verbose == T) {print(i)}
+      if (verbose == TRUE) {print(i)}
       subdata <- subset(melt_data, variable == aVariable)
       colnames(subdata) <- fix_name_fun(colnames(subdata))
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
           subdata <- subdata %>%
             dplyr::mutate(value_norm =
-                            bestNormalize::bestNormalize(value, loo = T)$x.t)
+                            bestNormalize::bestNormalize(value, loo = TRUE)$x.t)
         }}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
       ps_lm <- c()
       ps_lm_inv <- c()
       if (length(sel_fac[[i]]) >= 1) {
         #tryCatch skips error in for loop
         tryCatch({
-          for (k in 1:length(sel_fac[[i]])) { # Sel_fac exists
+          for (k in seq_len(length(sel_fac[[i]]))) { # Sel_fac exists
             if (data_type == "count") {
               fmla2 <- as.formula(paste("value ~ (1| Individual) +" ,
                                         fix_name_fun(sel_fac[[i]][k]), "+",
                                         test_var))
-              m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata, family = nbinom2,
-                                     na.action = na.omit, REML = F)
+              m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata,
+                                     family = nbinom2,
+                                     na.action = na.omit, REML = FALSE)
             } else if (data_type == "proportion") {
               fmla2 <- as.formula(paste("value ~ (1| Individual) +" ,
                                         fix_name_fun(sel_fac[[i]][k]), "+",
                                         test_var))
-              m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = beta_family(),
-                                     na.action = na.omit, REML = F)
+              m2 <- glmmTMB::glmmTMB(fmla2, data = subdata,
+                                     family = beta_family(),
+                                     na.action = na.omit, REML = FALSE)
             } else if (data_type %in% c("measurement", "others")) {
               fmla2 <- as.formula(paste("value_norm ~ (1| Individual) +",
                                         fix_name_fun(sel_fac[[i]][k]), "+",
                                         test_var))
-              m2 <- lme4::lmer(data = subdata, fmla2, REML = F)
+              m2 <- lme4::lmer(data = subdata, fmla2, REML = FALSE)
             } else if (data_type == "binary") {
               fmla2 <- as.formula(paste("value ~ (1| Individual) +",
                                         fix_name_fun(sel_fac[[i]][k]), "+",
                                         test_var))
               m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = "binomial",
-                                     na.action = na.omit, REML = F)
+                                     na.action = na.omit, REML = FALSE)
             } else if (data_type == "ordinal") {
               fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +",
                                         fix_name_fun(sel_fac[[i]][k]), "+",

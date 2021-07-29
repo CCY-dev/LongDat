@@ -14,21 +14,23 @@
 #' @name data_preprocess
 
 data_preprocess <- function(input, test_var, variable_col, fac_var, not_used) {
-data <- read.table (file = input, header = T, sep = "\t", check.names = F,
-                    stringsAsFactors = F)
+data <- read.table (file = input, header = TRUE, sep = "\t",
+                    check.names = FALSE,
+                    stringsAsFactors = FALSE)
 # Remove the features (bacteria) whose column sum is 0
 values <- data %>% dplyr::select(all_of(variable_col:ncol(data)))
 values <- as.data.frame(apply(values, 2, as.numeric))
-zero_ones <- which(colSums(values,  na.rm = T) == 0)
-values <- as.data.frame(values[ , colSums(values,  na.rm = T) > 0])
+zero_ones <- which(colSums(values,  na.rm = TRUE) == 0)
+values <- as.data.frame(values[ , colSums(values,  na.rm = TRUE) > 0])
 colnames(values) <- colnames(data %>%
                                dplyr::select(variable_col:ncol(data)) %>%
                                dplyr::select(-all_of(zero_ones)))
 data <- as.data.frame(cbind(data[ , 1:(variable_col-1)], values))
-mean_abundance <- round(colSums(values, na.rm = T)/nrow(data), 3)
+mean_abundance <- round(colSums(values, na.rm = TRUE)/nrow(data), 3)
 prevalence <- c()
-for (i in 1:ncol(values)) {
-  prevalence[i] <- round(sum(values[ , i] > 0, na.rm = T)/nrow(data) * 100, 3)
+for (i in seq_len(ncol(values))) {
+  prevalence[i] <- round(sum(values[ , i] > 0,
+                             na.rm = TRUE)/nrow(data) * 100, 3)
 }
 
 variables_original <- colnames(data)[variable_col:ncol(data)]

@@ -17,7 +17,7 @@ longdat_cont(
   theta_cutoff = 2^20,
   nonzero_count_cutoff1 = 9,
   nonzero_count_cutoff2 = 5,
-  verbose = T
+  verbose = TRUE
 )
 }
 \arguments{
@@ -50,14 +50,14 @@ variable columns (ex: bacteria) start in the table}
 aren't numerical  (e.g. characters, categorical numbers, ordinal numbers),
 should be a numerical vector (ex: c(1, 2, 5:7)).}
 
-\item{not_used}{The column position of the columns not are irrevelant and
+\item{not_used}{The column position of the columns not are irrelevant and
 can be ignored when in the analysis.
        This should be a number vector, and the default is NULL.}
 
 \item{adjustMethod}{Multiple testing p value correction. Choices are
 the ones in p.adjust(), including
-        "holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr".
-        The default is "fdr".}
+        'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY' and 'fdr.'
+        The default is 'fdr'.}
 
 \item{model_q}{The threshold for significance of model test after multiple
 testing correction.
@@ -87,7 +87,7 @@ The default is TRUE.}
 \value{
 The "Result_table" will be in your output directory. If there are
  confounders in the input, there will be another table called
- "Confounder_table". For count mode, if there is false postive
+ "Confounder_table". For count mode, if there is false positive
 in the randomized control result, then another table named
 "Randomized_control_table" will also be
 generated. The detailed description is as below.
@@ -130,7 +130,7 @@ A positive correlation between with time dependent variable value yields
 "increase", while a negative correlation yields "decrease".
 NS means no significant correlation.
 
-6. EffectSize: This column reports the correlation coeffecient
+6. 'EffectSize': This column reports the correlation coefficient
 (Spearman's rho) between each dependent variable value and time.
 
 7. Null_time_model_q: This column shows the multiple-comparison-adjusted
@@ -177,16 +177,16 @@ false positive features.
   "False positive" indicates that test_var is significant, while
   "Negative" indicates non-significance.
 
- 3. Posthoc_q: This column describes the multiple-comparison-adjusted
+ 3. 'Posthoc_q': This column describes the multiple-comparison-adjusted
   p values from the post-hoc test (Spearman's correlation test) of the
    model in the randomized control dataset.
 
- 4. Effect_size: This column describes the correlation coeffecient
+ 4. Effect_size: This column describes the correlation coefficient
  (Spearman's rho) of each dependent variable between each dependent
  variable value and time.
 }
 \description{
-Longdat_cont calculates the p values, effect sizes and discover confounding
+longdat_cont calculates the p values, effect sizes and discover confounding
 effects of time variables from longitudinal data.
 }
 \details{
@@ -198,8 +198,9 @@ First, the model test tests the significance of test_var on dependent
 variables. Different generalized linear mixed effect models are implemented
 for different types of dependent variable. Negative binomial mixed model for
  "count", linear mixed model (dependent variables normalized first) for
- "measurement", beta mixed model for "proportion", Binary logistic mixed model
- for "binary", and proportional odds logistic mixed model for "ordinal".
+ "measurement", beta mixed model for "proportion",
+ binary logistic mixed model for "binary",
+ and proportional odds logistic mixed model for "ordinal".
  Then, post-hoc test (Spearman's correlation test) on the model is done.
  When the data type is "count" mode, a control model test will be run on
  randomized data (the rows are shuffled). If there are false positive
@@ -219,7 +220,7 @@ randomized negative check.
 \examples{
 \dontrun{
 # Get the path of example dataset
-system.file("Fasting_cont.txt", package = "longdat")
+system.file("Fasting_cont.txt", package = "LongDat")
 # Paste the directory to the input below
 test_cont <- longdat_cont(input = "your_path_to/Fasting_cont.txt",
 data_type = "count",

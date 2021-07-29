@@ -28,12 +28,13 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
 
     for (i in 1:N) {# loop through all variables
       aVariable <- variables[i]
-      if (verbose == T) {print(i)}
+      if (verbose == TRUE) {print(i)}
       print(aVariable)
       subdata <- subset(melt_data, variable == aVariable)
       colnames(subdata) <- fix_name_fun(colnames(subdata))
 
-      for (j in 1:length(factor_columns)) {# loop through all factor columns
+      for (j in seq_len(length(factor_columns))) {
+        # loop through all factor columns
         # Remove NA rows in subdata[ ,factor_columns[j]] first,
         # or else it will cause error
         subdata <- subdata %>%
@@ -47,7 +48,7 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
           # sub2 selects all the data that has the second kind of value
           sub2 <- subdata[which(subdata[, factor_columns[j]] ==
                                   unique(subdata[ , factor_columns[j]])[2]),]
-          p <- wilcox.test(sub1$value, sub2$value, paired = F)$p.value
+          p <- wilcox.test(sub1$value, sub2$value, paired = FALSE)$p.value
           Ps[i,j] <- p
           #d <- as.numeric(dmes(x = sub1$value, y = sub2$value)$dc)
           # Orddom is outdated. Replace it with effsize
@@ -125,13 +126,14 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
     # (eg. age, sex...)
     sel_fac <- list()
     for (i in 1:N) { # loop through all variables
-      aVariable = variables[i]
-      if (verbose == T) {print(i)}
+      aVariable <- variables[i]
+      if (verbose == TRUE) {print(i)}
       subdata <- subset(melt_data, variable == aVariable)
       facs <- c()
-      for (k in 1:length(sel_fac_ini[[i]])) {# Loop through all sel_fac
+      for (k in seq_len(length(sel_fac_ini[[i]]))) {
+        # Loop through all sel_fac
         fac <- c()
-        for (m in 1:length(unique(subdata$Individual))) {
+        for (m in seq_len(length(unique(subdata$Individual)))) {
           # Loop through all idividuals
           subdata_individual <- subset(subdata, Individual ==
                                          (unique(subdata$Individual)[m]))

@@ -17,7 +17,7 @@ longdat_disc(
   theta_cutoff = 2^20,
   nonzero_count_cutoff1 = 9,
   nonzero_count_cutoff2 = 5,
-  verbose = T
+  verbose = TRUE
 )
 }
 \arguments{
@@ -47,26 +47,22 @@ should be a character vector (ex: c("Time"))
 variable columns (ex: bacteria) start in the table.}
 
 \item{fac_var}{The column numbers of the position where the columns that
-aren't
-        numerical  (e.g. characters, categorical numbers, ordinal numbers),
-         should be a numerical vector (ex: c(1, 2, 5:7)).}
+aren't numerical  (e.g. characters, categorical numbers, ordinal numbers),
+should be a numerical vector (ex: c(1, 2, 5:7)).}
 
-\item{not_used}{The column position of the columns not are irrevelant and
-can be ignored when in the analysis.
-       This should be a number vector, and the default is NULL.}
+\item{not_used}{The column position of the columns not are irrelevant and
+can be ignored when in the analysis. This should be a number vector, and
+the default is NULL.}
 
 \item{adjustMethod}{Multiple testing p value correction. Choices are the
-ones in p.adjust(), including
-        "holm", "hochberg", "hommel", "bonferroni", "BH", "BY" and "fdr".
-        The default is "fdr".}
+ones in p.adjust(), including 'holm', 'hochberg', 'hommel', 'bonferroni',
+'BH', 'BY' and 'fdr'. The default is 'fdr'.}
 
 \item{model_q}{The threshold for significance of model test after multiple
-testing correction.
-               The default is 0.1.}
+testing correction. The default is 0.1.}
 
 \item{posthoc_q}{The threshold for significance of post-hoc test of the
-model after multiple testing correction.
-               The default is 0.05.}
+model after multiple testing correction. The default is 0.05.}
 
 \item{theta_cutoff}{Required when the data type is set as "count".
 Variable with theta value from negative binomial regression
@@ -89,7 +85,7 @@ The default is TRUE.}
 The "Result_table" will be in the output. If there are confounders in
  the input,
 there will be another table called "Confounder_table". For count mode,
- if there is false postive
+ if there is false positive
 in the randomized control result, then another table named
 "Randomized_control_table" will also be
 generated. The detailed description is as below.
@@ -111,10 +107,10 @@ individuals and time points.
 
    OK: There’s an effect of time and there’s no potential confounder.
 
-   OK but doubtful: There’s an effect of time and there’s no potential confounder,
-    however the confidence interval of the test_var
-                            estimate in the model test covers zero, and
-                             thus it is doubtful of this signal.
+   OK but doubtful: There’s an effect of time and there’s no
+   potential confounder, however the confidence interval of the test_var
+   estimate in the model test covers zero, and thus it is doubtful of
+   this signal.
 
    OK and strictly deconfounded: There are potential confounders, however
    there’s an effect of time and it is independent of those of confounders.
@@ -126,32 +122,32 @@ individuals and time points.
    Confounded: There’s an effect of time, but it can be reduced to the
    confounder effects.
 
-5. Effect_a_b: The "a" and "b" here are the names of the time points.
+5. 'Effect_a_b': The "a" and "b" here are the names of the time points.
  These columns describe the value of each dependent
                variable decreases/increases/NS(non-significant) at time
                 point b comparing with time point a. The number of
                Effect columns depends on how many combinations of
                 time points in the input data.
 
-6. EffectSize_a_b: The "a" and "b" here are the names of the time points.
+6. 'EffectSize_a_b': The "a" and "b" here are the names of the time points.
  These columns describe the effect size (Cliff's delta) of each dependent
                    variable between time point b and a. The number of
-                   EffectSize columns depends on how many combinations of time points
-                   in the input data.
+                   'EffectSize' columns depends on how many combinations of
+                   time points in the input data.
 
- 7. Null_time_model_q: This column shows the multiple-comparison-adjusted
+ 7. 'Null_time_model_q': This column shows the multiple-comparison-adjusted
  p values (Wald test) of the significance of test_var in the models.
 
- 8. Post-hoc_q_a_b: The "a" and "b" here are the names of the time points.
+ 8. 'Post-hoc_q_a_b': The "a" and "b" here are the names of the time points.
   These are the multiple-comparison-adjusted p values from the post-hoc
                     test of the model. The number of Post-hoc_q columns
                     depends on how many combinations of time points
                      in the input data.
 
- 9. Wilcox_p_a_b: The "a" and "b" here are the names of the time points.
+ 9. 'Wilcox_p_a_b': The "a" and "b" here are the names of the time points.
   These columns only appear when data type is "count" and there exist
   false positives in the model test on randomized data. Wilcoxon test
-  are more conservative than the default post-hoc test (emmeans),
+  are more conservative than the default post-hoc test ('emmeans'),
   and thus it is a good reference for getting a more conservative result
   of the significant outcomes.
 
@@ -174,7 +170,7 @@ We assume that there shouldn't be positive results in the randomized control
 test, because all the rows in the original dataset are
 shuffled randomly. Therefore, any signal that showed significance here will
  be regarded as false positive. And if there's false
-positive in this randomized control result, longdat_disc will warn the user
+positive in this randomized control result, longdat_disc() will warn the user
 at the end of the run. This Randomized_control table is only
 generated when there is false positive in the randomized control test.
  It is intended to be a reference for users to see the effect size of
@@ -189,7 +185,7 @@ false positive features.
   or negative. "False positive" indicates that test_var is significant,
   while "Negative" indicates non-significance.
 
- 3. Signal_a_b: The "a" and "b" here are the names of the time points.
+ 3. 'Signal_a_b': The "a" and "b" here are the names of the time points.
   These columns describe if test_var is significant on each dependent
   variable between each time point based on the post-hoc test p values
    (listed right to Signal_a_b). "False positive" indicates that test_var
@@ -197,21 +193,21 @@ false positive features.
     of Signal_a_b columns depends on how many combinations of time points
      in the input data.
 
- 4. Posthoc_q_a_b: The "a" and "b" here are the names of the time points.
+ 4. 'Posthoc_q_a_b': The "a" and "b" here are the names of the time points.
  These columns describe the multiple-comparison-adjusted p values from the
  post-hoc test of the model between time point b and a in the randomized
- control dataset. The number of Posthoc_q_a_b columns depends on how
+ control dataset. The number of 'Posthoc_q_a_b' columns depends on how
  many combinations of time points in the input data.
 
 
- 5. Effect_size_a_b: The "a" and "b" here are the names of the time points.
+ 5. 'Effect_size_a_b': The "a" and "b" here are the names of the time points.
  These columns describe the effect size (Cliff's delta) of each dependent
   variable between time point b and a in the randomized control dataset.
   The number of Effect_size_a_b columns depends on how many combinations
    of time points in the input data.
 }
 \description{
-Longdat_disc calculates the p values, effect sizes and discover confounding
+longdat_disc calculates the p values, effect sizes and discover confounding
  effects of time variables from longitudinal data.
 }
 \details{
@@ -227,7 +223,7 @@ for different types of dependent variable. Negative binomial mixed model for
  "measurement",
 beta mixed model for "proportion", Binary logistic mixed model for
 "binary", and proportional odds logistic mixed model for "ordinal".
-Then, post-hoc test (emmeans) on
+Then, post-hoc test ('emmeans') on
 the model is done. When the data type is "count" mode, a control model
  test will be run on randomized data (the rows are shuffled). If there
   are false positive signals in this control model
@@ -248,7 +244,7 @@ negative check.
 \examples{
 \dontrun{
 # Get the path of example dataset
-system.file("Fasting_disc.txt", package = "longdat")
+system.file("Fasting_disc.txt", package = "LongDat")
 # Paste the directory to the input below
 test_disc <- longdat_disc(input = "your_path_to/Fasting_disc.txt",
 data_type = "count",

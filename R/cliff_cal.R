@@ -13,13 +13,15 @@
 #' @name cliff_cal
 utils::globalVariables(c("variable", "Individual"))
 
-cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose) {
+cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var,
+                      data, verbose) {
   case_pairs <- combn(sort(unique(melt_data[ , test_var])), m = 2)
   delta <- data.frame(matrix(nrow = length(row.names(Ps_poho_fdr)),
                              ncol = ncol(case_pairs)))
   case_pairs_name <- c()
-  for (i in 1:length(row.names(Ps_poho_fdr))) {# loop through all variables
-    if (verbose == T) {print(i)}
+  for (i in seq_len(length(row.names(Ps_poho_fdr)))) {
+    # loop through all variables
+    if (verbose == TRUE) {print(i)}
     bVariable <- variables[i]
     subdata_pre <- subset(melt_data, variable == bVariable)
     counts <- subdata_pre %>% dplyr::count(.data$Individual)
@@ -31,7 +33,7 @@ cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose
     } else {
       subdata2 <- subdata_pre
     }
-    for (k in 1:ncol(case_pairs)) { # loop through each case pair
+    for (k in seq_len(ncol(case_pairs))) { # loop through each case pair
       sub3 <- subdata2[subdata2[ , test_var] == case_pairs[1,k], ] %>%
         dplyr::arrange(Individual)
       sub4 <- subdata2[subdata2[ , test_var] == case_pairs[2,k], ] %>%
@@ -40,7 +42,7 @@ cliff_cal <- function(melt_data, Ps_poho_fdr, variables, test_var, data, verbose
       #delta[i, k] <- d
       ### Orddom is outdated, so calculate Cliff's delta as below:
       #Note that the order is treatment - control
-      delta[i, k] <- mean(sign(sub4$value-sub3$value), na.rm = T)
+      delta[i, k] <- mean(sign(sub4$value-sub3$value), na.rm = TRUE)
       name <- paste(case_pairs[1,k], sep = "_", case_pairs[2,k])
       case_pairs_name <- c(case_pairs_name, name)
     }

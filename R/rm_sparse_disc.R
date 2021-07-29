@@ -25,7 +25,7 @@ rm_sparse_disc <- function(values, data, nonzero_count_cutoff1,
                            Ps_null_model, prevalence, absolute_sparsity,
                            mean_abundance, Ps_poho_fdr, delta) {
   absolute_sparsity <- c()
-  for (i in 1:ncol(values)) {
+  for (i in seq_len(ncol(values))) {
     absolute_sparsity[i] <- sum(values[ , i] == 0)
   }
   non_zero_count <- nrow(data) - absolute_sparsity

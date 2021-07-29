@@ -15,7 +15,7 @@ correlation_posthoc <- function(variables, verbose, melt_data, test_var, N) {
   assoc <- as.data.frame(matrix(nrow = length(variables), ncol = 1))
 
   for (i in 1:N) { # loop through all variables
-    if (verbose == T) {print(i)}
+    if (verbose == TRUE) {print(i)}
     bVariable <- variables[i]
     subdata <- subset(melt_data, variable == bVariable)
     # Here set the "test_var" to numeric

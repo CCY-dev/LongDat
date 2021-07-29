@@ -85,14 +85,15 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
 
   suppressWarnings(
     for (i in 1:N) { # loop through all variables
-      aVariable = variables[i]
-      if (verbose == T) {print(i)}
+      aVariable <- variables[i]
+      if (verbose == TRUE) {print(i)}
       subdata_random <- subset(melt_data_random, variable == aVariable)
       tryCatch({
         # Negative binomial
         fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
         m3 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata_random,
-                               family = nbinom2, na.action = na.omit, REML = F)
+                               family = nbinom2, na.action = na.omit,
+                               REML = FALSE)
 
         # Extract dispersion theta out of model
         Theta_random[i] <- glmmTMB::sigma(m3)
@@ -110,7 +111,7 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
         ci <- as.data.frame(confint(m3))
         ci <- ci[str_detect(row.names(ci), test_var), 1:2]
         if (nrow(ci) > 1) {
-          if (any(apply(sign(ci), 1, sum, na.rm = T) != 0)) {
+          if (any(apply(sign(ci), 1, sum, na.rm = TRUE) != 0)) {
             Ps_neg_ctrl[i, 2] <- "Good"
           } else {
             Ps_neg_ctrl[i, 2] <- "Bad"
@@ -135,8 +136,8 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
   assoc_random <- as.data.frame(matrix(nrow = length(variables), ncol = 1))
 
   for (i in 1:N) { # loop through all variables
-    if (verbose == T) {print(i)}
-    cVariable = variables[i]
+    if (verbose == TRUE) {print(i)}
+    cVariable <- variables[i]
     subdata_random <- subset(melt_data_random, variable == cVariable)
     # Here set the "test_var" to numeric
     subdata_random[ , test_var] <- as.numeric(subdata_random[ , test_var])
@@ -154,8 +155,8 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
 
   #### Remove high theta and low prevalence ones from randomized result
   absolute_sparsity_random <- c()
-  for (i in 1:ncol(value_random)) {
-    absolute_sparsity_random[i] <- sum(value_random[ , i] == 0, na.rm = T)
+  for (i in seq_len(ncol(value_random))) {
+    absolute_sparsity_random[i] <- sum(value_random[ , i] == 0, na.rm = TRUE)
   }
 
   non_zero_count_randomized <- nrow(data_randomized) - absolute_sparsity_random
@@ -200,10 +201,10 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
   ####### Write randomized control table
     signal_neg_ctrl_tbl <-
       data.frame(matrix(nrow = length(row.names(Ps_neg_ctrl_filterd)),
-                        ncol = 1, data = NA, byrow = F))
+                        ncol = 1, data = NA, byrow = FALSE))
     colnames(signal_neg_ctrl_tbl) <- "Signal"
     rownames(signal_neg_ctrl_tbl) <- rownames(Ps_neg_ctrl_filterd)
-    for (i in 1:nrow(Ps_neg_ctrl_filterd)) {
+    for (i in seq_len(nrow(Ps_neg_ctrl_filterd))) {
         signal_neg_ctrl_tbl[i, 1] <-
           ifelse(Ps_neg_ctrl_filterd$P_fdr[i] < model_q &
                    p_poho_random_filtered$`p_post-hoc`[i] < posthoc_q &
@@ -211,7 +212,8 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
                    !is.na(p_poho_random_filtered$`p_post-hoc`[i]),
                  yes = "False_positive", no = "Negative")
       }
-    result_neg_ctrl <- cbind(Ps_neg_ctrl_filterd[ ,c(2, 5)], signal_neg_ctrl_tbl,
+    result_neg_ctrl <- cbind(Ps_neg_ctrl_filterd[ ,c(2, 5)],
+                             signal_neg_ctrl_tbl,
                              p_poho_random_filtered$`p_post-hoc`,
                              assoc_random_filtered)
     colnames(result_neg_ctrl) <- c("Signal_of_CI_signs", "Model_q", "Signal",
@@ -219,7 +221,7 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
 
     # Change the rownames to avoid confusion for the users
     rownames(result_neg_ctrl) <- paste0("Randomized_feature_",
-                                        1:nrow(result_neg_ctrl))
+                                        seq_len(nrow(result_neg_ctrl)))
 
     result_neg_ctrl_sig <- result_neg_ctrl %>%
       dplyr::filter(.data$Signal == "False_positive" &

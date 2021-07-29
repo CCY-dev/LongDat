@@ -27,35 +27,35 @@ NuModelTest_cont <- function(N, data_type, test_var, melt_data,
   }
   suppressWarnings(
     for (i in 1:N) { # loop through all variables
-      aVariable = variables[i]
-       if (verbose == T) {print(i)}
+      aVariable <- variables[i]
+       if (verbose == TRUE) {print(i)}
       subdata <- subset(melt_data, variable == aVariable)
 
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
           subdata <- subdata %>%
             dplyr::mutate(value_norm =
-                            bestNormalize::bestNormalize(value, loo = T)$x.t)
+                            bestNormalize::bestNormalize(value, loo = TRUE)$x.t)
         }
         if (data_type == "count") {
           # Negative binomial
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
           m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata,
                                  family = nbinom2, na.action = na.omit,
-                                 REML = F)
+                                 REML = FALSE)
           # Extract dispersion theta out of model
           Theta[i] <- glmmTMB::sigma(m2)
         } else if (data_type == "proportion") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
           m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = beta_family(),
-                                 na.action = na.omit, REML = F)
+                                 na.action = na.omit, REML = FALSE)
         } else if (data_type %in% c("measurement", "others")) {
           fmla2 <- as.formula(paste("value_norm ~ (1|Individual) +", test_var))
-          m2 <- lme4::lmer(data = subdata, fmla2, REML = F)
+          m2 <- lme4::lmer(data = subdata, fmla2, REML = FALSE)
         } else if (data_type == "binary") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
           m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = "binomial",
-                                 na.action = na.omit, REML = F)
+                                 na.action = na.omit, REML = FALSE)
         } else if (data_type == "ordinal") {
           fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +",
                                     test_var))
@@ -75,7 +75,7 @@ NuModelTest_cont <- function(N, data_type, test_var, melt_data,
         ci <- as.data.frame(confint(m2))
         ci <- ci[str_detect(row.names(ci), test_var), 1:2]
         if (nrow(ci) > 1) {
-          if (any(apply(sign(ci), 1, sum, na.rm = T) != 0)) {
+          if (any(apply(sign(ci), 1, sum, na.rm = TRUE) != 0)) {
             Ps_null_model[i, 2] <- "Good"
           } else {
             Ps_null_model[i, 2] <- "Bad"

@@ -31,35 +31,35 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data,
                               ncol = ncol(case_pairs)))
   suppressWarnings(
     for (i in 1:N) { # loop through all variables
-      aVariable = variables[i]
-      if (verbose == T) {print(i)}
+      aVariable <- variables[i]
+      if (verbose == TRUE) {print(i)}
       subdata <- subset(melt_data, variable == aVariable)
 
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
           subdata <- subdata %>%
             mutate(value_norm =
-                     bestNormalize::bestNormalize(value, loo = T)$x.t)
+                     bestNormalize::bestNormalize(value, loo = TRUE)$x.t)
         }
         if (data_type == "count") {
           # Negative binomial
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
           m2 <- glmmTMB::glmmTMB(formula = fmla2, data = subdata,
                                  family = nbinom2, na.action = na.omit,
-                                 REML = F)
+                                 REML = FALSE)
           # Extract dispersion theta out of model
           Theta[i] <- glmmTMB::sigma(m2)
         } else if (data_type == "proportion") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
           m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = beta_family(),
-                                 na.action = na.omit, REML = F)
+                                 na.action = na.omit, REML = FALSE)
         } else if (data_type %in% c("measurement", "others")) {
           fmla2 <- as.formula(paste("value_norm ~ (1|Individual) +", test_var))
-          m2 <- lme4::lmer(data = subdata, fmla2, REML = F)
+          m2 <- lme4::lmer(data = subdata, fmla2, REML = FALSE)
         } else if (data_type == "binary") {
           fmla2 <- as.formula(paste("value ~ (1| Individual) +", test_var))
           m2 <- glmmTMB::glmmTMB(fmla2, data = subdata, family = "binomial",
-                                 na.action = na.omit, REML = F)
+                                 na.action = na.omit, REML = FALSE)
         } else if (data_type == "ordinal") {
           fmla2 <- as.formula(paste("as.factor(value) ~ (1| Individual) +",
                                     test_var))
@@ -74,7 +74,7 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data,
         m_means <- emmeans::emmeans(object = m2, specs = test_var)
         b <- as.data.frame(pairs(m_means, adjust = "fdr",
                                  infer = c(FALSE, TRUE), reverse = FALSE))
-        for (m in 1:ncol(case_pairs)) {
+        for (m in seq_len(ncol(case_pairs))) {
           p_poho[i, m] <- b$p.value[m]
         }
 
@@ -106,7 +106,7 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data,
   colnames(Ps_null_model) <- c("Null_model_p", "Signal_of_CI_signs")
   row.names(p_poho) <- variables
   case_pairs_name <- c()
-  for (i in 1:ncol(case_pairs)) {
+  for (i in seq_len(ncol(case_pairs))) {
     cpn <- paste0(case_pairs[1, i], "_", case_pairs[2, i])
     case_pairs_name <- c(case_pairs_name, cpn)
   }
