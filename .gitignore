@@ -6,3 +6,4 @@ README.md
 .gitignore
 .Rbuildignore
 inst/doc
+.DS_Store

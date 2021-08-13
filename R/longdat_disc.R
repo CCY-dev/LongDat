@@ -467,12 +467,12 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
   print("Finished successfully!")
   if (data_type == "count") {
     if (false_pos_count > 0) {
-      print("Attention! Since there are false
-            positives in randomized control test,
-            it's better to check the Wilcoxon post-hoc
-            p values of significant signals in the
-            Result_table to get a more conservative result.
-            See documentation for more details.")
+      print(paste0("Attention! Since there are false ",
+            "positives in the randomized control test, ",
+            "it's recommended to check the Wilcoxon post-hoc ",
+            "p values of significant signals in the ",
+            "Result_table to get a more conservative result. ",
+            "See the documentation for more details."))
     }
   }
 
