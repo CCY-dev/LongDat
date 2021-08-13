@@ -29,7 +29,6 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
     for (i in 1:N) {# loop through all variables
       aVariable <- variables[i]
       if (verbose == TRUE) {print(i)}
-      print(aVariable)
       subdata <- subset(melt_data, variable == aVariable)
       colnames(subdata) <- fix_name_fun(colnames(subdata))
 
@@ -157,6 +156,9 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
         facs <- c(facs, ff)
       }
       sel_fac[[i]] <- facs
+      if(is.null(facs)) {
+        sel_fac[[i]] <- NA
+      }
     }
     names(sel_fac) <- variables
     sel_fac <- lapply(sel_fac, function(x) x[!is.na(x)])
