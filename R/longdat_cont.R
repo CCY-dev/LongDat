@@ -271,12 +271,12 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
   ####### Unlist the Ps_conf_model and Ps_inv_conf_model ########
   suppressWarnings(
     if (variable_col-1-2-length(not_used) > 0) {
-      if (verbose == TRUE) {print("Start unlisting tables from
-                               confounding model result.")}
+      if (verbose == TRUE) {print(
+        "Start unlisting tables from confounding model result.")}
       Ps_conf_model_unlist <- unlist_table(Ps_conf_model, N, variables)
       Ps_conf_inv_model_unlist <- unlist_table(Ps_inv_conf_model, N, variables)
-      if (verbose == TRUE) {print("Finish unlisting tables from
-                               confounding model result.")}
+      if (verbose == TRUE) {print(
+        "Finish unlisting tables from confounding model result.")}
     })
 
   ############## Post-hoc test (p value and association) #################
@@ -385,6 +385,15 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
   } else if (variable_col-1-2-length(not_used) == 0) {
     Result_table <- final_result[[1]]
   }
+  print("Finished successfully!")
+  if (data_type == "count") {
+    if (false_pos_count > 0) {
+      print("Attention! Since there are false positives in
+            randomized control test, it's better to check the
+            effect sizes significant signals and rule out the ones
+            with low effect sizes. See documentation for more details.")
+    }
+  }
 
   if (data_type == "count") {
     if (false_pos_count > 0 & variable_col-1-2-length(not_used) > 0) {
@@ -413,16 +422,6 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
                   Confounder_table = Confounder_table))
     } else if (variable_col-1-2-length(not_used) == 0) {
       return(Result_table = Result_table)
-    }
-  }
-
-  print("Finished successfully!")
-  if (data_type == "count") {
-    if (false_pos_count > 0) {
-      print("Attention! Since there are false positives in
-            randomized control test, it's better to check the
-            effect sizes significant signals and rule out the ones
-            with low effect sizes. See documentation for more details.")
     }
   }
 }

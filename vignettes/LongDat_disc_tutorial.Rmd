@@ -1,0 +1,104 @@
+---
+title: "LongDat tutorial (longdat_disc)"
+subtitle: "Longitudinal analysis (time as discrete variable) with         longdat_disc()"
+output: 
+  rmarkdown::html_vignette:
+    toc: true 
+vignette: >
+  %\VignetteIndexEntry{LongDat_tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+This is an example of running longdat_disc. Note that the time variable here should be discrete. If the time variable is continuous, please apply longdat_cont instead. 
+
+## Input format
+
+The input format should be the same as the example data set "Fasting_disc.txt". 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  rmarkdown.html_vignette.check_title = FALSE
+)
+```
+
+```{r message=FALSE}
+# Load the package
+library(LongDat)
+library(tidyverse)
+library(kableExtra)
+```
+
+```{r tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+# Get the path of example dataset
+system.file("Fasting_disc.txt", package = "LongDat")
+```
+First, let's have a look at Fasting_disc.txt (the input file). This is a mock longitudinal data set with 3 time points (1~3). Here we want to see if the fasting intervention has significant effect on gut microbial abundance or not. 
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+# Read in Fasting_disc.txt
+library(kableExtra)
+fasting <- read.table("/Library/Frameworks/R.framework/Versions/4.0/Resources/library/LongDat/Fasting_disc.txt", header = T, row.names = NULL, sep = "\t")
+fasting %>%
+  kbl() %>%
+  kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
+  scroll_box(width = "700px", height = "200px")
+```
+As you can see, the "Individual" is at the first column, and the dependent variable, which are bacterial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential confounders. For example, here the potential confounders are sex, age, drug A and drug B. For the details of the requirements, please read the help page of this function. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data.**
+
+## Run longdat_disc()
+
+Below is an example of running longdat_disc(). The input is the example data Fasting_disc.txt, and the data_type is "count" since the dependent variable (bacterial abundance in this case) is count data. The "test_var" is the independent variable you're testing, and here we're testing the "Time_point". The variable_col is 7 because the dependent variables start at column 7. And the fac_var mark the columns that aren't numerical.  For the details of the arguments, please read the help page of this function. The run below takes less than a minute to complete.
+
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+# Run longdat_disc on example data set
+# When data_type = count, set seed for reproducible randomized control test  
+set.seed(100)
+example <- longdat_disc(input = "/Library/Frameworks/R.framework/Versions/4.0/Resources/library/LongDat/Fasting_disc.txt", data_type = "count", test_var = "Time_point", variable_col = 7, fac_var = c(1:3), verbose = T)
+```
+If you have complete running the function successfully, you'll see the message "Finished successfully!" at the end. 
+
+## Results
+### Result table
+
+Now, let's have a look at the result table. 
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+result_table <- example[[1]]
+result_table %>%
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
+  kableExtra::scroll_box(width = "700px")
+```
+The first and second column show the prevalence and mean abundance of each bacterium. According to the "Signal" column, fasting intervention is a significant predictor for BacteriumA as it shows "OK and strictly deconfounded", meaning that there are potential confounders, however there’s an effect of time and it is independent of those of confounders. To find out what the confounders are, you'll need to see the confounder table, but we'll get to that later. 
+
+The following columns "Effect_1_2", "Effect_1_3" and "Effect_2_3" describe how dependent variables change from time point a to b. Here we can tell that BacteriumA decreases from time point 1 to 2, and then enriched from time point 2 to 3. From the columns "EffectSize_1_2" and "EffectSize_2_3", we know that the effect size are -0.6 and 0.8. The most relevant information for users ends here, which are listed from the first column to "EffectSize" columns. 
+
+Then the following columns contain the details of model test p values ("Null_time_model_q"), the post-hoc test p values (Post.hoc_q_1_2, Post.hoc_q_1_3 and Post.hoc_q_2_3). For more detailed info of the columns in the result table, please refer to the documentation of this function. The explanation of each type of "Signal" is listed below.
+
+| Signal        | Explanation           
+|---------------|:-------------:|
+| NS      | Non-significant, meaning there’s no effect of time.| 
+| OK     | There’s an effect of time and there’s no potential confounder.|
+| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test covers zero, and thus it is doubtful of this signal.|
+| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
+| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
+| Confounded | There’s an effect of time, but it can be reduced to the confounder effects. |
+
+### Confounder table
+Next, let's take a look at the confounder table.
+
+```{r}
+confound_table <- example[[2]]
+confound_table %>%
+  kbl() %>%
+  kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
+  scroll_box(width = "700px")
+```
+The columns of this confounder table should be grouped by every 3 columns. "Confounder1" is the name of the confounder, while "Confounding_type1" is the confounding type of confounder1, and "Effect_size1" is the effect size of the dependent variable values between different levels of confounder 1. If there are more than 1 confounders, they will be listed along the rows of each dependent variable.
+
+## Conclusion
+From the result above, we see that the potential confounder for BacteriumA is DrugB, but we don't need to worry about the effect of time (proxy for fasting treatment) confounded by DrugB since it's confounding type is "strictly deconfounded", meaning that the effect of time is strictly deconfounded from the effect of DrugB. From this information, we confirm that fasting treatment can solely explain the changes in BacteriumA abundance. In other words, fasting induces significant change on BacteriumA.
+
+This tutorial ends here! For more detailed descriptions of this function, please look it up with ```?longdat_disc``` in R.
+

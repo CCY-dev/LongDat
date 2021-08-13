@@ -464,6 +464,18 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
   } else if (variable_col-1-2-length(not_used) == 0) {
     Result_table <- final_result[[1]]
   }
+  print("Finished successfully!")
+  if (data_type == "count") {
+    if (false_pos_count > 0) {
+      print("Attention! Since there are false
+            positives in randomized control test,
+            it's better to check the Wilcoxon post-hoc
+            p values of significant signals in the
+            Result_table to get a more conservative result.
+            See documentation for more details.")
+    }
+  }
+
   if (data_type == "count") {
     if (nrow(result_neg_ctrl) > 0 & variable_col-1-2-length(not_used) > 0) {
       return(list(Result_table = Result_table,
@@ -486,17 +498,6 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
                   Confounder_table = Confounder_table))
     } else if (variable_col-1-2-length(not_used) == 0) {
       return(Result_table = Result_table)
-    }
-  }
-  print("Finished successfully!")
-  if (data_type == "count") {
-    if (false_pos_count > 0) {
-      print("Attention! Since there are false
-            positives in randomized control test,
-            it's better to check the Wilcoxon post-hoc
-            p values of significant signals in the
-            Result_table to get a more conservative result.
-            See documentation for more details.")
     }
   }
 }
