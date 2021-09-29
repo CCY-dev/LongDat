@@ -462,7 +462,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
     Confounder_table <- final_result[[1]]
     Result_table <- final_result[[2]]
   } else if (variable_col-1-2-length(not_used) == 0) {
-    Result_table <- final_result[[1]]
+    Result_table <- final_result
   }
   print("Finished successfully!")
   if (data_type == "count") {
