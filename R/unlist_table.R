@@ -51,5 +51,9 @@ unlist_table <- function(x, N, variables) {
   Ps_conf_model_unlist <-
     as.data.frame(Ps_conf_model_unlist[match(
       variables,rownames(Ps_conf_model_unlist)), ])
+  if (ncol(Ps_conf_model_unlist) == 1) {
+    colnames(Ps_conf_model_unlist) <- colnames(cast.ps_lm_m2)
+  }
   return(Ps_conf_model_unlist)
   }
+
