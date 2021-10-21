@@ -1,6 +1,6 @@
 ---
 title: "LongDat tutorial (longdat_cont)"
-subtitle: "Longitudinal analysis (time as continuous variable) with         longdat_cont()"
+subtitle: "Longitudinal analysis (time as continuous variable) with longdat_cont()"
 output: 
   rmarkdown::html_vignette:
     toc: true 
@@ -31,12 +31,18 @@ library(tidyverse)
 library(kableExtra)
 ```
 
-```{r tidy=TRUE, tidy.opts=list(width.cutoff=50)}
-# Get the path of example dataset
+```{r tidy=TRUE, tidy.opts=list(width.cutoff=80)}
+# Get the path of example dataset "Fasting_cont.txt" so that we can run LongDat on it 
 system.file("Fasting_cont.txt", package = "LongDat")
+
+# If the command above doesn't work, you can also try the one below. It will show you the path to your R libraries on your computer.
+.libPaths()
+# Copy the path from .libPaths() and add "/LongDat/Fasting_cont.txt" to the end. This is the path to the example dataset "Fasting_cont.txt".
+
+# In addition the methods above, if you have the source code of LongDat package, you can find "Fasting_cont.txt" in the folder "inst/" as wel.
 ```
 First, let's have a look at Fasting_cont.txt. This is a mock longitudinal data set with 2 time points (0 and 7 days). Here we want to see if the fasting intervention has significant effect on gut bacterial abundance or not. 
-```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
 # Read in Fasting_cont.txt
 library(kableExtra)
 fasting <- read.table("/Library/Frameworks/R.framework/Versions/4.0/Resources/library/LongDat/Fasting_cont.txt", header = T, row.names = NULL, sep = "\t")
@@ -51,7 +57,7 @@ As you can see, the "Individual" is at the first column, and the dependent varia
 
 Below is an example of running longdat_cont(). The input is the example data Fasting_cont.txt, and the data_type is "count" since the dependent variable (bacterial abundance in this case) is count data. The "test_var" is the independent variable you're testing, and here we're testing the "Day". The variable_col is 7 because the dependent variables start at column 7. And the fac_var states the columns that aren't numerical. Lastly, the output_tag is the name tag you'd like to add to the output. For the details of the arguments, please read the help page of this function. The run below takes less than a minute to complete.
 
-```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
 # Run longdat_cont on example data set
 # When data_type = count, set seed for reproducible randomized control test  
 set.seed(100)
@@ -63,7 +69,7 @@ If you have completed running the function successfully, you'll see the message 
 ### Result table
 
 Now, let's have a look at the result table. 
-```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
 #The first dataframe in the list is the result table
 result_table <- example[[1]]
 result_table %>%
