@@ -82,19 +82,19 @@ final_result_summarize_disc <- function(variable_col, N,
           c_effectsize <- Ps_effectsize[i, c_name]
           c_type <- if (is.null(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {
             # if Ps_conf_model_unlist is null
-            print("Strictly deconfounded")
+            print("Strictly_deconfounded")
           } else { #Ps_conf_model_unlist isn't  null
             if (Ps_conf_model_unlist[i, sel_fac[[i]][j]] < posthoc_q &
                 !is.na(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {
               # Confounding model p < posthoc_q
-              print("Strictly deconfounded")
+              print("Strictly_deconfounded")
             } else {# Confounding model p >= posthoc_q
               if (Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]] < posthoc_q &
                   !is.na(Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]])) {
                 # Inverse confounding model p < posthoc_q
                 print("Confounded")
               } else {# Inverse onfounding model p >= posthoc_q
-                print("Ambiguously deconfounded")
+                print("Ambiguously_deconfounded")
               }
             }}
           confound[match(i, confs_num), 3*j-2] <- c_name
@@ -129,10 +129,10 @@ final_result_summarize_disc <- function(variable_col, N,
           if (length(sel_fac[[i]]) == 0) {
             # No sel_fac, meaning no confounding effect
             if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {
-              # Proper confidence interval
-              final_sig[i, 1] <- "OK"
-            } else {# Improper confidence interval
-              final_sig[i, 1] <- "OK but doubtful"
+              # Proper confidence interval: OK and no confounder
+              final_sig[i, 1] <- "OK_nc"
+            } else {# Improper confidence interval: OK but doubtful
+              final_sig[i, 1] <- "OK_d"
             }
           } else {# There are sel_fac, so decide the signal
                   # based on confound table
@@ -145,20 +145,22 @@ final_result_summarize_disc <- function(variable_col, N,
             if (sum(stringr::str_detect(string = subconfound_columns,
                                         pattern = "Confounded"),
                     na.rm = TRUE) > 0) {
-              # There is "confounding" signals
-              final_sig[i, 1] <- "Confounded"
+              # There is "confounding" signals: Confounded
+              final_sig[i, 1] <- "C"
             } else if(sum(stringr::str_detect(string = subconfound_columns,
                                               pattern = "Confounded"),
                           na.rm = TRUE) == 0){
               # There isn't "confounding" signals
               if (sum(
                 stringr::str_detect(string = subconfound_columns,
-                                    pattern = "Ambiguously deconfounded"),
+                                    pattern = "Ambiguously_deconfounded"),
                 na.rm = TRUE) > 0) {
-                # If there is "ambiguously deconfounded" signals
-                final_sig[i, 1] <- "Ambiguously deconfounded"
-              } else { # There isn't "ambiguously deconfounded" signals
-                final_sig[i, 1] <- "OK and strictly deconfounded"
+                # If there is "ambiguously deconfounded" signals:
+                # Ambiguously deconfounded
+                final_sig[i, 1] <- "AD"
+              } else { # There isn't "ambiguously deconfounded" signals:
+                # OK and strictly deconfounded
+                final_sig[i, 1] <- "OK_sd"
               }
             }
           }
@@ -229,10 +231,11 @@ final_result_summarize_disc <- function(variable_col, N,
           # All post-hoc q >= posthoc_q
           final_sig[i, 1] <- "NS"
         } else {# At least one post-hoc q < posthoc_q
-          if (Ps_null_model[i, 2] == "Good") {# Proper confidence interval
-            final_sig[i, 1] <- "OK"
-          } else {# Improper confidence interval
-            final_sig[i, 1] <- "OK but doubtful"
+          if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {
+            # Proper confidence interval: OK and no confounder
+            final_sig[i, 1] <- "OK_nc"
+          } else {# Improper confidence interval: OK but doubtful
+            final_sig[i, 1] <- "OK_d"
           }
         }
       }

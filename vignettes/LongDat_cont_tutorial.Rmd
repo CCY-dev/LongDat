@@ -77,20 +77,20 @@ result_table %>%
   kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
   kableExtra::scroll_box(width = "700px")
 ```
-The first and second column show the prevalence and mean abundance of each bacterium. According to the "Signal" column, fasting intervention is a significant predictor for BacteriumA as it shows "OK", meaning that there is an effect of time and no potential confounder.
+The first and second column show the prevalence and mean abundance of each bacterium. According to the "Signal" column, fasting intervention is a significant predictor for BacteriumA as it shows "OK_nc" (which represents "OK and no confounder"), meaning that there is an effect of time and no potential confounder.
 
 The following column "Effect" describes the trend of dependent variables changes along time. Here we can tell that BacteriumA has a decreasing pattern. From the next column "Effect_size", we know that the effect size is -0.78. The important and the most relevant information for users ends here, which are listed from the first column to "Effect_size". 
 
 Then the following columns contain the details of model test p values ("Null_time_model_q"), the post-hoc test p values (Post.hoc_q). For more detailed info of the columns in the result table, please refer to the documentation of this function. The explanation of each type of "Signal" is listed below.
 
-| Signal        | Explanation           
-|---------------|:-------------:|
-| NS      | Non-significant, meaning there’s no effect of time.| 
-| OK     | There’s an effect of time and there’s no potential confounder.|
-| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test covers zero, and thus it is doubtful of this signal.|
-| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
-| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
-| Confounded | There’s an effect of time, but it can be reduced to the confounder effects. |
+|Signal|Meaning|Explanation|          
+|---|--------|-------------|
+|NS| Non-significant | There’s no effect of time.|
+|OK_nc |OK and no confounder | There’s an effect of time and there’s no potential confounder.|
+|OK_d| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test includes zero, and thus it is doubtful of this signal.|
+|OK_sd| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
+|AD| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
+|C| Confounded | There’s an effect of time, but it can be reduced to the confounding effects.|
 
 ### Confounder table
 Next, let's take a look at the confounder table.

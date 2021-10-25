@@ -103,23 +103,29 @@ individuals and time points.
 
 4. Signal: The final decision of the significance of the test_var
  (independent variable) on each dependent variable.
-   NS: Non-significant, meaning there’s no effect of time.
+   NS: This represents "Non-significant",
+   which means that there’s no effect of time.
 
-   OK: There’s an effect of time and there’s no potential confounder.
+   OK_nc: This represents "OK and no confounder".
+   There’s an effect of time and there’s no potential confounder.
 
-   OK but doubtful: There’s an effect of time and there’s no
+   OK_d: This represents "OK but doubtful".
+   There’s an effect of time and there’s no
    potential confounder, however the confidence interval of the test_var
    estimate in the model test covers zero, and thus it is doubtful of
    this signal.
 
-   OK and strictly deconfounded: There are potential confounders, however
+   OK_sd: This represents "OK and strictly deconfounded".
+   There are potential confounders, however
    there’s an effect of time and it is independent of those of confounders.
 
-   Ambiguously deconfounded: There are potential confounders, and it isn’t
-    possible to conclude whether the effect is resulted from time or
-    confounders.
+   AD: This represents " Ambiguously deconfounded".
+   There are potential confounders, and it isn’t
+   possible to conclude whether the effect is resulted from time or
+   confounders.
 
-   Confounded: There’s an effect of time, but it can be reduced to the
+   C: This represents "Confounded".
+   There’s an effect of time, but it can be reduced to the
    confounder effects.
 
 5. 'Effect_a_b': The "a" and "b" here are the names of the time points.

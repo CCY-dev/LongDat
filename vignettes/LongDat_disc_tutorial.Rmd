@@ -77,20 +77,20 @@ result_table %>%
   kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
   kableExtra::scroll_box(width = "700px")
 ```
-The first and second column show the prevalence and mean abundance of each bacterium. According to the "Signal" column, fasting intervention is a significant predictor for BacteriumA as it shows "OK and strictly deconfounded", meaning that there are potential confounders, however there’s an effect of time and it is independent of those of confounders. To find out what the confounders are, you'll need to see the confounder table, but we'll get to that later. 
+The first and second column show the prevalence and mean abundance of each bacterium. According to the "Signal" column, fasting intervention is a significant predictor for BacteriumA as it shows "OK_sd" (which represents "OK and strictly deconfounded"), meaning that there are potential confounders, however there’s an effect of time and it is independent of those of confounders. To find out what the confounders are, you'll need to see the confounder table, but we'll get to that later. 
 
 The following columns "Effect_1_2", "Effect_1_3" and "Effect_2_3" describe how dependent variables change from time point a to b. Here we can tell that BacteriumA decreases from time point 1 to 2, and then enriched from time point 2 to 3. From the columns "EffectSize_1_2" and "EffectSize_2_3", we know that the effect size are -0.6 and 0.8. The most relevant information for users ends here, which are listed from the first column to "EffectSize" columns. 
 
 Then the following columns contain the details of model test p values ("Null_time_model_q"), the post-hoc test p values (Post.hoc_q_1_2, Post.hoc_q_1_3 and Post.hoc_q_2_3). For more detailed info of the columns in the result table, please refer to the documentation of this function. The explanation of each type of "Signal" is listed below.
 
-| Signal        | Explanation           
-|---------------|:-------------:|
-| NS      | Non-significant, meaning there’s no effect of time.| 
-| OK     | There’s an effect of time and there’s no potential confounder.|
-| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test covers zero, and thus it is doubtful of this signal.|
-| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
-| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
-| Confounded | There’s an effect of time, but it can be reduced to the confounder effects. |
+|Signal|Meaning|Explanation|          
+|---|--------|-------------|
+|NS| Non-significant | There’s no effect of time.|
+|OK_nc |OK and no confounder | There’s an effect of time and there’s no potential confounder.|
+|OK_d| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test includes zero, and thus it is doubtful of this signal.|
+|OK_sd| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
+|AD| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
+|C| Confounded | There’s an effect of time, but it can be reduced to the confounding effects.|
 
 ### Confounder table
 Next, let's take a look at the confounder table.
@@ -103,7 +103,7 @@ confound_table %>%
   kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
   scroll_box(width = "700px")
 ```
-The columns of this confounder table should be grouped by every 3 columns. "Confounder1" is the name of the confounder, while "Confounding_type1" is the confounding type of confounder1, and "Effect_size1" is the effect size of the dependent variable values between different levels of confounder 1. If there are more than 1 confounders, they will be listed along the rows of each dependent variable.
+The columns of this confounder table should be grouped by every 3 columns. "Confounder1" is the name of the confounder, while "Confounding_type1" is the confounding type of confounder1 with time (or the test_var), and "Effect_size1" is the effect size of the dependent variable values between different levels of confounder1. Here, time is strictly deconfounded with confounder1, so we don't need to worry about the confounding effect of confounder1 on bacteriumA. If there are more than 1 confounders, they will be listed along the rows of each dependent variable.
 
 ## Conclusion
 From the result above, we see that the potential confounder for BacteriumA is DrugB, but we don't need to worry about the effect of time (proxy for fasting treatment) confounded by DrugB since it's confounding type is "strictly deconfounded", meaning that the effect of time is strictly deconfounded from the effect of DrugB. From this information, we confirm that fasting treatment can solely explain the changes in BacteriumA abundance. In other words, fasting induces significant change on BacteriumA.
