@@ -6,20 +6,19 @@
 for count data}
 \arguments{
 \item{input}{A character vector. This is the path to a txt file with the
-first column as "Individual", and all the dependent variables (ex: bacteria)
+first column as "Individual", and all the dependent variables (eg. bacteria)
         should be at the end of the table.}
 
 \item{test_var}{The name of the independent variable you are testing for,
-should be a character vector (ex: c("Time"))
+should be a character vector (eg. c("Time"))
        identical to its column name and make sure there is no space in it.}
 
 \item{variable_col}{The column number of the position where the dependent
-variable columns (ex: bacteria) start in the table}
+variable columns (eg. bacteria) start in the table}
 
 \item{fac_var}{The column numbers of the position where the columns
-that aren't
-        numerical  (e.g. characters, categorical numbers, ordinal numbers),
-        should be a numerical vector (ex: c(1, 2, 5:7))}
+that aren't numerical  (eg. characters, categorical numbers,
+ordinal numbers), should be a numerical vector (eg. c(1, 2, 5:7))}
 
 \item{not_used}{The column position of the columns not are irrelevant and
 can be ignored when in the analysis.
@@ -58,7 +57,6 @@ from the test. The default value of theta_cutoff is set to 2^20 from the
 observation that 2^20 is a clear cutoff line
 for several datasets. Users can change theta_cutoff value to fit
 their own data.
-The "nonzero_count_vs_theta.pdf" will be in the output directory.
 }
 \examples{
 \dontrun{

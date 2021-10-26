@@ -3,7 +3,7 @@
 #' longdat_cont calculates the p values, effect sizes and discover confounding
 #' effects of time variables from longitudinal data.
 #' @param input A character vector. This is the path to a txt file with the
-#' first column as "Individual", and all the dependent variables (ex: bacteria)
+#' first column as "Individual", and all the dependent variables (eg: bacteria)
 #'         should be at the end of the table. The time variable here should be
 #'         continuous, if time is discrete, please apply longdat_disc() instead.
 #'         Please avoid symbols in the names of potential confounders
@@ -19,13 +19,13 @@
 #'        ranks. Any data that doesn't belong to the previous categories
 #'        should be classified as "others".
 #' @param test_var The name of the independent variable you are testing for,
-#' should be a character vector (ex: c("Time")) identical to its column name
+#' should be a character vector (eg. c("Time")) identical to its column name
 #' and make sure there is no space in it.
 #' @param variable_col The column number of the position where the dependent
-#' variable columns (ex: bacteria) start in the table
+#' variable columns (eg. bacteria) start in the table
 #' @param fac_var The column numbers of the position where the columns that
-#' aren't numerical  (e.g. characters, categorical numbers, ordinal numbers),
-#' should be a numerical vector (ex: c(1, 2, 5:7)).
+#' aren't numerical  (eg. characters, categorical numbers, ordinal numbers),
+#' should be a numerical vector (eg. c(1, 2, 5:7)).
 #' @param not_used The column position of the columns not are irrelevant and
 #' can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.
