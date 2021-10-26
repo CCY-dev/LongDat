@@ -5,6 +5,8 @@
 #' @param x_axis_order The plotting order of the x axis.
 #' It should be a character vector
 #' (eg. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).
+#' @param confound_panel A boolean vector indicating whether to plot
+#' confounding status alongside the effect panel. The default is TRUE.
 #' @param pos_color The color for a positive effect size.
 #'  It should be a hex color code (eg. "#b3e6ff") or the colors recognized
 #'  by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
@@ -59,6 +61,7 @@
 
 cuneiform_plot <- function(result_table,
                            x_axis_order = NULL,
+                           confound_panel = TRUE,
                            pos_color = "red",
                            neg_color = "blue",
                            panel_width = 4,
@@ -129,7 +132,9 @@ cuneiform_plot <- function(result_table,
   g1 <- ggplot2::ggplot(All_long, aes(x = Effect_name, y = Variables)) +
     geom_point(aes(shape = Shape, fill = EffectSize,
                    alpha = Alpha), size = 3.5) +
-    scale_shape_manual(values = c(1, 24, 25)) +
+    scale_shape_manual(values = c(1, 24, 25),
+                       labels = c("No change", "Enriched", "Decreased"),
+                       name = "Effect") +
     scale_fill_gradient2(midpoint = 0, low = neg_color, mid = "white",
                          high = pos_color, n.breaks = 8,
                          limits = c(-1, 1) * max(abs(All_long$EffectSize))) +
@@ -144,24 +149,27 @@ cuneiform_plot <- function(result_table,
           axis.text.x=element_text(size = x_label_size),
           axis.title.y=element_blank(),
           legend.title = element_text(size = legend_title_size),
-          legend.text = element_text(size = legend_text_size)) +
-    guides(shape = "none") # Remove shape legend
+          legend.text = element_text(size = legend_text_size))
 
-  g2 <- ggplot2::ggplot(Effect_wide, aes(x = "Confounding status",
-                                         y = Variables)) +
-    geom_text(aes(label = Signal),
-              size = confound_text_size, color = "gray30") +
-    theme_light() +
-    theme(axis.title.x=element_blank(),
-          axis.text.x=element_text(size = x_label_size),
-          axis.ticks.x=element_blank(),
-          axis.title.y=element_blank(),
-          axis.text.y=element_blank(),
-          axis.ticks.y=element_blank(),
-          panel.grid.major.x = element_blank())
+  if (confound_panel == TRUE) {
+    g2 <- ggplot2::ggplot(Effect_wide, aes(x = "Confounding status",
+                                           y = Variables)) +
+      geom_text(aes(label = Signal),
+                size = confound_text_size, color = "gray30") +
+      theme_light() +
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_text(size = x_label_size),
+            axis.ticks.x=element_blank(),
+            axis.title.y=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank(),
+            panel.grid.major.x = element_blank())
 
-  final_plot <- (g1|g2) + patchwork::plot_layout(guides = "collect",
-                                 widths = c(panel_width, 1))
+    final_plot <- (g1|g2) + patchwork::plot_layout(guides = "collect",
+                                                   widths = c(panel_width, 1))
+  } else {
+    final_plot <- g1
+  }
   return(final_plot)
   print("Finished plotting successfully!")
 }

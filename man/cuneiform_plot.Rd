@@ -8,6 +8,7 @@ longdat_cont()}
 cuneiform_plot(
   result_table,
   x_axis_order = NULL,
+  confound_panel = TRUE,
   pos_color = "red",
   neg_color = "blue",
   panel_width = 4,
@@ -27,6 +28,9 @@ longdat_cont() output, or any table that has the same format.}
 \item{x_axis_order}{The plotting order of the x axis.
 It should be a character vector
 (eg. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).}
+
+\item{confound_panel}{A boolean vector indicating whether to plot
+confounding status alongside the effect panel. The default is TRUE.}
 
 \item{pos_color}{The color for a positive effect size.
 It should be a hex color code (eg. "#b3e6ff") or the colors recognized
