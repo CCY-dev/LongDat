@@ -189,7 +189,7 @@ final_result_summarize_cont <- function(variable_col, N,
     result_table <- cbind(prevalence, mean_abundance, final_sig, effect_type,
                           assoc, Ps_null_model_fdr, p_poho)
     colnames(result_table) <- c("Prevalence_percentage", "Mean_abundance",
-                                "Signal", "Effect", "Effect_size",
+                                "Signal", "Effect", "EffectSize",
                                 "Null_time_model_q", "Post-hoc_q")
 
   } else if (variable_col-1-2-length(not_used) == 0) {
@@ -245,7 +245,7 @@ final_result_summarize_cont <- function(variable_col, N,
     result_table <- cbind(prevalence, mean_abundance, final_sig, effect_type,
                           assoc, Ps_null_model_fdr, p_poho)
     colnames(result_table) <- c("Prevalence_percentage", "Mean_abundance",
-                                "Signal", "Effect", "Effect_size",
+                                "Signal", "Effect", "EffectSize",
                                 "Null_time_model_q", "Post-hoc_q")
   }
   #write.table(x = result_table, file = paste0(output_tag,
