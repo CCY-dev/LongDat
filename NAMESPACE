@@ -3,6 +3,7 @@
 export(cuneiform_plot)
 export(longdat_cont)
 export(longdat_disc)
+export(make_master_table)
 export(theta_plot)
 import(bestNormalize)
 import(dplyr)
