@@ -1,4 +1,4 @@
-#' Creates cuneiform plots of result table from longdat_disc() or
+#' Create cuneiform plots of result table from longdat_disc() or
 #' longdat_cont()
 #' @param result_table The result table from longdat_disc() or
 #' longdat_cont() output, or any data frame that has the same format.
