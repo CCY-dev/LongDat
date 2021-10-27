@@ -124,18 +124,24 @@ cuneiform_plot <- function(result_table,
                                    levels = x_axis_order)
   }
 
+  # Specify the levels of alpha and shape
+  All_long$Alpha <- factor(All_long$Alpha, levels = c("Significant",
+                                                      "Insignificant"))
+  All_long$Shape <- factor(All_long$Shape, levels = c("1", "24", "25"))
+
   # Plotting
   g1 <- ggplot2::ggplot(All_long, aes(x = Effect_name, y = Variables)) +
     geom_point(aes(shape = Shape, fill = EffectSize,
                    alpha = Alpha), size = 3.5) +
     scale_shape_manual(values = c(1, 24, 25),
+                       breaks = c("1", "24", "25"),
                        labels = c("No change", "Enriched", "Decreased"),
-                       name = "Effect") +
+                       name = "Effect", drop = FALSE) +
     scale_fill_gradient2(midpoint = 0, low = neg_color, mid = "white",
                          high = pos_color, n.breaks = 8,
                          limits = c(-1, 1) * max(abs(All_long$EffectSize))) +
     scale_alpha_manual(breaks = c("Insignificant", "Significant"),
-                       values=c(0.4, 1)) +
+                       values=c(0.4, 1), drop = FALSE) +
     ggtitle(title) +
     labs(fill = "Effect size", alpha = "Significance") +
     theme_light() +
