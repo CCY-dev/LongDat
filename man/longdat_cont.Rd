@@ -21,38 +21,39 @@ longdat_cont(
 )
 }
 \arguments{
-\item{input}{A character vector. This is the path to a txt file with the
-first column as "Individual", and all the dependent variables (eg: bacteria)
-        should be at the end of the table. The time variable here should be
-        continuous, if time is discrete, please apply longdat_disc() instead.
-        Please avoid symbols in the names of potential confounders
+\item{input}{A data frame with the first column as "Individual"
+and all the columns of dependent variables (features, eg. bacteria)
+        at the end of the table. The time variable here should be
+        continuous, if time is discrete, please apply longdat_disc()
+        instead. Please avoid using characters that don't belong to
+        ASCII printable characters for potential confounders names
         (confounders are any column apart from individual, test_var and
         dependent variables).}
 
-\item{data_type}{The data type of the dependent variable. Can either
-be "proportion", "measurement", "count", "binary", "ordinal" or "others".
-      Proportion (or ratio) data range from 0 to 1. Measurement data are
-      continuous and can be measured at finer and finer scale.
-      Count data consist of discrete non-negative integers resulted from
-      counting. Binary data are the data of sorting things into
-      one of two mutually exclusive categories. Ordinal data consist of
-      ranks. Any data that doesn't belong to the previous categories
-      should be classified as "others".}
+\item{data_type}{The data type of the dependent variables (features).
+Can either be "proportion", "measurement", "count", "binary", "ordinal" or
+"others". Proportion (or ratio) data range from 0 to 1. Measurement data are
+       continuous and can be measured at finer and finer scale (eg. weight).
+       Count data consist of discrete non-negative integers resulted from
+       counting. Binary data are the data of sorting things into
+       one of two mutually exclusive categories. Ordinal data consist of
+       ranks. Any data that doesn't belong to the previous categories
+       should be classified as "others".}
 
 \item{test_var}{The name of the independent variable you are testing for,
 should be a character vector (eg. c("Time")) identical to its column name
 and make sure there is no space in it.}
 
 \item{variable_col}{The column number of the position where the dependent
-variable columns (eg. bacteria) start in the table}
+variable columns (features, eg. bacteria) start in the table.}
 
 \item{fac_var}{The column numbers of the position where the columns that
-aren't numerical  (eg. characters, categorical numbers, ordinal numbers),
-should be a numerical vector (eg. c(1, 2, 5:7)).}
+aren't numerical  (eg. characters, categorical numbers, ordinal numbers).
+This should be a numerical vector (eg. c(1, 2, 5:7)).}
 
 \item{not_used}{The column position of the columns not are irrelevant and
 can be ignored when in the analysis.
-       This should be a number vector, and the default is NULL.}
+       This should be a numerical vector, and the default is NULL.}
 
 \item{adjustMethod}{Multiple testing p value correction. Choices are
 the ones in p.adjust(), including
@@ -81,13 +82,14 @@ Variable with non-zero counts lower than or equal to this value
 Variable with non-zero counts lower than or equal to this value
        will be filtered out. The default is 5.}
 
-\item{verbose}{A boolean vector indicating whether to print detailed message.
-The default is TRUE.}
+\item{verbose}{A boolean vector indicating whether to print detailed
+message. The default is TRUE.}
 }
 \value{
-The "Result_table" will be in your output directory. If there are
- confounders in the input, there will be another table called
- "Confounder_table". For count mode, if there is false positive
+longdat_cont() returns a list which contains a "Result_table",
+and if there are confounders in the input data frame,
+there will be another table called
+ "Confounder_table". For count mode, if there is any false positive
 in the randomized control result, then another table named
 "Randomized_control_table" will also be
 generated. The detailed description is as below.
@@ -213,7 +215,7 @@ for different types of dependent variable. Negative binomial mixed model for
  signals in this control model test, users will get a warning
  at the end of the run.
 
-When there are potential confounders:
+When there are potential confounders in the input data:
 After the model test and post-hoc test described above, a confounding
 model test will be added to the work flow. The potential confounders
 will be added to the model one by one and test for its significance
@@ -225,11 +227,8 @@ randomized negative check.
 }
 \examples{
 \dontrun{
-# Get the path of example dataset
-system.file("Fasting_cont.txt", package = "LongDat")
-# Paste the directory to the input below
-test_cont <- longdat_cont(input = "your_path_to/Fasting_cont.txt",
-data_type = "count",
-test_var = "Day", variable_col = 7, fac_var = c(1, 3))
+test_cont <- longdat_cont(input = LongDat_cont_master_table,
+data_type = "count", test_var = "Day",
+variable_col = 7, fac_var = c(1, 3))
 }
 }

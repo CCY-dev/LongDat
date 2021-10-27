@@ -1,8 +1,8 @@
 #' Plot theta values of negative binomial models versus non-zero count
 #' for count data
-#' @param input A character vector. This is the path to a txt file with the
-#' first column as "Individual", and all the dependent variables (eg. bacteria)
-#'         should be at the end of the table.
+#' @param input A data frame with the first column as "Individual"
+#' and all the columns of dependent variables (features, eg. bacteria)
+#'         at the end of the table.
 #' @param test_var The name of the independent variable you are testing for,
 #' should be a character vector (eg. c("Time"))
 #'        identical to its column name and make sure there is no space in it.
@@ -51,10 +51,7 @@
 #' their own data.
 #' @examples
 #'\dontrun{
-#' # Get the path of example dataset
-#' system.file("Fasting_disc.txt", package = "LongDat")
-#' # Paste the directory to the input below
-#' test_theta <- theta_plot(input = "your_path_to/Fasting_disc.txt",
+#' test_theta_plot <- theta_plot(input = LongDat_disc_master_table,
 #'  test_var = "Time_point", variable_col = 7, fac_var = c(1:3))
 #'}
 utils::globalVariables(c("values", "NB_theta", "Nonzero_count"))
@@ -76,9 +73,7 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
   }
 
   if (verbose == TRUE) {print("Start data preprocessing.")}
-  data <- read.table (file = input, header = TRUE, sep = "\t",
-                      check.names = FALSE,
-                      stringsAsFactors = FALSE)
+  data <- input
   # Remove the features (bacteria) whose column sum is 0
   values <- as.data.frame(data[ , variable_col:ncol(data)])
   values <- as.data.frame(apply(values, 2, as.numeric))

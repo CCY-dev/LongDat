@@ -5,9 +5,9 @@
 \title{Plot theta values of negative binomial models versus non-zero count
 for count data}
 \arguments{
-\item{input}{A character vector. This is the path to a txt file with the
-first column as "Individual", and all the dependent variables (eg. bacteria)
-        should be at the end of the table.}
+\item{input}{A data frame with the first column as "Individual"
+and all the columns of dependent variables (features, eg. bacteria)
+        at the end of the table.}
 
 \item{test_var}{The name of the independent variable you are testing for,
 should be a character vector (eg. c("Time"))
@@ -60,10 +60,7 @@ their own data.
 }
 \examples{
 \dontrun{
-# Get the path of example dataset
-system.file("Fasting_disc.txt", package = "LongDat")
-# Paste the directory to the input below
-test_theta <- theta_plot(input = "your_path_to/Fasting_disc.txt",
+test_theta_plot <- theta_plot(input = LongDat_disc_master_table,
  test_var = "Time_point", variable_col = 7, fac_var = c(1:3))
 }
 }

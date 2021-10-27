@@ -14,9 +14,8 @@
 #' @name data_preprocess
 
 data_preprocess <- function(input, test_var, variable_col, fac_var, not_used) {
-data <- read.table (file = input, header = TRUE, sep = "\t",
-                    check.names = FALSE,
-                    stringsAsFactors = FALSE)
+data <- input
+
 # Remove the features (bacteria) whose column sum is 0
 values <- data %>% dplyr::select(all_of(variable_col:ncol(data)))
 values <- as.data.frame(apply(values, 2, as.numeric))
