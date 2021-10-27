@@ -41,7 +41,7 @@ Can either be "proportion", "measurement", "count", "binary", "ordinal" or
        should be classified as "others".}
 
 \item{test_var}{The name of the independent variable you are testing for,
-should be a character vector (eg. c("Time")) identical to its column name
+should be a string (eg. "Time") identical to its column name
 and make sure there is no space in it.}
 
 \item{variable_col}{The column number of the position where the dependent

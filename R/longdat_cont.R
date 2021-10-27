@@ -20,7 +20,7 @@
 #'        ranks. Any data that doesn't belong to the previous categories
 #'        should be classified as "others".
 #' @param test_var The name of the independent variable you are testing for,
-#' should be a character vector (eg. c("Time")) identical to its column name
+#' should be a string (eg. "Time") identical to its column name
 #' and make sure there is no space in it.
 #' @param variable_col The column number of the position where the dependent
 #' variable columns (features, eg. bacteria) start in the table.
