@@ -2,7 +2,7 @@
 % Please edit documentation in R/cuneiform_plot.R
 \name{cuneiform_plot}
 \alias{cuneiform_plot}
-\title{Creates cuneiform plots of result table from longdat_disc() or
+\title{Create cuneiform plots of result table from longdat_disc() or
 longdat_cont()}
 \usage{
 cuneiform_plot(
@@ -66,7 +66,7 @@ panel. The default is 4.}
 a 'ggplot' object
 }
 \description{
-Creates cuneiform plots of result table from longdat_disc() or
+Create cuneiform plots of result table from longdat_disc() or
 longdat_cont()
 }
 \details{
@@ -79,13 +79,9 @@ result of longdat_disc() or longdat_cont(). It plots the effect sizes
 }
 \examples{
 \dontrun{
-# Get the path of example dataset
-system.file("Fasting_disc.txt", package = "LongDat")
-
-# Paste the directory to the input below
-test_disc <- longdat_disc(input = "your_path_to/Fasting_disc.txt",
-data_type = "count", test_var = "Time_point", variable_col = 7,
-fac_var = c(1:3))
+test_disc <- longdat_disc(input = LongDat_disc_master_table,
+data_type = "count", test_var = "Time_point",
+variable_col = 7, fac_var = c(1:3))
 
 test_plot <- cuneiform_plot(result_table = test_disc[[1]])
 }
