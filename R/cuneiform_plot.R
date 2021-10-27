@@ -1,7 +1,7 @@
 #' Creates cuneiform plots of result table from longdat_disc() or
 #' longdat_cont()
 #' @param result_table The result table from longdat_disc() or
-#' longdat_cont() output, or any table that has the same format.
+#' longdat_cont() output, or any data frame that has the same format.
 #' @param x_axis_order The plotting order of the x axis.
 #' It should be a character vector
 #' (eg. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).
