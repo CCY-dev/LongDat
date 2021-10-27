@@ -23,7 +23,7 @@ cuneiform_plot(
 }
 \arguments{
 \item{result_table}{The result table from longdat_disc() or
-longdat_cont() output, or any table that has the same format.}
+longdat_cont() output, or any data frame that has the same format.}
 
 \item{x_axis_order}{The plotting order of the x axis.
 It should be a character vector

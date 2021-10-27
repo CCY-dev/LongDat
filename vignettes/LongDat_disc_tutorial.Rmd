@@ -51,7 +51,7 @@ fasting %>%
   kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
   scroll_box(width = "700px", height = "200px")
 ```
-As you can see, the "Individual" is at the first column, and the dependent variable, which are bacterial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential confounders. For example, here the potential confounders are sex, age, drug A and drug B. For the details of the requirements, please read the help page of this function. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data.**
+As you can see, the "Individual" is at the first column, and the dependent variable, which are bacterial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential confounders. For example, here the potential confounders are sex, age, drug A and drug B. For the details of the requirements, please read the help page of this function. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data frame.**
 
 ## Run longdat_disc()
 
