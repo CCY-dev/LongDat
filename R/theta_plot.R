@@ -159,6 +159,6 @@ theta_plot <- function(input, test_var, variable_col, fac_var, not_used = NULL,
       scale_x_continuous(breaks = seq(0, nrow(data), by = x_interval_value)) +
       expand_limits(x = c(0, nrow(data)), y = c(-10, max(log(all_info$NB_theta,
                                                              base = 2)) + 10)))
+  print("Finished plotting successfully!")
   return(plot)
-  print("Finished successfully!")
 }

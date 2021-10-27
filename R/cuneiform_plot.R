@@ -166,6 +166,6 @@ cuneiform_plot <- function(result_table,
   } else {
     final_plot <- g1
   }
-  return(final_plot)
   print("Finished plotting successfully!")
+  return(final_plot)
 }
