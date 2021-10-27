@@ -99,6 +99,8 @@ final_result_summarize_cont <- function(variable_col, N,
         }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
       }
     }
+    confound <- confound %>%
+      tibble::rownames_to_column("Feature")
     #write.table(x = confound,
     #file = paste0(output_tag, "_confounders.txt"), sep = "\t",
     #            row.names = T, col.names = NA, quote = F)
@@ -248,6 +250,8 @@ final_result_summarize_cont <- function(variable_col, N,
                                 "Signal", "Effect", "EffectSize",
                                 "Null_time_model_q", "Post-hoc_q")
   }
+  result_table <- result_table %>%
+    rownames_to_column("Feature")
   #write.table(x = result_table, file = paste0(output_tag,
   # "_result_table.txt"), sep = "\t",
   #           row.names = T, col.names = NA, quote = F)

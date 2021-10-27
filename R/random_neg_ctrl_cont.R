@@ -229,6 +229,9 @@ random_neg_ctrl_cont <- function(test_var, variable_col, fac_var, not_used,
       dplyr::select(-1)
     false_pos_count <- nrow(result_neg_ctrl_sig)
 
+    result_neg_ctrl_sig <- result_neg_ctrl_sig %>%
+      tibble::rownames_to_column("Randomized_feature")
+
     if (nrow(result_neg_ctrl_sig) > 0) {
     #write.table(x = result_neg_ctrl_sig, file =
       # paste0("_randomized_control.txt"), sep = "\t",

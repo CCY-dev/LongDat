@@ -278,6 +278,8 @@ random_neg_ctrl_disc <- function(test_var, variable_col, fac_var,
        dplyr::filter(.data$Final_signal == "False_positive" &
                        .data$Signal_of_CI_signs == "Good") %>%
        dplyr::select(-1)
+     result_neg_ctrl_sig <- result_neg_ctrl_sig %>%
+       tibble::rownames_to_column("Randomized_feature")
        #write.table(x = result_neg_ctrl_sig, file = paste0(output_tag,
        # "_randomized_control.txt"), sep = "\t",
        #            row.names = T, col.names = NA, quote = F)

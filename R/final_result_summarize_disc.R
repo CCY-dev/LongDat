@@ -103,6 +103,8 @@ final_result_summarize_disc <- function(variable_col, N,
         }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
       }
     }
+    confound <- confound %>%
+      tibble::rownames_to_column("Feature")
     #write.table(x = confound, file = paste0(output_tag, "_confounders.txt"),
     # sep = "\t",
     #            row.names = TRUE, col.names = NA, quote = FALSE)
@@ -285,6 +287,8 @@ final_result_summarize_disc <- function(variable_col, N,
       }
     }
   }
+  result_table <- result_table %>%
+    rownames_to_column("Feature")
   #write.table(x = result_table, file = paste0(output_tag,
   # "_result_table.txt"), sep = "\t",
   #            row.names = TRUE, col.names = NA, quote = FALSE)

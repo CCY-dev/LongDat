@@ -81,9 +81,8 @@ cuneiform_plot <- function(result_table,
 
   # Select the required columns
   sig_wide <- sig_result %>%
-    dplyr::select(c(Signal, stringr::str_which(string = colnames(sig_result),
-                                               pattern = "Effect"))) %>%
-    tibble::rownames_to_column("Variables")
+    dplyr::select(c(Feature, Signal, stringr::str_which(string = colnames(sig_result),
+                                               pattern = "Effect")))
 
   # Divide them into 2 tables: Effect and EffectSize
   Effect_wide <- sig_wide %>%
@@ -91,7 +90,7 @@ cuneiform_plot <- function(result_table,
                                      pattern = "EffectSize",
                                      negate = T))
   EffectSize_wide <- sig_wide %>%
-    dplyr::select(c(Variables, Signal,
+    dplyr::select(c(Feature, Signal,
                     stringr::str_which(string = colnames(sig_wide),
                                        pattern = "EffectSize")))
 
@@ -130,7 +129,7 @@ cuneiform_plot <- function(result_table,
   All_long$Shape <- factor(All_long$Shape, levels = c("1", "24", "25"))
 
   # Plotting
-  g1 <- ggplot2::ggplot(All_long, aes(x = Effect_name, y = Variables)) +
+  g1 <- ggplot2::ggplot(All_long, aes(x = Effect_name, y = Feature)) +
     geom_point(aes(shape = Shape, fill = EffectSize,
                    alpha = Alpha), size = 3.5) +
     scale_shape_manual(values = c(1, 24, 25),
@@ -155,7 +154,7 @@ cuneiform_plot <- function(result_table,
 
   if (confound_panel == TRUE) {
     g2 <- ggplot2::ggplot(Effect_wide, aes(x = "Confounding status",
-                                           y = Variables)) +
+                                           y = Feature)) +
       geom_text(aes(label = Signal),
                 size = confound_text_size, color = "gray30") +
       theme_light() +
