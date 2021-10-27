@@ -18,7 +18,7 @@ Description: This tool takes longitudinal dataset as input and analyzes if there
 License: GPL-2
 Encoding: UTF-8
 Language: en-US
-LazyData: Fasle
+LazyData: true
 URL: https://github.com/CCY-dev/longdat
 BugReports: https://github.com/CCY-dev/longdat/issues
 RoxygenNote: 7.1.2
