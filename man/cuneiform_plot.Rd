@@ -83,6 +83,7 @@ test_disc <- longdat_disc(input = LongDat_disc_master_table,
 data_type = "count", test_var = "Time_point",
 variable_col = 7, fac_var = c(1:3))
 
-test_plot <- cuneiform_plot(result_table = test_disc[[1]])
+test_plot <- cuneiform_plot(result_table = test_disc[[1]],
+x_axis_order = c("Effect_1_2", "Effect_2_3", "Effect_1_3"))
 }
 }
