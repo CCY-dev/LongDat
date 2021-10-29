@@ -4,15 +4,15 @@
 #' longdat_cont() output, or any data frame that has the same format.
 #' @param x_axis_order The plotting order of the x axis.
 #' It should be a character vector
-#' (eg. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).
+#' (e.g. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).
 #' @param confound_panel A boolean vector indicating whether to plot
 #' confounding status alongside the effect panel. The default is TRUE.
 #' @param pos_color The color for a positive effect size.
-#'  It should be a hex color code (eg. "#b3e6ff") or the colors recognized
+#'  It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
 #'  by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
 #'  The default is "red".
 #' @param neg_color The color for a negative effect size.
-#'  It should be a hex color code (eg. "#b3e6ff") or the colors recognized
+#'  It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
 #'  by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
 #'  The default is "blue".
 #' @param panel_width The width of the effect size panel on the left

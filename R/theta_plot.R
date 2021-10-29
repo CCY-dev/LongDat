@@ -1,16 +1,16 @@
 #' Plot theta values of negative binomial models versus non-zero count
 #' for count data
 #' @param input A data frame with the first column as "Individual"
-#' and all the columns of dependent variables (features, eg. bacteria)
+#' and all the columns of dependent variables (features, e.g. bacteria)
 #'         at the end of the table.
 #' @param test_var The name of the independent variable you are testing for,
-#' should be a character vector (eg. c("Time"))
+#' should be a character vector (e.g. c("Time"))
 #'        identical to its column name and make sure there is no space in it.
 #' @param variable_col The column number of the position where the dependent
-#'  variable columns (eg. bacteria) start in the table
+#'  variable columns (e.g. bacteria) start in the table
 #' @param fac_var The column numbers of the position where the columns
-#' that aren't numerical  (eg. characters, categorical numbers,
-#' ordinal numbers), should be a numerical vector (eg. c(1, 2, 5:7))
+#' that aren't numerical  (e.g. characters, categorical numbers,
+#' ordinal numbers), should be a numerical vector (e.g. c(1, 2, 5:7))
 #' @param not_used The column position of the columns not are irrelevant and
 #' can be ignored when in the analysis.
 #'        This should be a number vector, and the default is NULL.

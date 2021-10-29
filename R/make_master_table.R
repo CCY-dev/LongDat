@@ -6,7 +6,7 @@
 #' number of rows as feature table does.
 #' @param feature_table A data frame whose columns only consist of
 #'  sample identifiers (sample_ID) and features
-#'  (dependent variables, eg. microbiome). Each row corresponds to
+#'  (dependent variables, e.g. microbiome). Each row corresponds to
 #'  one sample_ID. Please do not include any columns other than
 #'  sample_ID and features. Also, feature table should have the same number
 #'  of rows as metadata table does.
@@ -14,9 +14,9 @@
 #' Please make sure that sample_IDs are unique for each sample, and that
 #' metadata and feature tables have same sample_IDs. If sample_IDs don't match
 #' between the two tables, it will fail to join them together. This should
-#' be a string, eg. "Sample_ID"
+#' be a string, e.g. "Sample_ID"
 #' @param individual The name of the column which stores individual information
-#' in the metadata table. This should be a string, eg. "Individual"
+#' in the metadata table. This should be a string, e.g. "Individual"
 #' @param keep_id A boolean vector indicating whether keep sample_ID
 #' column in the output master table. The default is FALSE.
 #' @export

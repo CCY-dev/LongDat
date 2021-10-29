@@ -22,7 +22,7 @@ longdat_cont(
 }
 \arguments{
 \item{input}{A data frame with the first column as "Individual"
-and all the columns of dependent variables (features, eg. bacteria)
+and all the columns of dependent variables (features, e.g. bacteria)
         at the end of the table. The time variable here should be
         continuous, if time is discrete, please apply longdat_disc()
         instead. Please avoid using characters that don't belong to
@@ -33,7 +33,7 @@ and all the columns of dependent variables (features, eg. bacteria)
 \item{data_type}{The data type of the dependent variables (features).
 Can either be "proportion", "measurement", "count", "binary", "ordinal" or
 "others". Proportion (or ratio) data range from 0 to 1. Measurement data are
-       continuous and can be measured at finer and finer scale (eg. weight).
+       continuous and can be measured at finer and finer scale (e.g. weight).
        Count data consist of discrete non-negative integers resulted from
        counting. Binary data are the data of sorting things into
        one of two mutually exclusive categories. Ordinal data consist of
@@ -41,15 +41,15 @@ Can either be "proportion", "measurement", "count", "binary", "ordinal" or
        should be classified as "others".}
 
 \item{test_var}{The name of the independent variable you are testing for,
-should be a string (eg. "Time") identical to its column name
+should be a string (e.g. "Time") identical to its column name
 and make sure there is no space in it.}
 
 \item{variable_col}{The column number of the position where the dependent
-variable columns (features, eg. bacteria) start in the table.}
+variable columns (features, e.g. bacteria) start in the table.}
 
 \item{fac_var}{The column numbers of the position where the columns that
-aren't numerical  (eg. characters, categorical numbers, ordinal numbers).
-This should be a numerical vector (eg. c(1, 2, 5:7)).}
+aren't numerical  (e.g. characters, categorical numbers, ordinal numbers).
+This should be a numerical vector (e.g. c(1, 2, 5:7)).}
 
 \item{not_used}{The column position of the columns not are irrelevant and
 can be ignored when in the analysis.
