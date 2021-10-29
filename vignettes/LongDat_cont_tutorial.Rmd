@@ -5,7 +5,7 @@ output:
   rmarkdown::html_vignette:
     toc: true 
 vignette: >
-  %\VignetteIndexEntry{LongDat_tutorial}
+  %\VignetteIndexEntry{longdat_cont_tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
