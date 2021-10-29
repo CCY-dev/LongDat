@@ -35,22 +35,25 @@
 #'         'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY' and 'fdr.'
 #'         The default is 'fdr'.
 #' @param model_q The threshold for significance of model test after multiple
-#'  testing correction.
-#'                The default is 0.1.
+#'  testing correction. The default is 0.1.
 #' @param posthoc_q The threshold for significance of post-hoc test after
-#' multiple testing correction.
-#'                The default is 0.05.
+#' multiple testing correction. The default is 0.05.
 #' @param theta_cutoff Required when the data type is set as "count".
-#' Variable with theta value from negative binomial regression
+#'  Variable with theta value from negative binomial regression
 #'        larger than or equal to the cutoff will be filtered out if it
-#'        also doesn't meet the non-zero count threshold. The default is 2^20.
+#'        also doesn't meet the non-zero count threshold.
+#'        Users can use the function "theta_plot()" to help with
+#'        specifying the value for theta_cutoff. The default is 2^20.
 #' @param nonzero_count_cutoff1 Required when the data type is set as "count".
-#' Variable with non-zero counts lower than or equal to this value
-#'        will be filtered out if it also doesn't meet the theta threshold.
-#'        The default is 9.
+#'  Variable with non-zero counts lower than or equal to this value
+#'        will be filtered out if it doesn't meet the theta threshold either.
+#'        Users can use the function "theta_plot()" to help with
+#'        specifying the value for nonzero_count_cutoff1. The default is 9.
 #' @param nonzero_count_cutoff2 Required when the data type is set as "count".
-#' Variable with non-zero counts lower than or equal to this value
-#'        will be filtered out. The default is 5.
+#'  Variable with non-zero counts lower than or equal to this value
+#'        will be filtered out. Users can use the function "theta_plot()" to
+#'        help with specifying the value for nonzero_count_cutoff2.
+#'        The default is 5.
 #' @param verbose A boolean vector indicating whether to print detailed
 #' message. The default is TRUE.
 #' @export
