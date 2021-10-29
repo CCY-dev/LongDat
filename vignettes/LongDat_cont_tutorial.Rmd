@@ -1,6 +1,6 @@
 ---
-title: "LongDat tutorial (longdat_cont)"
-subtitle: "Longitudinal analysis (time as continuous variable) with longdat_cont()"
+title: "Longitudinal analysis pipeline with longdat_cont()"
+subtitle: "Time (the proxy for treatment) as a continuous variable"
 output: 
   rmarkdown::html_vignette:
     toc: true 
@@ -9,11 +9,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-This is an example of running longdat_cont. Note that the time variable here should be continuous If time variable is discrete, please apply longdat_disc instead. 
+## Introduction
 
-## Input format
+This is an example of running ```longdat_cont()```. Note that the time variable (proxy of treatment) here should be continuous. If the time variable is discrete, please apply ```longdat_disc()``` instead. 
 
-The input format should be the same as the example data set "Fasting_cont.txt".
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -25,88 +24,167 @@ knitr::opts_chunk$set(
 ```
 
 ```{r message=FALSE}
-# Load the package
+# Load the packages
 library(LongDat)
 library(tidyverse)
 library(kableExtra)
 ```
 
-```{r tidy=TRUE, tidy.opts=list(width.cutoff=80)}
-# Get the path of example dataset "Fasting_cont.txt" so that we can run LongDat on it 
-system.file("Fasting_cont.txt", package = "LongDat")
+## Explaining the input data frame format
 
-# If the command above doesn't work, you can also try the one below. It will show you the path to your R libraries on your computer.
-.libPaths()
-# Copy the path from .libPaths() and add "/LongDat/Fasting_cont.txt" to the end. This is the path to the example dataset "Fasting_cont.txt".
+The input data frame (called master table) should have the same format as the example data "LongDat_cont_master_table". If you have metadata and feature (eg. microbiome, immunome) data stored in separate tables, you can go to the section [Preparing the input data frame with make_master_table()] below. The function ```make_master_table()``` helps you to create master table from metadata and feature tables.
 
-# In addition the methods above, if you have the source code of LongDat package, you can find "Fasting_cont.txt" in the folder "inst/" as wel.
-```
-First, let's have a look at Fasting_cont.txt. This is a mock longitudinal data set with 2 time points (0 and 7 days). Here we want to see if the fasting intervention has significant effect on gut bacterial abundance or not. 
+Now let's have a look at the required format for the input master table. The example below is a dummy longitudinal data set with 2 time points (day 0 and 7). Here we want to see if the treatment has a significant effect on gut microbial abundance or not. 
+
 ```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
-# Read in Fasting_cont.txt
-library(kableExtra)
-fasting <- read.table("/Library/Frameworks/R.framework/Versions/4.0/Resources/library/LongDat/Fasting_cont.txt", header = T, row.names = NULL, sep = "\t")
-fasting %>%
-  kbl() %>%
-  kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
-  scroll_box(width = "700px", height = "200px")
+# Read in the data frame. LongDat_cont_master_table is already lazily loaded.
+master <- LongDat_cont_master_table
+master %>%
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
+  kableExtra::scroll_box(width = "700px", height = "200px")
 ```
-As you can see, the "Individual" is at the first column, and the dependent variable, which are bacterial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. day) and dependent variables will be taken as potential confounders. For example, here the potential confounders are sex, age, drug A and drug B. For the details of the requirements, please read the help page of this function. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data.**
+As you can see, the "Individual" is at the first column, and the features (dependent variables), which are gut microbial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Day) and dependent variables will be taken as potential confounders (confounding with the test_var). For example, here the potential confounders are sex, age, drug A and drug B. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data frame.**
+
+## Preparing the input data frame with make_master_table()
+
+If you have your input master table prepared already, you can skip this section and go to [Run longdat_cont()] directly. If your metadata and feature (eg. microbiome, immunome) data are stored in two tables, you can create a master table out of them easily with the function ```make_master_table()```.
+
+First, let's take a look at an example of the metadata table. Metadata table should be a data frame whose columns consist of sample identifiers (sample_ID, unique for each sample), individual, time point and other meta data. Each row corresponds to one sample_ID. 
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
+# Read in the data frame. LongDat_cont_metadata_table is already lazily loaded.
+metadata <- LongDat_cont_metadata_table
+metadata %>%
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
+  kableExtra::scroll_box(width = "700px", height = "200px")
+```
+This example is a dummy longitudinal meatadata with 2 time points for each individual. Besides sample_ID, individual, day columns, there are also information of sex, age and drugs that individuals take. Here we want to see if the treatment has a significant effect on gut microbial abundance or not. 
+
+Then, let's see how a feature table looks like. Feature table should be a data frame whose columns only consist of sample identifiers (sample_ID) and features (dependent variables, e.g. microbiome). Each row corresponds to one sample_ID. Please do not include any columns other than sample_ID and features in the feature table.
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
+# Read in the data frame. LongDat_cont_feature_table is already lazily loaded.
+feature <- LongDat_cont_feature_table
+feature %>%
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
+  kableExtra::scroll_box(width = "700px", height = "200px")
+```
+This example is a dummy longitudinal feature data. It stores the gut microbial abundance of each sample.
+
+**To enable the joining process of metadata and feature tables, please pay attention to the following rules.** 
+
+1. The row numbers of metadata and feature tables should be the same.
+2. Sample_IDs are unique for each sample (i.e. no repeated sample_ID)
+3. Metadata and feature tables have the same sample_IDs. If sample_IDs don't match between the two tables, the joining process will fail.
+4. As mentioned above, feature table should include only the columns of sample_ID and features.
+5. Avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names.
+
+Now let's create a master table and take a look at the result!
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
+master_created <- make_master_table(
+metadata_table = LongDat_cont_metadata_table,
+feature_table = LongDat_cont_feature_table,
+sample_ID = "Sample_ID",
+individual = "Individual")
+
+master_created %>%
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
+  kableExtra::scroll_box(width = "700px", height = "200px")
+```
+
+The table "master_created" is just the same as the table "master" or "LongDat_cont_master_table" in the previous section, with the "Individual" as the first column, and the features (dependent variables), which are gut microbial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Day) and dependent variables will be taken as potential confounders (confounding with the test_var). For the details of the arguments, please read the help page of this function by using ```?make_master_table```.
+
+
+OK, now we're ready to run ```longdat_cont()```!
 
 ## Run longdat_cont()
 
-Below is an example of running longdat_cont(). The input is the example data Fasting_cont.txt, and the data_type is "count" since the dependent variable (bacterial abundance in this case) is count data. The "test_var" is the independent variable you're testing, and here we're testing the "Day". The variable_col is 7 because the dependent variables start at column 7. And the fac_var states the columns that aren't numerical. Lastly, the output_tag is the name tag you'd like to add to the output. For the details of the arguments, please read the help page of this function. The run below takes less than a minute to complete.
+The input is the example data frame LongDat_cont_master_table (same as "master" or "master_created" in the previous sections), and the data_type is "count" since the dependent variables (features, in this case they're gut microbial abundance) are count data. The "test_var" is the independent variable you're testing, and here we're testing "Day" (time as the proxy for treatment). The variable_col is 7 because the dependent variables start at column 7. And the fac_var mark the columns that aren't numerical. For the details of the arguments, please read the help page of this function by using ```?longdat_cont```.
+
+The run below takes less than a minute to complete. When data_type equals to "count", please remember to set seed (as shown below) so that you'll get reproducible randomized control test.
 
 ```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
-# Run longdat_cont on example data set
-# When data_type = count, set seed for reproducible randomized control test  
+# Run longdat_cont() on LongDat_cont_master_table
 set.seed(100)
-example <-  longdat_cont(input = "/Library/Frameworks/R.framework/Versions/4.0/Resources/library/LongDat/Fasting_cont.txt", data_type = "count", test_var = "Day", variable_col = 7, fac_var = c(1, 3), verbose = TRUE)
+test_cont <- longdat_cont(input = LongDat_cont_master_table,
+data_type = "count",
+test_var = "Day",
+variable_col = 7,
+fac_var = c(1, 3))
 ```
 If you have completed running the function successfully, you'll see the message "Finished successfully!" at the end. The results are stored in list format.
 
 ## Results
+
+The major output from ```longdat_cont()``` include a result table and a confounder table. If you have count data (data_type equals to "count"), then there are chances that you get a third table "randomized control table". For more details about the "randomized control table", please read the help page of this function by using ```?longdat_cont```.
+
 ### Result table
 
-Now, let's have a look at the result table. 
+Let's have a look at the result table first. 
 ```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
-#The first dataframe in the list is the result table
-result_table <- example[[1]]
+# The first dataframe in the list is the result table
+result_table <- test_cont[[1]]
 result_table %>%
   kableExtra::kbl() %>%
   kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
   kableExtra::scroll_box(width = "700px")
 ```
-The first and second column show the prevalence and mean abundance of each bacterium. According to the "Signal" column, fasting intervention is a significant predictor for BacteriumA as it shows "OK_nc" (which represents "OK and no confounder"), meaning that there is an effect of time and no potential confounder.
 
-The following column "Effect" describes the trend of dependent variables changes along time. Here we can tell that BacteriumA has a decreasing pattern. From the next column "Effect_size", we know that the effect size is -0.78. The important and the most relevant information for users ends here, which are listed from the first column to "Effect_size". 
+The second and third columns show the prevalence and mean abundance of each feature According to the "Signal" column, treatment is a significant predictor for BacteriumA and BacteriumC as they show "OK_nc" (which represents OK and no confounder), meaning that the abundance of BacteriumA and BacteriumC alter significantly through time (proxy of treatment), and that there is no potential confounder. If there is confounding effect in the result, please see the confounder table to find out what the confounders are. As for BacteriumB, time (proxy of treatment) has no effect on its abundance.
 
-Then the following columns contain the details of model test p values ("Null_time_model_q"), the post-hoc test p values (Post.hoc_q). For more detailed info of the columns in the result table, please refer to the documentation of this function. The explanation of each type of "Signal" is listed below.
+The following column "Effect" describes the trend of dependent variables change along time. Here we can tell that BacteriumA and BacteriumC have decreasing and increasing patterns, respectively. From the next column "EffectSize", we know that the effect sizes are -0.78 and 0.71, respectively. The important and the most relevant information for users ends here, which are listed from the first column to "EffectSize". 
+
+Then the following columns contain the details of model test p values ("Null_time_model_q"), the post-hoc test p values (Post.hoc_q). For more detailed information of the columns in the result table, please refer to the help page by using ```?longdat_cont```. 
+
+The explanation of each type of "Signal" is listed below.
 
 |Signal|Meaning|Explanation|          
 |---|--------|-------------|
 |NS| Non-significant | There’s no effect of time.|
 |OK_nc |OK and no confounder | There’s an effect of time and there’s no potential confounder.|
-|OK_d| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test includes zero, and thus it is doubtful of this signal.|
+|OK_d| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test includes zero, and thus it is doubtful. Please check the raw data (e.g. plot feature against time) to confirm if there is real effect of time.|
 |OK_sd| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
 |AD| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
 |C| Confounded | There’s an effect of time, but it can be reduced to the confounding effects.|
 
 ### Confounder table
+
 Next, let's take a look at the confounder table.
 
-```{r}
-#The second dataframe in the list is the confounder table
-confound_table <- example[[2]]
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
+# The second dataframe in the list is the confounder table
+confound_table <- test_cont[[2]]
 confound_table %>%
-  kbl() %>%
-  kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
-  scroll_box(width = "700px")
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
+  kableExtra::scroll_box(width = "700px")
 ```
-The columns of this confounder table should be grouped by every 3 columns. "Confounder1" is the name of the confounder, while "Confounding_type1" is the confounding type of confounder1, and "Effect_size1" is the effect size of the dependent variable values between different levels of confounder 1.  If there are more than 1 confounders, they will be listed along the rows of each dependent variable. Since there is no confounding effect found in this example (according to the result table), the confounder table is a blank.
 
-## Conclusion
-From the result above, we confirm that fasting treatment can solely explain the changes in BacteriumA abundance as there is no confounder found. In other words, fasting induces significant change on BacteriumA.
+The columns of this confounder table are grouped every three columns. "Confounder1" is the name of the confounder, while "Confounding_type1" is the confounding type of confounder1, and "Effect_size1" is the effect size of the dependent variable values between different levels of confounder1. If there are more than one confounders, they will be listed along the rows of each dependent variable. Since there is no confounding effect found in this example (according to the result table), the confounder table is a blank. If you'd like to see a result with confounders, please read the vignette of ```longdat_disc()```.
 
-This tutorial ends here! For more detailed descriptions of this function, please look it up with ```?longdat_cont``` in R.
+### Result interpretation
+
+From the result above, we see that the treatment induces significant changes on the abundance of BacteriumA and BacteriumC, while causing no alteration in that of BacteriumB.
+
+## Plotting the result
+
+Finally, we can plot the result with the function ```cuneiform_plot()```. The required input is a result table from ```longdat_cont()``` (or any table with the same format as a result table does).
+
+```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
+test_plot <- cuneiform_plot(result_table = test_cont[[1]],
+                            title_size = 15)
+```
+
+```{r fig.asp = 0.6, fig.width = 8, out.width = "80%", dpi = 600}
+test_plot
+```
+
+Here we can see the result clearly from the cuneiform plot. It shows the features whose signals are not "NS". The left panel displays the effects in each time interval. Red represents positive effect size while blue describes negative one (colors can be customized by users). Signficant signals are indicated by solid shapes, whereas insignificant signals are denoted by transparent ones. The right panel displays the confounding status of each feature, and users can remove it by specifying ```confound_panel = FALSE```. For more details of the arguments, please read the help page of this function by using ```?cuneiform_plot```.
+
+### Wrap-up
+
+This tutorial ends here! If you have any further questions and can't find the answers in the vignettes or help pages, please contact the author (Chia-Yu.Chen@mdc-berlin.de).
+
 
