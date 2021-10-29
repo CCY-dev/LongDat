@@ -14,21 +14,24 @@ make_master_table(
 )
 }
 \arguments{
-\item{metadata_table}{A data frame which whose columns consist of
+\item{metadata_table}{A data frame whose columns consist of
 sample identifiers (sample_ID), individual, time point and other meta data.
 Each row corresponds to one sample_ID. Metadata table should have the same
-number of rows as feature table does.}
+number of rows as feature table does. Please avoid using characters that
+don't belong to ASCII printable characters for the column names.}
 
 \item{feature_table}{A data frame whose columns only consist of
-sample identifiers (sample_ID) and features
-(dependent variables, e.g. microbiome). Each row corresponds to
-one sample_ID. Please do not include any columns other than
-sample_ID and features. Also, feature table should have the same number
-of rows as metadata table does.}
+ sample identifiers (sample_ID) and features
+ (dependent variables, e.g. microbiome). Each row corresponds to
+ one sample_ID. Please do not include any columns other than
+ sample_ID and features. Please avoid using characters that
+don't belong to ASCII printable characters for the column names.
+Also, feature table should have the same number
+ of rows as metadata table does.}
 
 \item{sample_ID}{The name of the column which stores sample identifiers.
 Please make sure that sample_IDs are unique for each sample, and that
-metadata and feature tables have same sample_IDs. If sample_IDs don't match
+metadata and feature tables have the same sample_IDs. If sample_IDs don't match
 between the two tables, it will fail to join them together. This should
 be a string, e.g. "Sample_ID"}
 
