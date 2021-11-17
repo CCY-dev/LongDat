@@ -151,7 +151,8 @@ cuneiform_plot <- function(result_table,
           axis.text.x=element_text(size = x_label_size),
           axis.title.y=element_blank(),
           legend.title = element_text(size = legend_title_size),
-          legend.text = element_text(size = legend_text_size))
+          legend.text = element_text(size = legend_text_size)) +
+    guides(fill = guide_colorbar(raster = FALSE, nbin = 30))
 
   if (confound_panel == TRUE) {
     g2 <- ggplot2::ggplot(Effect_wide, aes(x = "Confounding status",
