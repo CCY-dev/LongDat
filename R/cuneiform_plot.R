@@ -54,7 +54,8 @@
 #' test_plot <- cuneiform_plot(result_table = test_disc[[1]],
 #' x_axis_order = c("Effect_1_2", "Effect_2_3", "Effect_1_3"))
 #'}
-#utils::globalVariables(c(""))
+utils::globalVariables(c("Signal", "Feature", "Effect_name",
+                         "Shape", "EffectSize", "Alpha"))
 
 cuneiform_plot <- function(result_table,
                            x_axis_order = NULL,

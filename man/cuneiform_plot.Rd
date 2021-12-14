@@ -4,23 +4,6 @@
 \alias{cuneiform_plot}
 \title{Create cuneiform plots of result table from longdat_disc() or
 longdat_cont()}
-\usage{
-cuneiform_plot(
-  result_table,
-  x_axis_order = NULL,
-  confound_panel = TRUE,
-  pos_color = "red",
-  neg_color = "blue",
-  panel_width = 4,
-  title = "LongDat result cuneiform plot",
-  title_size = 20,
-  confound_text_size = 4,
-  x_label_size = 10,
-  y_label_size = 10,
-  legend_title_size = 12,
-  legend_text_size = 10
-)
-}
 \arguments{
 \item{result_table}{The result table from longdat_disc() or
 longdat_cont() output, or any data frame that has the same format.}
