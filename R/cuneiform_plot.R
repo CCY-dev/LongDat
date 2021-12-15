@@ -9,12 +9,10 @@
 #' confounding status alongside the effect panel. The default is TRUE.
 #' @param pos_color The color for a positive effect size.
 #'  It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
-#'  by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
-#'  The default is "red".
+#'  by R. The default is "red".
 #' @param neg_color The color for a negative effect size.
 #'  It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
-#'  by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
-#'  The default is "blue".
+#'  by R. The default is "blue".
 #' @param panel_width The width of the effect size panel on the left
 #' relative to the confounding status panel on the right (width set to 1).
 #' It should be a numerical vector. The default is 4.
@@ -83,14 +81,15 @@ cuneiform_plot <- function(result_table,
 
   # Select the required columns
   sig_wide <- sig_result %>%
-    dplyr::select(c(Feature, Signal, stringr::str_which(string = colnames(sig_result),
+    dplyr::select(c(Feature, Signal,
+                    stringr::str_which(string = colnames(sig_result),
                                                pattern = "Effect")))
 
   # Divide them into 2 tables: Effect and EffectSize
   Effect_wide <- sig_wide %>%
     dplyr::select(stringr::str_which(string = colnames(sig_wide),
                                      pattern = "EffectSize",
-                                     negate = T))
+                                     negate = TRUE))
   EffectSize_wide <- sig_wide %>%
     dplyr::select(c(Feature, Signal,
                     stringr::str_which(string = colnames(sig_wide),

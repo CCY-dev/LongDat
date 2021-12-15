@@ -17,13 +17,11 @@ confounding status alongside the effect panel. The default is TRUE.}
 
 \item{pos_color}{The color for a positive effect size.
 It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
-by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
-The default is "red".}
+by R. The default is "red".}
 
 \item{neg_color}{The color for a negative effect size.
 It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
-by R (see http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
-The default is "blue".}
+by R. The default is "blue".}
 
 \item{panel_width}{The width of the effect size panel on the left
 relative to the confounding status panel on the right (width set to 1).

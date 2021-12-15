@@ -15,9 +15,9 @@
 #'  of rows as metadata table does.
 #' @param sample_ID The name of the column which stores sample identifiers.
 #' Please make sure that sample_IDs are unique for each sample, and that
-#' metadata and feature tables have the same sample_IDs. If sample_IDs don't match
-#' between the two tables, it will fail to join them together. This should
-#' be a string, e.g. "Sample_ID"
+#' metadata and feature tables have the same sample_IDs. If sample_IDs don't
+#' match between the two tables, it will fail to join them together. This
+#' should be a string, e.g. "Sample_ID"
 #' @param individual The name of the column which stores individual information
 #' in the metadata table. This should be a string, e.g. "Individual"
 #' @param keep_id A boolean vector indicating whether keep sample_ID
