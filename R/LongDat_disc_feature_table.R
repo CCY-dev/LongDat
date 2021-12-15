@@ -11,3 +11,4 @@
 #' \dontrun{
 #' data(LongDat_disc_feature_table)
 #' }
+"LongDat_disc_feature_table"

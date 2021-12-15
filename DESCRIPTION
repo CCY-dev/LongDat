@@ -24,5 +24,5 @@ BugReports: https://github.com/CCY-dev/longdat/issues
 RoxygenNote: 7.1.2
 Depends: R (>= 4.0.0)
 Imports: lme4, reshape2, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, effsize, tidyr, patchwork
-Suggests: rmarkdown, knitr
+Suggests: rmarkdown, knitr, tidyverse, kableExtra
 VignetteBuilder: knitr
