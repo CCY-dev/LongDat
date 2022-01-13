@@ -1,0 +1,10 @@
+citHeader("To cite LongDat in publications use:")
+
+citEntry(
+  entry    = "Manual",
+  title    = "LongDat: an R package for confounder-sensitive longitudinal analysis on multi-omics data",
+  author   = c(person("Chia-Yu", "Chen"),
+               person("Ulrike ", "Löber"),
+               person("Sofia", "Forslund"))
+  year     = "2022"
+)
