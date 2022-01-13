@@ -1,6 +1,6 @@
 Package: LongDat
 Type: Package
-Title: A Tool for Confounder-Sensitive Longitudinal Analysis on Multi-omics Data
+Title: A Tool For 'Confounder'-Sensitive Longitudinal Analysis On 'Multi-omics' Data
 Version: 1.0.0
 Authors@R: c(person(given = "Chia-Yu",
            family = "Chen",
@@ -14,15 +14,15 @@ Authors@R: c(person(given = "Chia-Yu",
            comment = c(ORCID = "0000-0003-4285-6993")))
 Description: This tool takes longitudinal dataset as input and analyzes if there is significant 
              change of the features over time (a proxy for treatments), while detects and controls 
-             for confounders simultaneously. LongDat is able to take in several data types as input, 
+             for 'confounders' simultaneously. 'LongDat' is able to take in several data types as input, 
              including count, proportion, binary, ordinal and continuous data. The output table contains 
-              p values, effect sizes and confounders of each feature, making the downstream analysis easy.
+              p values, effect sizes and 'confounders' of each feature, making the downstream analysis easy.
 License: GPL-2
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-URL: https://github.com/CCY-dev/longdat
-BugReports: https://github.com/CCY-dev/longdat/issues
+URL: https://github.com/CCY-dev/LongDat
+BugReports: https://github.com/CCY-dev/LongDat/issues
 RoxygenNote: 7.1.2
 Depends: R (>= 4.0.0)
 Imports: lme4, reshape2, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, effsize, tidyr, patchwork

@@ -5,6 +5,8 @@ citEntry(
   title    = "LongDat: an R package for confounder-sensitive longitudinal analysis on multi-omics data",
   author   = c(person("Chia-Yu", "Chen"),
                person("Ulrike ", "Löber"),
-               person("Sofia", "Forslund"))
-  year     = "2022"
+               person("Sofia", "Forslund")),
+  year     = "2022",
+  textVersion = paste("Chen et al., (2022).", "LongDat: an R package for confounder-sensitive longitudinal analysis on multi-omics data", "."
+  )
 )
