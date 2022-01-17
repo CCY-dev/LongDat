@@ -1,3 +1,5 @@
+## 20220117 Updated the description file
+
 ## 20220113 Updated the description and citation file
 
 ## 20211215 Ready for submission to CRAN

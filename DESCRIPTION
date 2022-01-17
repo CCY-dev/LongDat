@@ -1,6 +1,6 @@
 Package: LongDat
 Type: Package
-Title: A Tool For 'Confounder'-Sensitive Longitudinal Analysis On 'Multi-omics' Data
+Title: A Tool for 'Confounder'-Sensitive Longitudinal Analysis on 'Multi-omics' Data
 Version: 1.0.0
 Authors@R: c(person(given = "Chia-Yu",
            family = "Chen",
