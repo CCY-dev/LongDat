@@ -204,11 +204,10 @@
 #'  variable value and time.
 #'
 #' @examples
-#'\dontrun{
-#' test_cont <- longdat_cont(input = LongDat_cont_master_table,
+#' test_cont <- suppressWarnings(longdat_cont(input = LongDat_cont_master_table,
 #' data_type = "count", test_var = "Day",
-#' variable_col = 7, fac_var = c(1, 3))
-#'}
+#' variable_col = 7, fac_var = c(1, 3)))
+
 
 longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
                          not_used = NULL, adjustMethod = "fdr", model_q = 0.1,

@@ -37,13 +37,12 @@
 #'  master table with individual as the first column, followed by time point
 #'  and other metadata, and then by feature columns.
 #' @examples
-#'\dontrun{
 #' test_master <- make_master_table(
 #' metadata_table = LongDat_disc_metadata_table,
 #' feature_table = LongDat_disc_feature_table,
 #' sample_ID = "Sample_ID",
 #' individual = "Individual")
-#'}
+
 #utils::globalVariables(c(""))
 
 make_master_table <- function(metadata_table, feature_table,

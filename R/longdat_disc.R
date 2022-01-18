@@ -228,11 +228,10 @@
 #'    of time points in the input data.
 #'
 #' @examples
-#'\dontrun{
 #' test_disc <- longdat_disc(input = LongDat_disc_master_table,
 #' data_type = "count", test_var = "Time_point",
 #' variable_col = 7, fac_var = c(1:3))
-#'}
+
 
 longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
                          not_used = NULL, adjustMethod = "fdr", model_q = 0.1,
