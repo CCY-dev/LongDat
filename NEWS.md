@@ -1,3 +1,5 @@
+## 20220118 Remove \dontrun in the examples
+
 ## 20220117 Updated the description file
 
 ## 20220113 Updated the description and citation file

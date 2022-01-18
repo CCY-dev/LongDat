@@ -19,4 +19,11 @@ R CMD check succeeded
 
 ## 2022/01/17 Title has been changed to title case in the description file
 
+## R CMD check results for resubmission on 2022/01/18
+── R CMD check results  LongDat 1.0.0 ────
+Duration: 2m 19.2s
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded
 
