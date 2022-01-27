@@ -1,7 +1,7 @@
 ## Introduction
 LongDat R package takes longitudinal dataset as input data and analyzes if there is significant change of the features over time (proxy for treatments), while detects and controls for confounders at the same time. LongDat is able to take in several data types as input, including count, proportion, binary, ordinal and continuous data. The output table contains p values, effect sizes and confounders of each feature, making the downstream analysis easy. 
 
-A poster introducing LongDat can be found [here](https://github.com/CCY-dev/LongDat/files/7951866/Poster.pdf).
+A poster introducing LongDat can be found [here](https://www.dropbox.com/s/w5hvi1gffse7nss/Poster.pdf?dl=0).
 
 
 ## Install
