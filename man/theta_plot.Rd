@@ -59,8 +59,6 @@ for several datasets. Users can change theta_cutoff value to fit
 their own data.
 }
 \examples{
-\dontrun{
 test_theta_plot <- theta_plot(input = LongDat_disc_master_table,
  test_var = "Time_point", variable_col = 7, fac_var = c(1:3))
-}
 }

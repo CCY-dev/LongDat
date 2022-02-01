@@ -57,11 +57,9 @@ This function joins metadata and feature tables by the sample_ID
  and other metadata, and then by feature columns.
 }
 \examples{
-\dontrun{
 test_master <- make_master_table(
 metadata_table = LongDat_disc_metadata_table,
 feature_table = LongDat_disc_feature_table,
 sample_ID = "Sample_ID",
 individual = "Individual")
-}
 }

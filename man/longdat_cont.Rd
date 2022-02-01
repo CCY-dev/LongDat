@@ -229,9 +229,7 @@ before running longdat_cont() so that you can get reproducible
 randomized negative check.
 }
 \examples{
-\dontrun{
-test_cont <- longdat_cont(input = LongDat_cont_master_table,
+test_cont <- suppressWarnings(longdat_cont(input = LongDat_cont_master_table,
 data_type = "count", test_var = "Day",
-variable_col = 7, fac_var = c(1, 3))
-}
+variable_col = 7, fac_var = c(1, 3)))
 }

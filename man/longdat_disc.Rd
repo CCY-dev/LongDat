@@ -254,9 +254,7 @@ running longdat_disc() so that you can get reproducible randomized
 negative check.
 }
 \examples{
-\dontrun{
 test_disc <- longdat_disc(input = LongDat_disc_master_table,
 data_type = "count", test_var = "Time_point",
 variable_col = 7, fac_var = c(1:3))
-}
 }
