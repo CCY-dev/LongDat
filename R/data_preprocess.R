@@ -15,12 +15,23 @@
 
 data_preprocess <- function(input, test_var, variable_col, fac_var, not_used) {
 data <- input
-
-# Remove the features (bacteria) whose column sum is 0
 values <- data %>% dplyr::select(all_of(variable_col:ncol(data)))
 values <- as.data.frame(apply(values, 2, as.numeric))
-zero_ones <- which(colSums(values,  na.rm = TRUE) == 0)
-values <- as.data.frame(values[ , colSums(values,  na.rm = TRUE) > 0])
+
+# Count the number of unique values for each column
+unique_values <- apply(values, 2, unique)
+if (class(unique_values)[1] == "matrix") {
+  unique_length <- apply(unique_values, 2, length)
+} else {
+  unique_length <- lapply(unique_values, length)
+}
+
+# Remove the features whose values are all 0
+# Zero_ones are those who only have 0 as values (sum=0 & unique length=1)
+zero_ones <- which(colSums(values,  na.rm = TRUE) == 0 &
+                     unique_length == 1)
+values <- values %>%
+  dplyr::select(-all_of(zero_ones))
 colnames(values) <- colnames(data %>%
                                dplyr::select(variable_col:ncol(data)) %>%
                                dplyr::select(-all_of(zero_ones)))
