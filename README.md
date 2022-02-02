@@ -8,9 +8,9 @@ A poster introducing LongDat can be found [here](https://www.dropbox.com/s/w5hvi
 Install LongDat by typing ```install.packages("LongDat")``` in R.
 
 ## Tutorial
-Tutorials for the analysis on continuous time variable (e.g. days) can be found [here](https://cran.r-project.org/web/packages/LongDat/vignettes/LongDat_cont_tutorial.html). 
+Tutorials for the analysis on continuous time variable (e.g. days) can be found [here](https://CRAN.R-project.org/package=LongDat/vignettes/LongDat_cont_tutorial.html). 
 
-Tutorials for the analysis on discrete time variable (e.g. before/after treatment) can be found [here](https://cran.r-project.org/web/packages/LongDat/vignettes/LongDat_disc_tutorial.html). 
+Tutorials for the analysis on discrete time variable (e.g. before/after treatment) can be found [here](https://CRAN.R-project.org/package=LongDat/vignettes/LongDat_disc_tutorial.html). 
 
 Alternatively, you can type ```browseVignettes(“LongDat”)``` in R after installing LongDat to access these tutorials.
 
