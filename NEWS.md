@@ -1,3 +1,6 @@
+## 20220202 Update to LongDat_1.0.1
+Optimized the data preprocess script to make LongDat also applicable to feature with negative values
+
 ## 20220118 Remove \dontrun in the examples
 
 ## 20220117 Updated the description file
