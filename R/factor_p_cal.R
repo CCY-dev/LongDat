@@ -93,12 +93,18 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
     # Exclude columns containing NA,
     # and then turn the class of matrix into numeric
     if (length(col_NA) > 0) {
-      Ps <- Ps[ , -unique(col_NA)]
+      Ps <- Ps %>%
+        as.data.frame() %>%
+        dplyr::select(-c(unique(col_NA))) %>%
+        as.matrix()
     }
     mode(Ps) <- "numeric"
 
     if (length(col_NA) > 0) {
-      Ps_effectsize <- Ps_effectsize[ , -unique(col_NA)]
+      Ps_effectsize <- Ps_effectsize %>%
+        as.data.frame() %>%
+        dplyr::select(-c(unique(col_NA))) %>%
+        as.matrix()
     }
     mode(Ps_effectsize) <- "numeric"
 
