@@ -1,3 +1,6 @@
+## 20220217 Update to LongDat_1.0.3
+Fixed the problem that occurs in the measurement mode.
+
 ## 20220217 Update to LongDat_1.0.2
 Fixed the problem that occurs when there is only one feature variable.
 

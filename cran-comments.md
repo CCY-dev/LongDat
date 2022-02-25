@@ -43,5 +43,12 @@ Duration: 3m 41.1s
 
 R CMD check succeeded
 
+## RCM check results for version update submission on 2022/02/25
+─ R CMD check results  LongDat 1─
+Duration: 1m 49.2s
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded
 
 

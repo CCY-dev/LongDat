@@ -88,8 +88,17 @@ ConModelTest_disc <- function(N, variables, melt_data, sel_fac,
         ps_lm <- "No selected factors for confounding model test"
         ps_lm_inv <- "No selected factors for inverse confounding model test"
       }
-      Ps_conf_model[[i]] <- ps_lm
-      Ps_inv_conf_model[[i]] <- ps_lm_inv
+      if (is.null(ps_lm)) {
+        Ps_conf_model[[i]] <- NA
+      } else {
+        Ps_conf_model[[i]] <- ps_lm
+      }
+
+      if (is.null(ps_lm_inv)) {
+        Ps_inv_conf_model[[i]] <- NA
+      } else {
+        Ps_inv_conf_model[[i]] <- ps_lm_inv
+      }
     }
   )
   names(Ps_conf_model) <- variables
