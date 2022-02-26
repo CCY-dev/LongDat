@@ -142,13 +142,13 @@ factor_p_cal <- function(melt_data, variables, factor_columns,
           # Loop through all idividuals
           subdata_individual <- subset(subdata, Individual ==
                                          (unique(subdata$Individual)[m]))
-          if (class(sel_fac_ini[[i]]) != "logical") {
+          if (!is.logical(sel_fac_ini[[i]])) {
             if (length(unique(
               subdata_individual[ , (sel_fac_ini[[i]][k])])) == 1) {
               f <- 0 }
             else {
               f <- 1 }
-          } else if (class(sel_fac_ini[[i]]) == "logical"){
+          } else if (is.logical(sel_fac_ini[[i]])){
             f <- 0
           }
           fac <- c(fac, f)

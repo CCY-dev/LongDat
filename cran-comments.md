@@ -51,4 +51,3 @@ Duration: 1m 49.2s
 
 R CMD check succeeded
 
-
