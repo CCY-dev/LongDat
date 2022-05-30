@@ -1,14 +1,14 @@
 #' Longitudinal analysis with time as discrete variable
 #' @description
-#' longdat_disc calculates the p values, effect sizes and discover confounding
+#' longdat_disc calculates the p values, effect sizes and discover covariate
 #'  effects of time variables from longitudinal data.
 #' @param input A data frame with the first column as "Individual"
 #' and all the columns of dependent variables (features, e.g. bacteria)
 #'         at the end of the table. The time variable here should be
 #'         discrete, if time is continuous, please apply longdat_cont()
 #'         instead. Please avoid using characters that don't belong to
-#'         ASCII printable characters for potential confounders names
-#'         (confounders are any column apart from individual, test_var and
+#'         ASCII printable characters for potential covariates names
+#'         (covariates are any column apart from individual, test_var and
 #'         dependent variables).
 #' @param data_type The data type of the dependent variables (features).
 #' Can either be "proportion", "measurement", "count", "binary", "ordinal" or
@@ -68,8 +68,8 @@
 #' @details
 #' The brief workflow of longdat_disc() is as below:
 #'
-#' When there's no potential confounder in the input data
-#' (confounders are anything apart from individual, test_var and
+#' When there's no potential covariates in the input data
+#' (covariates are anything apart from individual, test_var and
 #' dependent variables):
 #' First, the model test tests the significance of test_var on dependent
 #' variables. Different generalized linear mixed effect models are implemented
@@ -85,9 +85,9 @@
 #' test, then additional Wilcoxon post-hoc test will be done because it
 #' is more conservative.
 #'
-#' When there are potential confounders in the input data:
-#' After the model test and post-hoc test described above, a confounding
-#'  model test will be added to the work flow. The potential confounders will
+#' When there are potential covariates in the input data:
+#' After the model test and post-hoc test described above, a covariate
+#'  model test will be added to the work flow. The potential covariates will
 #'   be added to the model
 #' one by one and test for its significance on each dependent variable. The
 #' rest are the same as the description above.
@@ -98,8 +98,8 @@
 #'
 #' @return
 #' longdat_disc() returns a list which contains a "Result_table",
-#' and if there are confounders in the input data frame,
-#' there will be another table called "Confounder_table". For count mode,
+#' and if there are covariates in the input data frame,
+#' there will be another table called "Covariate_table". For count mode,
 #'  if there is any false positive
 #' in the randomized control result, then another table named
 #' "Randomized_control_table" will also be
@@ -121,27 +121,27 @@
 #'    NS: This represents "Non-significant",
 #'    which means that there’s no effect of time.
 #'
-#'    OK_nc: This represents "OK and no confounder".
-#'    There’s an effect of time and there’s no potential confounder.
+#'    OK_nc: This represents "OK and no covariate".
+#'    There’s an effect of time and there’s no potential covariate.
 #'
 #'    OK_d: This represents "OK but doubtful".
 #'    There’s an effect of time and there’s no
-#'    potential confounder, however the confidence interval of the test_var
+#'    potential covariate, however the confidence interval of the test_var
 #'    estimate in the model test covers zero, and thus it is doubtful of
 #'    this signal.
 #'
-#'    OK_sd: This represents "OK and strictly deconfounded".
-#'    There are potential confounders, however
-#'    there’s an effect of time and it is independent of those of confounders.
+#'    OK_nrc: This represents "OK and not reducible to covariate".
+#'    There are potential covariates, however
+#'    there’s an effect of time and it is independent of those of covariates.
 #'
-#'    AD: This represents " Ambiguously deconfounded".
-#'    There are potential confounders, and it isn’t
+#'    EC: This represents "Entangled with covariate".
+#'    There are potential covariates, and it isn’t
 #'    possible to conclude whether the effect is resulted from time or
-#'    confounders.
+#'    covariates.
 #'
-#'    C: This represents "Confounded".
+#'    RC: This represents "Effect reducible to covariate".
 #'    There’s an effect of time, but it can be reduced to the
-#'    confounder effects.
+#'    covariate effects.
 #'
 #' 5. 'Effect_a_b': The "a" and "b" here are the names of the time points.
 #'  These columns describe the value of each dependent
@@ -172,18 +172,18 @@
 #'   and thus it is a good reference for getting a more conservative result
 #'   of the significant outcomes.
 #'
-#' Confounder_table
+#' Covariate_table
 #'
 #' The first column contains the dependent variables in the input data.
 #' This can be used as row name when being imported into R.
-#' Then every 3 columns are a group. Confounder column shows the confounder's
-#'  name; Confounding_type column shows how test_var is
-#' confounded with this confounder; Effect_size column shows the effect
+#' Then every 3 columns are a group. Covariate column shows the covariate's
+#'  name; Covariate_type column shows how effect is affected by covariate;
+#'  Effect_size column shows the effect
 #' size of dependent variable value between different values of
-#' confounders. Due to the different number of confounders for each dependent
+#' covariate. Due to the different number of covariates for each dependent
 #' variable, there may be NAs in the table and they can
-#' simply be ignored. If the confounder table is totally empty, this means
-#' that there are no confounders detected.
+#' simply be ignored. If the covariate table is totally empty, this means
+#' that there are no covariates detected.
 #'
 #' Randomized_control_table (for user's reference)
 #'
@@ -273,14 +273,14 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
   ########## Calculate the p values for every factor
   #          (used for selecting factors later)
   if (variable_col-1-2-length(not_used) > 0) {
-    if (verbose == TRUE) {print("Start selecting potential confounders.")}
+    if (verbose == TRUE) {print("Start selecting potential covariates.")}
     factor_p_lists <- suppressWarnings(factor_p_cal(melt_data, variables,
                                                     factor_columns, factors,
                                                     data, N, verbose))
     Ps <- as.data.frame(factor_p_lists[[1]])
     Ps_effectsize <- as.data.frame(factor_p_lists[[2]])
     sel_fac <- factor_p_lists[[3]]
-    if (verbose == TRUE) {print("Finished selecting potential confounders.")}
+    if (verbose == TRUE) {print("Finished selecting potential covariates.")}
   }
 
   ################## Null Model Test and Post-Hoc Test #################
@@ -292,25 +292,25 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
   case_pairs_name <- NuModel_lists[[3]]
   if (verbose == TRUE) {print("Finish null model test and post-hoc test.")}
 
-  ################## Confounding model test ###############
+  ################## Covariate model test ###############
   if (variable_col-1-2-length(not_used) > 0) {
-    if (verbose == TRUE) {print("Start confounding model test.")}
+    if (verbose == TRUE) {print("Start covariate model test.")}
     ConModel_lists <- ConModelTest_disc(N, variables, melt_data, sel_fac,
                                         data_type, test_var, verbose)
     Ps_conf_model <- ConModel_lists[[1]]
     Ps_inv_conf_model <-ConModel_lists[[2]]
-    if (verbose == TRUE) {print("Finish confounding model test.")}
+    if (verbose == TRUE) {print("Finish covariate model test.")}
   }
 
   ####### Unlist the Ps_conf_model and Ps_inv_conf_model ########
   suppressWarnings(
     if (variable_col-1-2-length(not_used) > 0) {
       if (verbose == TRUE) {print(
-        "Start unlisting tables from confounding model result.")}
+        "Start unlisting tables from covariate model result.")}
       Ps_conf_model_unlist <- unlist_table(Ps_conf_model, N, variables)
       Ps_conf_inv_model_unlist <- unlist_table(Ps_inv_conf_model, N, variables)
       if (verbose == TRUE) {print(
-        "Finish unlisting tables from confounding model result.")}
+        "Finish unlisting tables from covariate model result.")}
       })
 
   ############## Calculate cliff's delta for all variables #################
@@ -347,7 +347,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
     }
   )
 
-  ##### Reset the variable names and confounder names to oringinal ####
+  ##### Reset the variable names and covariate names to oringinal ####
   rownames(Ps_null_model) <- variables_original
   rownames(Ps_poho_fdr) <- variables_original
   rownames(delta) <- variables_original
@@ -487,7 +487,7 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
   if (data_type == "count") {
     if (nrow(result_neg_ctrl) > 0 & variable_col-1-2-length(not_used) > 0) {
       return(list(Result_table = Result_table,
-                  Confounder_table = Confounder_table,
+                  Covariate_table = Confounder_table,
                   Randomized_control_table = result_neg_ctrl))
     } else if (nrow(result_neg_ctrl) > 0 &
                variable_col-1-2-length(not_used) == 0) {
@@ -496,14 +496,14 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
     } else if (nrow(result_neg_ctrl) == 0 &
                variable_col-1-2-length(not_used) > 0) {
       return(list(Result_table = Result_table,
-                  Confounder_table = Confounder_table))
+                  Covariate_table = Confounder_table))
     } else if (nrow(result_neg_ctrl) == 0 &
                variable_col-1-2-length(not_used) == 0) {
       return(list(Result_table = Result_table))}
   } else if(data_type != "count") {
     if (variable_col-1-2-length(not_used) > 0) {
       return(list(Result_table = Result_table,
-                  Confounder_table = Confounder_table))
+                  Covariate_table = Confounder_table))
     } else if (variable_col-1-2-length(not_used) == 0) {
       return(Result_table = Result_table)
     }

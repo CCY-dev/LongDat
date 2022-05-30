@@ -2,7 +2,7 @@
 % Please edit documentation in R/ConModelTest_disc.R
 \name{ConModelTest_disc}
 \alias{ConModelTest_disc}
-\title{Confounding model test in longdat_disc() pipeline}
+\title{Covariate model test in longdat_disc() pipeline}
 \arguments{
 \item{N}{Internal function argument.}
 
@@ -19,5 +19,5 @@
 \item{verbose}{Internal function argument.}
 }
 \description{
-Confounding model test in longdat_disc() pipeline
+Covariate model test in longdat_disc() pipeline
 }

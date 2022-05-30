@@ -1,4 +1,5 @@
-#' Unlist confound and inverse confound tables, turn them into tables
+#' Unlist confound (covariate) and inverse confound (covariate) tables,
+#' turn them into tables
 #' @param x The list to be unlisted and turned into table
 #' @param N Internal function argument.
 #' @param variables Internal function argument.

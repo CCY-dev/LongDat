@@ -44,7 +44,7 @@ master %>%
   kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12) %>% 
   kableExtra::scroll_box(width = "700px", height = "200px")
 ```
-As you can see, the "Individual" is at the first column, and the features (dependent variables), which are gut microbial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential confounders (confounding with the test_var). For example, here the potential confounders are sex, age, drug A and drug B. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data frame.**
+As you can see, the "Individual" is at the first column, and the features (dependent variables), which are gut microbial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential covariates (could be confounder or mediator). For example, here the potential covariates are sex, age, drug A and drug B. **Please avoid using characters that don't belong to [ASCII printable characters](https://www.w3schools.com/charsets/ref_html_ascii.asp) for the column names in the input data frame.**
 
 ## Preparing the input data frame with make_master_table()
 
@@ -94,7 +94,7 @@ master_created %>%
   kableExtra::scroll_box(width = "700px", height = "200px")
 ```
 
-The table "master_created" is just the same as the table "master" or "LongDat_disc_master_table" in the previous section, with the "Individual" as the first column, and the features (dependent variables), which are gut microbial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential confounders (confounding with the test_var). For the details of the arguments, please read the help page of this function by using ```?make_master_table```.
+The table "master_created" is just the same as the table "master" or "LongDat_disc_master_table" in the previous section, with the "Individual" as the first column, and the features (dependent variables), which are gut microbial abundances in this case, are at the end of the table. Any column apart from individual, test_var (e.g. Time_point) and dependent variables will be taken as potential covariates (could be confounder or mediator). For the details of the arguments, please read the help page of this function by using ```?make_master_table```.
 
 
 OK, now we're ready to run ```longdat_disc()```!
@@ -118,7 +118,7 @@ If you have completed running the function successfully, you'll see the message 
 
 ## Results
 
-The major output from ```longdat_disc()``` include a result table and a confounder table. If you have count data (data_type equals to "count"), then there are chances that you get a third table "randomized control table". For more details about the "randomized control table", please read the help page of this function by using ```?longdat_disc```.
+The major output from ```longdat_disc()``` include a result table and a covariate table. If you have count data (data_type equals to "count"), then there are chances that you get a third table "randomized control table". For more details about the "randomized control table", please read the help page of this function by using ```?longdat_disc```.
 
 ### Result table
 
@@ -132,7 +132,7 @@ result_table %>%
   kableExtra::scroll_box(width = "700px")
 ```
 
-The second and third columns show the prevalence and mean abundance of each feature According to the "Signal" column, treatment is a significant predictor for BacteriumA as it shows "OK_sd" (which represents "OK and strictly deconfounded"), meaning that there are potential confounders, however there is an effect of time (proxy of treatment) and it is independent of those of confounders. To find out what the confounders are, you'll need to see the confounder table, but we'll get to that later. On the other hand, the signal for BacteriumC is "OK_nc" (which represents OK and no confounder), meaning that the abundance of BacteriumC alters significantly throughout time (proxy of treatment), and that there is no potential confounder. As for BacteriumB, time (proxy of treatment) has no effect on its abundance.
+The second and third columns show the prevalence and mean abundance of each feature According to the "Signal" column, treatment is a significant predictor for BacteriumA as it shows "OK_nrc" (which represents "OK and not reducible to covariate"), meaning that there are potential covariates, however there is an effect of time (proxy of treatment) and it is independent of those of covariates. To find out what the covariates are, you'll need to see the covariate table, but we'll get to that later. On the other hand, the signal for BacteriumC is "OK_nc" (which represents OK and no covariate), meaning that the abundance of BacteriumC alters significantly throughout time (proxy of treatment), and that there is no potential covariate. As for BacteriumB, time (proxy of treatment) has no effect on its abundance.
 
 The following columns "Effect_1_2", "Effect_1_3" and "Effect_2_3" describe how features (dependent variables) change from time point a to b. Here we can tell that BacteriumA decreases from time point 1 to 2, and then enriched from time point 2 to 3. From the columns "EffectSize_1_2" and "EffectSize_2_3", we know that the effect size are -0.6 and 0.8. The most relevant information for users ends here, which are listed from the first column to "EffectSize" columns. 
 
@@ -143,30 +143,30 @@ The explanation of each type of "Signal" is listed below.
 |Signal|Meaning|Explanation|          
 |---|--------|-------------|
 |NS| Non-significant | There’s no effect of time.|
-|OK_nc |OK and no confounder | There’s an effect of time and there’s no potential confounder.|
-|OK_d| OK but doubtful |  There’s an effect of time and there’s no potential confounder, however the confidence interval of the test_var estimate in the model test includes zero, and thus it is doubtful. Please check the raw data (e.g. plot feature against time) to confirm if there is real effect of time.|
-|OK_sd| OK and strictly deconfounded | There are potential confounders, however there’s an effect of time and it is independent of those of confounders. |
-|AD| Ambiguously deconfounded | There are potential confounders, and it isn’t possible to conclude whether the effect is resulted from time or confounders.|
-|C| Confounded | There’s an effect of time, but it can be reduced to the confounding effects.|
+|OK_nc |OK and no covariate | There’s an effect of time and there’s no potential covariate.|
+|OK_d| OK but doubtful |  There’s an effect of time and there’s no potential covariate, however the confidence interval of the test_var estimate in the model test includes zero, and thus it is doubtful. Please check the raw data (e.g., plot feature against time) to confirm if there is real effect of time.|
+|OK_nrc| OK and not reducible to covariate | There are potential covariates, however there’s an effect of time and it is independent of those of covariates. |
+|EC| Entangled with covariate | There are potential covariates, and it isn’t possible to conclude whether the effect is resulted from time or covariates.|
+|RC| Effect reducible to covariate | There’s an effect of time, but it can be reduced to the covariate effects.|
 
-### Confounder table
+### Covariate table
 
-Next, let's take a look at the confounder table.
+Next, let's take a look at the covariate table.
 
 ```{r message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=80)}
-# The second dataframe in the list is the confounder table
-confound_table <- test_disc[[2]]
-confound_table %>%
+# The second dataframe in the list is the covariate table
+covariate_table <- test_disc[[2]]
+covariate_table %>%
   kableExtra::kbl() %>%
   kableExtra::kable_paper(bootstrap_options = "responsive", font_size = 12, position = "center") %>% 
   kableExtra::scroll_box(width = "700px")
 ```
 
-The columns of this confounder table are grouped every three columns. "Confounder1" is the name of the confounder, while "Confounding_type1" is the confounding type of confounder1 with time (or the test_var), and "Effect_size1" is the effect size of the dependent variable values between different levels of confounder1. Here, time is strictly deconfounded with confounder1, so we don't need to worry about the confounding effect of confounder1 on bacteriumA. If there are more than one confounders, they will be listed along the rows of each dependent variable.
+The columns of this covariate table are grouped every three columns. "Covariate1" is the name of the covariate, while "Covariate_type1" is the covariate type of covariate1, that is, if the effect of time is reducible to covariate1. "Effect_size1" is the effect size of the dependent variable values between different levels of covariate1. Here, the effect of time isn't reducible to covariate1, so we don't need to worry about the covariate effect of covariate1 on bacteriumA. If there are more than one covariates, they will be listed along the rows of each dependent variable.
 
 ### Result interpretation
 
-From the result above, we see that the potential confounder for BacteriumA is DrugB, but we don't need to worry about the effect of time (proxy for the treatment) confounded by DrugB since it's confounding type is "strictly deconfounded", meaning that the effect of time is strictly deconfounded from the effect of DrugB. With this information, we confirm that the treatment can solely explain the changes in BacteriumA abundance. All together, the treatment induces significant changes on the abundance of BacteriumA and BacteriumC, while causing no alteration in that of BacteriumB.
+From the result above, we see that the potential covariate for BacteriumA is DrugB, but we don't need to worry about the effect of time (proxy for the treatment) being able to reduce to DrugB since it's covariate type is "not reducible to covariate", meaning that the effect of time is independent from the effect of DrugB. With this information, we confirm that the treatment can solely explain the changes in BacteriumA abundance. All together, the treatment induces significant changes on the abundance of BacteriumA and BacteriumC, while causing no alteration in that of BacteriumB.
 
 ## Plotting the result
 
@@ -183,7 +183,7 @@ test_plot
 ```
 
 
-Here we can see the result clearly from the cuneiform plot. It shows the features whose signals are not "NS". The left panel displays the effects in each time interval. Red represents positive effect size while blue describes negative one (colors can be customized by users). Signficant signals are indicated by solid shapes, whereas insignificant signals are denoted by transparent ones. The right panel displays the confounding status of each feature, and users can remove it by specifying ```confound_panel = FALSE```. For more details of the arguments, please read the help page of this function by using ```?cuneiform_plot```.
+Here we can see the result clearly from the cuneiform plot. It shows the features whose signals are not "NS". The left panel displays the effects in each time interval. Red represents positive effect size while blue describes negative one (colors can be customized by users). Signficant signals are indicated by solid shapes, whereas insignificant signals are denoted by transparent ones. The right panel displays the covariate status of each feature, and users can remove it by specifying ```covariate_panel = FALSE```. For more details of the arguments, please read the help page of this function by using ```?cuneiform_plot```.
 
 ### Wrap-up
 
