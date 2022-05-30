@@ -2,7 +2,8 @@
 % Please edit documentation in R/unlist_table.R
 \name{unlist_table}
 \alias{unlist_table}
-\title{Unlist confound and inverse confound tables, turn them into tables}
+\title{Unlist confound (covariate) and inverse confound (covariate) tables,
+turn them into tables}
 \usage{
 unlist_table(x, N, variables)
 }
@@ -14,5 +15,6 @@ unlist_table(x, N, variables)
 \item{variables}{Internal function argument.}
 }
 \description{
-Unlist confound and inverse confound tables, turn them into tables
+Unlist confound (covariate) and inverse confound (covariate) tables,
+turn them into tables
 }

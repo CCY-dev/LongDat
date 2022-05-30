@@ -1,4 +1,4 @@
-#' Replace the symbols in variable and confounder names in raw input
+#' Replace the symbols in variable and covariate names in raw input
 #' @param z A character vector. This is the character vector
 #'          that needs to be changed.
 #' @importFrom rlang .data

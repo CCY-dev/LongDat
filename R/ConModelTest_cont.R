@@ -1,4 +1,4 @@
-#' Confounding model test in longdat_cont() pipeline
+#' Covariate model test in longdat_cont() pipeline
 #' @param N Internal function argument.
 #' @param variables Internal function argument.
 #' @param melt_data Internal function argument.

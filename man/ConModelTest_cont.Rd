@@ -2,7 +2,7 @@
 % Please edit documentation in R/ConModelTest_cont.R
 \name{ConModelTest_cont}
 \alias{ConModelTest_cont}
-\title{Confounding model test in longdat_cont() pipeline}
+\title{Covariate model test in longdat_cont() pipeline}
 \arguments{
 \item{N}{Internal function argument.}
 
@@ -19,5 +19,5 @@
 \item{verbose}{Internal function argument.}
 }
 \description{
-Confounding model test in longdat_cont() pipeline
+Covariate model test in longdat_cont() pipeline
 }

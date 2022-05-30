@@ -5,8 +5,8 @@
 #' @param x_axis_order The plotting order of the x axis.
 #' It should be a character vector
 #' (e.g. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).
-#' @param confound_panel A boolean vector indicating whether to plot
-#' confounding status alongside the effect panel. The default is TRUE.
+#' @param covariate_panel A boolean vector indicating whether to plot
+#' covariate status alongside the effect panel. The default is TRUE.
 #' @param pos_color The color for a positive effect size.
 #'  It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
 #'  by R. The default is "red".
@@ -14,12 +14,12 @@
 #'  It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
 #'  by R. The default is "blue".
 #' @param panel_width The width of the effect size panel on the left
-#' relative to the confounding status panel on the right (width set to 1).
+#' relative to the covariate status panel on the right (width set to 1).
 #' It should be a numerical vector. The default is 4.
 #' @param title The name of the plot title. The default is
 #' "LongDat result cuneiform plot".
 #' @param title_size The size of the plot title. The default is 20.
-#' @param confound_text_size The size of the text in the confounding status
+#' @param covariate_text_size The size of the text in the covariate status
 #' panel. The default is 4.
 #' @param x_label_size The size of the x label. The default is 10.
 #' @param y_label_size The size of the y label. The default is 10.
@@ -39,7 +39,7 @@
 #' @details
 #' This function creates a cuneiform plot which displays the
 #' result of longdat_disc() or longdat_cont(). It plots the effect sizes
-#'  within each time interval for each feature, and also shows the confounding
+#'  within each time interval for each feature, and also shows the covariate
 #'  status. Only the features with non-NS signals will be included in the plot.
 #'  The output is a ggplot object in patchwork structure. For further
 #'  customization of the plot, please refer to the vignette.
@@ -55,13 +55,13 @@ utils::globalVariables(c("Signal", "Feature", "Effect_name",
 
 cuneiform_plot <- function(result_table,
                            x_axis_order = NULL,
-                           confound_panel = TRUE,
+                           covariate_panel = TRUE,
                            pos_color = "red",
                            neg_color = "blue",
                            panel_width = 4,
                            title = "LongDat result cuneiform plot",
                            title_size = 20,
-                           confound_text_size = 4,
+                           covariate_text_size = 4,
                            x_label_size = 10,
                            y_label_size = 10,
                            legend_title_size = 12,
@@ -152,11 +152,11 @@ cuneiform_plot <- function(result_table,
           legend.text = element_text(size = legend_text_size)) +
     guides(fill = guide_colorbar(raster = FALSE, nbin = 30))
 
-  if (confound_panel == TRUE) {
-    g2 <- ggplot2::ggplot(Effect_wide, aes(x = "Confounding status",
+  if (covariate_panel == TRUE) {
+    g2 <- ggplot2::ggplot(Effect_wide, aes(x = "Covariate status",
                                            y = Feature)) +
       geom_text(aes(label = Signal),
-                size = confound_text_size, color = "gray30") +
+                size = covariate_text_size, color = "gray30") +
       theme_light() +
       theme(axis.title.x=element_blank(),
             axis.text.x=element_text(size = x_label_size),

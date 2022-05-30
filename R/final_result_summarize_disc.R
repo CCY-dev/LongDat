@@ -68,7 +68,7 @@ final_result_summarize_disc <- function(variable_col, N,
     confound <- data.frame(matrix(NA, nrow = length(confs_num),
                                   ncol = 3*max(num + 1)))
     rownames(confound) <- confs$Bacteria
-    colnames(confound) <- paste(rep(c("Confounder", "Confounding_type",
+    colnames(confound) <- paste(rep(c("Covariate", "Covariate_type",
                                       "Effect_size"),
                                     time = max(num + 1)), sep = "",
                                 rep(1:max(num + 1), each = 3))
@@ -82,19 +82,23 @@ final_result_summarize_disc <- function(variable_col, N,
           c_effectsize <- Ps_effectsize[i, c_name]
           c_type <- if (is.null(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {
             # if Ps_conf_model_unlist is null
-            print("Strictly_deconfounded")
+            # Originally it was strictly_deconfounded
+            print("Not_reducible_to_covariate")
           } else { #Ps_conf_model_unlist isn't  null
             if (Ps_conf_model_unlist[i, sel_fac[[i]][j]] < posthoc_q &
                 !is.na(Ps_conf_model_unlist[i, sel_fac[[i]][j]])) {
               # Confounding model p < posthoc_q
-              print("Strictly_deconfounded")
+              # Originally it was strictly_deconfounded
+              print("Not_reducible_to_covariate")
             } else {# Confounding model p >= posthoc_q
               if (Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]] < posthoc_q &
                   !is.na(Ps_conf_inv_model_unlist[i, sel_fac[[i]][j]])) {
                 # Inverse confounding model p < posthoc_q
-                print("Confounded")
-              } else {# Inverse onfounding model p >= posthoc_q
-                print("Ambiguously_deconfounded")
+                # Originally it was confounded
+                print("Effect_reducible_to_covariate")
+              } else {# Inverse confounding model p >= posthoc_q
+                # Originally it was ambiguously_deconfounded
+                print("Entangled_with_covariate")
               }
             }}
           confound[match(i, confs_num), 3*j-2] <- c_name
@@ -131,7 +135,7 @@ final_result_summarize_disc <- function(variable_col, N,
           if (length(sel_fac[[i]]) == 0) {
             # No sel_fac, meaning no confounding effect
             if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {
-              # Proper confidence interval: OK and no confounder
+              # Proper confidence interval: OK and no covariate
               final_sig[i, 1] <- "OK_nc"
             } else {# Improper confidence interval: OK but doubtful
               final_sig[i, 1] <- "OK_d"
@@ -143,26 +147,32 @@ final_result_summarize_disc <- function(variable_col, N,
                                  pattern = as.character(variables[i])), ])
             subconfound_columns <-
               subconfound[ , str_which(string = colnames(confound),
-                                       pattern = "Confounding_type")]
+                                       pattern = "Covariate_type")]
             if (sum(stringr::str_detect(string = subconfound_columns,
-                                        pattern = "Confounded"),
+                                        pattern =
+                                        "Effect_reducible_to_covariate"),
                     na.rm = TRUE) > 0) {
-              # There is "confounding" signals: Confounded
-              final_sig[i, 1] <- "C"
+              # There is "Effect_reducible_to_covariate" signal: (RC)
+              # Originally: there is "confounding" signals: Confounded
+              final_sig[i, 1] <- "RC"
             } else if(sum(stringr::str_detect(string = subconfound_columns,
-                                              pattern = "Confounded"),
+                                              pattern =
+                                              "Effect_reducible_to_covariate"),
                           na.rm = TRUE) == 0){
               # There isn't "confounding" signals
               if (sum(
                 stringr::str_detect(string = subconfound_columns,
-                                    pattern = "Ambiguously_deconfounded"),
+                                    pattern = "Entangled_with_covariate"),
                 na.rm = TRUE) > 0) {
-                # If there is "ambiguously deconfounded" signals:
+                # There is "Entangled_with_covariate" signal: EC
+                # Originally: If there is "ambiguously deconfounded" signals:
                 # Ambiguously deconfounded
-                final_sig[i, 1] <- "AD"
-              } else { # There isn't "ambiguously deconfounded" signals:
+                final_sig[i, 1] <- "EC"
+              } else {
+                # There isn't "Entangled_with_covariate" signals: OK_nrc
+                # Originally: There isn't "ambiguously deconfounded" signals:
                 # OK and strictly deconfounded
-                final_sig[i, 1] <- "OK_sd"
+                final_sig[i, 1] <- "OK_nrc"
               }
             }
           }
@@ -234,7 +244,7 @@ final_result_summarize_disc <- function(variable_col, N,
           final_sig[i, 1] <- "NS"
         } else {# At least one post-hoc q < posthoc_q
           if (Ps_null_model[i, 2] == "Good" & !is.na(Ps_null_model[i, 2])) {
-            # Proper confidence interval: OK and no confounder
+            # Proper confidence interval: OK and no covariate
             final_sig[i, 1] <- "OK_nc"
           } else {# Improper confidence interval: OK but doubtful
             final_sig[i, 1] <- "OK_d"

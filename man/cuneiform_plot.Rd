@@ -12,8 +12,8 @@ longdat_cont() output, or any data frame that has the same format.}
 It should be a character vector
 (e.g. c("Effect_1_2", "Effect_2_3", "Effect_1_3")).}
 
-\item{confound_panel}{A boolean vector indicating whether to plot
-confounding status alongside the effect panel. The default is TRUE.}
+\item{covariate_panel}{A boolean vector indicating whether to plot
+covariate status alongside the effect panel. The default is TRUE.}
 
 \item{pos_color}{The color for a positive effect size.
 It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
@@ -24,7 +24,7 @@ It should be a hex color code (e.g. "#b3e6ff") or the colors recognized
 by R. The default is "blue".}
 
 \item{panel_width}{The width of the effect size panel on the left
-relative to the confounding status panel on the right (width set to 1).
+relative to the covariate status panel on the right (width set to 1).
 It should be a numerical vector. The default is 4.}
 
 \item{title}{The name of the plot title. The default is
@@ -32,7 +32,7 @@ It should be a numerical vector. The default is 4.}
 
 \item{title_size}{The size of the plot title. The default is 20.}
 
-\item{confound_text_size}{The size of the text in the confounding status
+\item{covariate_text_size}{The size of the text in the covariate status
 panel. The default is 4.}
 
 \item{x_label_size}{The size of the x label. The default is 10.}
@@ -53,7 +53,7 @@ longdat_cont()
 \details{
 This function creates a cuneiform plot which displays the
 result of longdat_disc() or longdat_cont(). It plots the effect sizes
- within each time interval for each feature, and also shows the confounding
+ within each time interval for each feature, and also shows the covariate
  status. Only the features with non-NS signals will be included in the plot.
  The output is a ggplot object in patchwork structure. For further
  customization of the plot, please refer to the vignette.

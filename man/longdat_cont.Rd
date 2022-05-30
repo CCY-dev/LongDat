@@ -26,8 +26,8 @@ and all the columns of dependent variables (features, e.g. bacteria)
         at the end of the table. The time variable here should be
         continuous, if time is discrete, please apply longdat_disc()
         instead. Please avoid using characters that don't belong to
-        ASCII printable characters for potential confounders names
-        (confounders are any column apart from individual, test_var and
+        ASCII printable characters for potential covariates names
+        (covariates are any column apart from individual, test_var and
         dependent variables).}
 
 \item{data_type}{The data type of the dependent variables (features).
@@ -90,9 +90,9 @@ message. The default is TRUE.}
 }
 \value{
 longdat_cont() returns a list which contains a "Result_table",
-and if there are confounders in the input data frame,
+and if there are covariates in the input data frame,
 there will be another table called
- "Confounder_table". For count mode, if there is any false positive
+ "Covariate_table". For count mode, if there is any false positive
 in the randomized control result, then another table named
 "Randomized_control_table" will also be
 generated. The detailed description is as below.
@@ -113,27 +113,27 @@ variable present across individuals and time points
    NS: This represents "Non-significant",
    which means that there’s no effect of time.
 
-   OK_nc: This represents "OK and no confounder".
-   There’s an effect of time and there’s no potential confounder.
+   OK_nc: This represents "OK and no covariate".
+   There’s an effect of time and there’s no potential covariate.
 
    OK_d: This represents "OK but doubtful".
    There’s an effect of time and there’s no
-   potential confounder, however the confidence interval of the test_var
+   potential covariate, however the confidence interval of the test_var
    estimate in the model test covers zero, and thus it is doubtful of
    this signal.
 
-   OK_sd: This represents "OK and strictly deconfounded".
-   There are potential confounders, however
-   there’s an effect of time and it is independent of those of confounders.
+   OK_nrc: This represents "OK and not reducible to covariate".
+   There are potential covariates, however
+   there’s an effect of time and it is independent of those of covariates.
 
-   AD: This represents " Ambiguously deconfounded".
-   There are potential confounders, and it isn’t
+   EC: This represents "Entangled with covariate".
+   There are potential covariates, and it isn’t
    possible to conclude whether the effect is resulted from time or
-   confounders.
+   covariates.
 
-   C: This represents "Confounded".
+   RC: This represents "Effect reducible to covariate".
    There’s an effect of time, but it can be reduced to the
-   confounder effects.
+   covariate effects.
 
 5. Effect: This column contains the value of each dependent variable
 decreases/increases/NS(non-significant) along the time.
@@ -151,18 +151,19 @@ p values (Wald test) of the significance of test_var in the models.
 from the post-hoc test (Spearman's correlation test) of the model.
 
 
-Confounder_table
+Covariate_table
 
 The first column contains the dependent variables in the input data.
 This can be used as row name when being imported into R.
-Then every 3 columns are a group. Confounder column shows the confounder's
-name; Confounding_type column shows how test_var is
-confounded with this confounder; Effect_size column shows the effect size of
+Then every 3 columns are a group. Covariate column shows the covariate's
+name; Covariate column shows the covariate's
+ name; Covariate_type column shows how effect is affected by covariate
+ ; Effect_size column shows the effect size of
 dependent variable value between different values of
-confounders. Due to the different number of confounders for each
+covariate. Due to the different number of covariates for each
 dependent variable, there may be NAs in the table and they can
-simply be ignored. If the confounder table is totally empty,
-this means that there are no confounders detected.
+simply be ignored. If the covariate table is totally empty,
+this means that there are no covariates detected.
 
 Randomized_control_table (for user's reference)
 
@@ -197,13 +198,13 @@ false positive features.
  variable value and time.
 }
 \description{
-longdat_cont calculates the p values, effect sizes and discover confounding
+longdat_cont calculates the p values, effect sizes and discover covariate
 effects of time variables from longitudinal data.
 }
 \details{
 The brief workflow of longdat_cont() is as below:
 
-When there's no potential confounder in the input data (confounders are
+When there's no potential covariates in the input data (covariates are
 anything apart from individual, test_var and dependent variables):
 First, the model test tests the significance of test_var on dependent
 variables. Different generalized linear mixed effect models are implemented
@@ -218,9 +219,9 @@ for different types of dependent variable. Negative binomial mixed model for
  signals in this control model test, users will get a warning
  at the end of the run.
 
-When there are potential confounders in the input data:
-After the model test and post-hoc test described above, a confounding
-model test will be added to the work flow. The potential confounders
+When there are potential covariates in the input data:
+After the model test and post-hoc test described above, a covariate
+model test will be added to the work flow. The potential covariates
 will be added to the model one by one and test for its significance
 on each dependent variable. The rest are the same as the description above.
 

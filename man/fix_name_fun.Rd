@@ -2,7 +2,7 @@
 % Please edit documentation in R/fix_name_fun.R
 \name{fix_name_fun}
 \alias{fix_name_fun}
-\title{Replace the symbols in variable and confounder names in raw input}
+\title{Replace the symbols in variable and covariate names in raw input}
 \usage{
 fix_name_fun(z)
 }
@@ -11,5 +11,5 @@ fix_name_fun(z)
 that needs to be changed.}
 }
 \description{
-Replace the symbols in variable and confounder names in raw input
+Replace the symbols in variable and covariate names in raw input
 }
