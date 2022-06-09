@@ -138,7 +138,7 @@ cuneiform_plot <- function(result_table,
     scale_fill_gradient2(midpoint = 0, low = neg_color, mid = "white",
                          high = pos_color, n.breaks = 8,
                          limits = c(-1, 1) * max(abs(All_long$EffectSize))) +
-    scale_alpha_manual(breaks = c("Insignificant", "Significant"),
+    scale_alpha_manual(breaks = c("Non-significant", "Significant"),
                        values=c(0.4, 1), drop = FALSE) +
     ggtitle(title) +
     labs(fill = "Effect size", alpha = "Significance") +
