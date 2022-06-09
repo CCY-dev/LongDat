@@ -1,3 +1,6 @@
+## 20220621 Update to LongDat_1.0.5
+Replaced the "insignificant" label in cuneiform plot with "non-significant"
+
 ## 20220601 Update to LongDat_1.0.4
 Replaced the "confounder" terms with "covariates" in the final signals.
 

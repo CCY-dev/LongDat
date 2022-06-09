@@ -58,3 +58,13 @@ Duration: 1m 21.9s
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 R CMD check succeeded
+
+## RCM check results for version update submission on 2022/06/21
+── R CMD check results ────── LongDat 1.0.5 ────
+Duration: 1m 53.3s
+
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check succeeded
+
+
