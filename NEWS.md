@@ -1,3 +1,6 @@
+## 20220601 Update to LongDat_1.0.4
+Replaced the "confounder" terms with "covariates" in the final signals.
+
 ## 20220225 Update to LongDat_1.0.3
 Fixed the problem that occurs in the measurement mode.
 
