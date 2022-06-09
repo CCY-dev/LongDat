@@ -75,7 +75,7 @@ cuneiform_plot <- function(result_table,
     dplyr::filter(Signal != "NS")
 
   if (nrow(sig_result) == 0) {
-    stop('All results are insignificant! There is nothing to plot.')}
+    stop('All results are non-significant! There is nothing to plot.')}
 
   # Select the required columns
   sig_wide <- sig_result %>%
@@ -108,7 +108,7 @@ cuneiform_plot <- function(result_table,
 
   # Define plotting parameters
   All_long$Alpha <- ifelse(All_long$Effect != "NS",
-                           yes = "Significant", no = "Insignificant")
+                           yes = "Significant", no = "Non-significant")
   All_long$Shape <- ifelse(All_long$EffectSize > 0,
                            yes = "24",
                            no = ifelse(All_long$EffectSize < 0,
@@ -124,7 +124,7 @@ cuneiform_plot <- function(result_table,
 
   # Specify the levels of alpha and shape
   All_long$Alpha <- factor(All_long$Alpha, levels = c("Significant",
-                                                      "Insignificant"))
+                                                      "Non-significant"))
   All_long$Shape <- factor(All_long$Shape, levels = c("1", "24", "25"))
 
   # Plotting
@@ -138,7 +138,7 @@ cuneiform_plot <- function(result_table,
     scale_fill_gradient2(midpoint = 0, low = neg_color, mid = "white",
                          high = pos_color, n.breaks = 8,
                          limits = c(-1, 1) * max(abs(All_long$EffectSize))) +
-    scale_alpha_manual(breaks = c("Insignificant", "Significant"),
+    scale_alpha_manual(breaks = c("Non-significant", "Significant"),
                        values=c(0.4, 1), drop = FALSE) +
     ggtitle(title) +
     labs(fill = "Effect size", alpha = "Significance") +
