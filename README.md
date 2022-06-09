@@ -1,5 +1,5 @@
 ## Introduction
-LongDat R package takes longitudinal dataset as input data and analyzes if there is significant change of the features over time (proxy for treatments), while detects and controls for confounds at the same time. LongDat is able to take in several data types as input, including count, proportion, binary, ordinal and continuous data. The output table contains p values, effect sizes and covariates of each feature, making the downstream analysis easy. 
+LongDat R package takes longitudinal dataset as input data and analyzes if there is significant change of the features over time (proxy for treatments), while detects and controls for covariates at the same time. LongDat is able to take in several data types as input, including count, proportion, binary, ordinal and continuous data. The output table contains p values, effect sizes and covariates of each feature, making the downstream analysis easy. 
 
 
 ## Install
@@ -13,5 +13,5 @@ Tutorials for the analysis on discrete time variable (e.g. before/after treatmen
 Alternatively, you can type ```browseVignettes(“LongDat”)``` in R after installing LongDat to access these tutorials.
 
 ## Citation
-The paper will be added once it is published. Before that, please cite:  \
+The paper will be added here once it is published. Before that, please cite:  \
 Chen et al., ( 2022 ). LongDat: an R package for confound-sensitive longitudinal analysis on multi-omics data.
