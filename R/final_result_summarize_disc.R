@@ -197,6 +197,8 @@ final_result_summarize_disc <- function(variable_col, N,
             } else if (delta[i, j] < 0 & !is.na(delta[i, j])) {
               # Delta < 0 and isn't NA
               effect_type[i, j] <- "Decreased"
+            } else {
+              effect_type[i, j] <- "No_change"
             }
           } else {
             effect_type[i, j] <- "NS"

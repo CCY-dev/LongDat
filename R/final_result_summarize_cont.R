@@ -187,6 +187,8 @@ final_result_summarize_cont <- function(variable_col, N,
           } else if (assoc[i, 1] < 0 & !is.na(assoc[i, 1])) {
             # Assoc < 0 and isn't NA
             effect_type[i, 1] <- "Decreased"
+          } else {
+            effect_type[i, j] <- "No_change"
           }
         } else {
           effect_type[i, 1] <- "NS"
