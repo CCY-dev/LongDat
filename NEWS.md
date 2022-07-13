@@ -25,6 +25,5 @@ Optimized the data preprocess script to make LongDat also applicable to feature 
 ## 20211215 Ready for submission to CRAN
 Ran through the checks for the preparation of CRAN submission
 
-
-## Created NEWS.md
-Added a `NEWS.md` file to track changes to the package.
+## Start of the News file
+Added News.md to track changes
