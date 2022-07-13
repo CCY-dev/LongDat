@@ -419,8 +419,9 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
     if (false_pos_count > 0) {
       print(paste0("Attention! Since there are false positives in the ",
                    "randomized control test, it's recommended to check the ",
-                   "effect sizes of the significant signals and rule out the ones ",
-                   "with low effect sizes. See the documentation for more details."))
+                   "effect sizes of the significant signals and rule out the
+                   ones ", "with low effect sizes. See the documentation for
+                   more details."))
     }
   }
 
