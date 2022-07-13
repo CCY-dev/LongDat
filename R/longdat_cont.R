@@ -204,6 +204,14 @@
 #'  (Spearman's rho) of each dependent variable between each dependent
 #'  variable value and time.
 #'
+#'  Normalize_method (for user's reference)
+#'
+#'  When data_type is either "measurement" or "others", this table shows the
+#'  normalization method used for each feature. Please refer to "Using the
+#'  bestNormalize Package" on the Internet for the details of each method.
+#'  "NA" indicates that there are too few data points to interpolate, and
+#'  thus no normalization was done.
+#'
 #' @examples
 #' test_cont <- suppressWarnings(longdat_cont(input = LongDat_cont_master_table,
 #' data_type = "count", test_var = "Day",
@@ -410,9 +418,9 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
   if (data_type == "count") {
     if (false_pos_count > 0) {
       print(paste0("Attention! Since there are false positives in the ",
-            "randomized control test, it's recommended to check the ",
-            "effect sizes of the significant signals and rule out the ones ",
-            "with low effect sizes. See the documentation for more details."))
+                   "randomized control test, it's recommended to check the ",
+                   "effect sizes of the significant signals and rule out the ones ",
+                   "with low effect sizes. See the documentation for more details."))
     }
   }
 
