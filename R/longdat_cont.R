@@ -204,8 +204,14 @@
 #'  (Spearman's rho) of each dependent variable between each dependent
 #'  variable value and time.
 #'
+#' Normalize_method (for user's reference)
 #'
-
+#'  When data_type is either "measurement" or "others", this table shows the
+#'  normalization method used for each feature. Please refer to "Using the
+#'  bestNormalize Package" on the Internet for the details of each method.
+#'  "NA" indicates that there are too few data points to interpolate, and
+#'  thus no normalization was done.
+#'
 #' @examples
 #' test_cont <- suppressWarnings(longdat_cont(input = LongDat_cont_master_table,
 #' data_type = "count", test_var = "Day",
