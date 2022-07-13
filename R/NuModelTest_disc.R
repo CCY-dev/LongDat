@@ -26,6 +26,11 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data,
   if (data_type == "count") {
     Theta <- c()
   }
+  if (data_type %in% c("measurement", "others")) {
+    Normalize_method <- as.data.frame(matrix(data = NA, nrow = N, ncol = 2))
+    colnames(Normalize_method) <- c("Feature", "Normalization_method")
+    Normalize_method$Feature <- variables
+  }
   case_pairs <- combn(x = sort(unique(melt_data[ , test_var])), m = 2)
   p_poho <- data.frame(matrix(nrow = length(variables),
                               ncol = ncol(case_pairs)))
@@ -37,9 +42,17 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data,
 
       tryCatch({
         if (data_type %in% c("measurement", "others")) {
+          normalize_result <- bestNormalize::bestNormalize(subdata$value,
+                                                           loo = TRUE)
+          # Record the method of normalization
+          # Find the one with the lowest Pearson P/df, lower = more normal
+          Normalize_method$Normalization_method[i] <-
+            names(normalize_result$norm_stats)[
+              which.min(normalize_result$norm_stats)]
+
           subdata <- subdata %>%
-            mutate(value_norm =
-                     bestNormalize::bestNormalize(value, loo = TRUE)$x.t)
+            mutate(value_norm = normalize_result$x.t)
+          remove(normalize_result)
         }
         if (data_type == "count") {
           # Negative binomial
@@ -118,5 +131,10 @@ NuModelTest_disc <- function(N, data_type, test_var, melt_data,
       dplyr::mutate(NB_theta = Theta) %>%
       tibble::column_to_rownames()
   }
-  return(list(Ps_null_model, p_poho, case_pairs_name))
+  if (data_type %in% c("measurement", "others")) {
+    return(list(Ps_null_model, p_poho, case_pairs_name, Normalize_method))
+  } else {
+    return(list(Ps_null_model, p_poho, case_pairs_name))
+  }
+
 }

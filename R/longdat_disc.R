@@ -227,6 +227,12 @@
 #'   The number of Effect_size_a_b columns depends on how many combinations
 #'    of time points in the input data.
 #'
+#'  Normalize_method (for user's reference)
+#'
+#'  When data_type is either "measurement" or "others", this table shows the
+#'  normalization method used for each feature. Please refer to "Using the
+#'  bestNormalize Package" on the Internet for the details of each method.
+#'
 #' @examples
 #' test_disc <- longdat_disc(input = LongDat_disc_master_table,
 #' data_type = "count", test_var = "Time_point",
@@ -290,6 +296,10 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
   Ps_null_model <- as.data.frame(NuModel_lists[[1]])
   Ps_poho_fdr <- as.data.frame(NuModel_lists[[2]])
   case_pairs_name <- NuModel_lists[[3]]
+
+  if (data_type %in% c("measurement", "others")) {
+    Normalize_method <- NuModel_lists[[4]]
+  }
   if (verbose == TRUE) {print("Finish null model test and post-hoc test.")}
 
   ################## Covariate model test ###############
@@ -364,7 +374,11 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
       rownames(p_wilcox) <- variables_original
     }}
 
-  ######################### Remove the excluded ones #########################
+  if (data_type %in% c("measurement", "others")) {
+    Normalize_method$Feature <- variables_original
+  }
+
+  ############## Remove the excluded one when data_type = count ##########
   if (data_type == "count") {
     if (verbose == TRUE) {print(
       "Start removing the dependent variables to be exlcuded.")}
@@ -500,7 +514,16 @@ longdat_disc <- function(input, data_type, test_var, variable_col, fac_var,
     } else if (nrow(result_neg_ctrl) == 0 &
                variable_col-1-2-length(not_used) == 0) {
       return(list(Result_table = Result_table))}
-  } else if(data_type != "count") {
+  } else if(data_type %in% c("measurement", "others")) {
+    if (variable_col-1-2-length(not_used) > 0) {
+      return(list(Result_table = Result_table,
+                  Covariate_table = Confounder_table,
+                  Normalize_method = Normalize_method))
+    } else if (variable_col-1-2-length(not_used) == 0) {
+      return(Result_table = Result_table,
+             Normalize_method = Normalize_method)
+    }
+  } else if(data_type %in% c("proportion", "binary", "ordinal")) {
     if (variable_col-1-2-length(not_used) > 0) {
       return(list(Result_table = Result_table,
                   Covariate_table = Confounder_table))
