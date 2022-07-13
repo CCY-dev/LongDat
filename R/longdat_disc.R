@@ -227,7 +227,6 @@
 #'   The number of Effect_size_a_b columns depends on how many combinations
 #'    of time points in the input data.
 #'
-
 #' @examples
 #' test_disc <- longdat_disc(input = LongDat_disc_master_table,
 #' data_type = "count", test_var = "Time_point",
