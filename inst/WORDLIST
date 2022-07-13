@@ -37,3 +37,5 @@ md
 nrc
 omics
 preprocess
+bestNormalize
+Normalize_method

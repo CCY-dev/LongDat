@@ -1,3 +1,6 @@
+## 20220713 Update to LongDat_1.1.0
+Added Normalize_method table when the data_type is "measurement" or "others". 
+
 ## 20220621 Update to LongDat_1.0.5
 Replaced the "insignificant" label in cuneiform plot with "non-significant"
 
