@@ -227,6 +227,14 @@
 #'   The number of Effect_size_a_b columns depends on how many combinations
 #'    of time points in the input data.
 #'
+#'  Normalize_method (for user's reference)
+#'
+#'  When data_type is either "measurement" or "others", this table shows the
+#'  normalization method used for each feature. Please refer to "Using the
+#'  bestNormalize Package" on the Internet for the details of each method.
+#'  "NA" indicates that there are too few data points to interpolate, and
+#'  thus no normalization was done.
+#'
 #' @examples
 #' test_disc <- longdat_disc(input = LongDat_disc_master_table,
 #' data_type = "count", test_var = "Time_point",
