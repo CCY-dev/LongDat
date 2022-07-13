@@ -204,7 +204,6 @@
 #'  (Spearman's rho) of each dependent variable between each dependent
 #'  variable value and time.
 #'
-
 #'
 #' @examples
 #' test_cont <- suppressWarnings(longdat_cont(input = LongDat_cont_master_table,
