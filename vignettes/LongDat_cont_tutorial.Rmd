@@ -118,7 +118,7 @@ If you have completed running the function successfully, you'll see the message 
 
 ## Results
 
-The major output from ```longdat_cont()``` include a result table and a covariate table. If you have count data (data_type equals to "count"), then there are chances that you get a third table "randomized control table". For more details about the "randomized control table", please read the help page of this function by using ```?longdat_cont```.
+The major output from ```longdat_cont()``` include a result table and a covariate table. If you have count data (data_type equals to "count"), then there are chances that you get a third table "randomized control table". If you specify data_type as either "measurement" or "others", then you'll get a "Normalize_method" table. For more details about the "randomized control table" and "Normalize_method" table, please read the help page of this function by using ```?longdat_cont```.
 
 ### Result table
 

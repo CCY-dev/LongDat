@@ -196,6 +196,14 @@ false positive features.
  4. Effect_size: This column describes the correlation coefficient
  (Spearman's rho) of each dependent variable between each dependent
  variable value and time.
+
+ Normalize_method (for user's reference)
+
+ When data_type is either "measurement" or "others", this table shows the
+ normalization method used for each feature. Please refer to "Using the
+ bestNormalize Package" on the Internet for the details of each method.
+ "NA" indicates that there are too few data points to interpolate, and
+ thus no normalization was done.
 }
 \description{
 longdat_cont calculates the p values, effect sizes and discover covariate

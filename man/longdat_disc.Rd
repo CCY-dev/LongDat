@@ -217,6 +217,14 @@ false positive features.
   variable between time point b and a in the randomized control dataset.
   The number of Effect_size_a_b columns depends on how many combinations
    of time points in the input data.
+
+ Normalize_method (for user's reference)
+
+ When data_type is either "measurement" or "others", this table shows the
+ normalization method used for each feature. Please refer to "Using the
+ bestNormalize Package" on the Internet for the details of each method.
+ "NA" indicates that there are too few data points to interpolate, and
+ thus no normalization was done.
 }
 \description{
 longdat_disc calculates the p values, effect sizes and discover covariate
