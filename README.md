@@ -3,7 +3,10 @@ LongDat R package takes longitudinal dataset as input data and analyzes if there
 
 
 ## Install
-Install LongDat by typing ```install.packages("LongDat")``` in R.
+Install LongDat by typing ```install.packages("LongDat")``` in R. \
+If you encounter errors like the one below when installing the package \
+```Error: package or namespace load failed for ‘LongDat’ object ‘A’ is not exported by 'namespace:B_package'``` \
+please try install the dependency B_package first, and then try to install LongDat again. An example to this kind of problem and solution can be found [here](https://stackoverflow.com/questions/48962946/error-package-or-namespace-load-failed-for-arulesviz-object-cividis-is-not)
 
 ## Tutorial
 Tutorials for the analysis on continuous time variable (e.g. days) can be found [here](https://CRAN.R-project.org/package=LongDat/vignettes/LongDat_cont_tutorial.html). 
