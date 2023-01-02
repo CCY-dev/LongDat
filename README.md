@@ -3,7 +3,7 @@ LongDat R package takes longitudinal dataset as input data and analyzes if there
 
 
 ## Install
-Install LongDat by typing ```install.packages("LongDat")``` in R. \
+Install LongDat by typing ```install.packages("LongDat")``` in R. 
 
 If you encounter errors like the one below when installing the package \
 ```Error: package or namespace load failed for ‘LongDat’ object ‘A’ is not exported by 'namespace:B_package'``` \
