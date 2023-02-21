@@ -452,15 +452,15 @@ longdat_cont <- function(input, data_type, test_var, variable_col, fac_var,
                   Covariate_table = Confounder_table,
                   Normalize_method = Normalize_method))
     } else if (variable_col-1-2-length(not_used) == 0) {
-      return(Result_table = Result_table,
-             Normalize_method = Normalize_method)
+      return(list(Result_table = Result_table,
+             Normalize_method = Normalize_method))
     }
   } else if(data_type %in% c("proportion", "binary", "ordinal")) {
     if (variable_col-1-2-length(not_used) > 0) {
       return(list(Result_table = Result_table,
                   Covariate_table = Confounder_table))
     } else if (variable_col-1-2-length(not_used) == 0) {
-      return(Result_table = Result_table)
+      return(list(Result_table = Result_table))
     }
   }
 }
