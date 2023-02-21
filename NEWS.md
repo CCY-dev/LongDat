@@ -1,33 +1,20 @@
-# LongDat 1.1.0
+# LongDat 1.1.0 (20220713 update)
+*Added Normalize_method table when the data_type is "measurement" or "others". 
 
-# 20220713 Update to LongDat_1.1.0
-Added Normalize_method table when the data_type is "measurement" or "others". 
+# LongDat 1.0.5 (20220621 update)
+*Replaced the "insignificant" label in cuneiform plot with "non-significant"
 
-# 20220621 Update to LongDat_1.0.5
-Replaced the "insignificant" label in cuneiform plot with "non-significant"
+# LongDat 1.0.4 (20220601 update)
+*Replaced the "confounder" terms with "covariates" in the final signals.
 
-# 20220601 Update to LongDat_1.0.4
-Replaced the "confounder" terms with "covariates" in the final signals.
+# LongDat 1.0.3 (20220225 update)
+*Fixed the problem that occurs in the measurement mode.
 
-# 20220225 Update to LongDat_1.0.3
-Fixed the problem that occurs in the measurement mode.
+# LongDat 1.0.2 (20220217 update)
+*Fixed the problem that occurs when there is only one feature variable.
 
-# 20220217 Update to LongDat_1.0.2
-Fixed the problem that occurs when there is only one feature variable.
+# LongDat 1.0.1 (20220202 update)
+*Optimized the data preprocess script to make LongDat also applicable to feature with negative values
 
-# 20220202 Update to LongDat_1.0.1
-Optimized the data preprocess script to make LongDat also applicable to feature with negative values
-
-# 20220118 Remove \dontrun in the examples
-
-# 20220117 Updated the description file
-
-# 20220113 Updated the description and citation file
-
-# 20211215 Ready for submission to CRAN
-Ran through the checks for the preparation of CRAN submission
-
-# Start of the News file
-Added News.md to track changes
-
+# LongDat 1.0.0 (20211215 submit)
 * Added a `NEWS.md` file to track changes to the package.
