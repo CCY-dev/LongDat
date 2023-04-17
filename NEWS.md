@@ -1,3 +1,7 @@
+# LongDat 1.1.1 (20230417 update)
+* Remove tidyverse from suggestions
+* Fixed the bug in longdat_disc/cont
+
 # LongDat 1.1.0 (20220713 update)
 *Added Normalize_method table when the data_type is "measurement" or "others". 
 

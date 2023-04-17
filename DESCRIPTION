@@ -1,7 +1,7 @@
 Package: LongDat
 Type: Package
 Title: A Tool for 'Covariate'-Sensitive Longitudinal Analysis on 'omics' Data
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(person(given = "Chia-Yu",
            family = "Chen",
            role = c("aut", "cre"),
@@ -26,5 +26,5 @@ BugReports: https://github.com/CCY-dev/LongDat/issues
 RoxygenNote: 7.1.2
 Depends: R (>= 4.0.0)
 Imports: lme4, reshape2, glmmTMB, emmeans, bestNormalize, MASS, ggplot2, stringr, magrittr, tibble, dplyr, graphics, utils, stats, rlang, car, rstatix, effsize, tidyr, patchwork
-Suggests: rmarkdown, knitr, tidyverse, kableExtra
+Suggests: rmarkdown, knitr, kableExtra
 VignetteBuilder: knitr
