@@ -1,3 +1,6 @@
+# LongDat 1.1.2 (20230713 update)
+* Updated citation information
+
 # LongDat 1.1.1 (20230417 update)
 * Remove tidyverse from suggestions
 * Fixed the bug in longdat_disc/cont
