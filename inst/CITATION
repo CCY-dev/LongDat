@@ -1,12 +1,17 @@
 citHeader("To cite LongDat in publications use:")
 
-citEntry(
-  entry    = "Manual",
-  title    = "LongDat: an R package for confounder-sensitive longitudinal analysis on multi-omics data",
+bibentry(
+  bibtype    = "Article",
+  title    = "LongDat: an R package for covariate-sensitive longitudinal analysis of high-dimensional data",
   author   = c(person("Chia-Yu", "Chen"),
                person("Ulrike ", "Löber"),
                person("Sofia", "Forslund")),
-  year     = "2022",
-  textVersion = paste("Chen et al., (2022).", "LongDat: an R package for confounder-sensitive longitudinal analysis on multi-omics data", "."
-  )
+  year     = "2023",
+  journal = "Bioinformatics Advances",
+  number = "1",
+  pages = "vbad063",
+  volume = "3",
+  doi = "10.1093/bioadv/vbad063",
+  url = "https://doi.org/10.1093/bioadv/vbad063",
+  textVersion = paste("Chen et al., LongDat: an R package for covariate-sensitive longitudinal analysis of high-dimensional data, Bioinformatics Advances, Volume 3, Issue 1, 2023, vbad063, https://doi.org/10.1093/bioadv/vbad063")
 )
