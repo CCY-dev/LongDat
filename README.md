@@ -18,4 +18,4 @@ Alternatively, you can type ```browseVignettes(“LongDat”)``` in R after inst
 
 ## Citation
 The paper will be added here once it is published. Before that, please cite:  \
-Chen et al., ( 2022 ). LongDat: an R package for confound-sensitive longitudinal analysis on multi-omics data.
+Chia-Yu Chen, Ulrike Löber, Sofia K Forslund, LongDat: an R package for covariate-sensitive longitudinal analysis of high-dimensional data, Bioinformatics Advances, Volume 3, Issue 1, 2023, vbad063, https://doi.org/10.1093/bioadv/vbad063
