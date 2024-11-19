@@ -1,3 +1,6 @@
+# LongDat 1.1.3 (20241118 update)
+* Revised the make_master_table function to support both data.frame and tibble inputs
+
 # LongDat 1.1.2 (20230713 update)
 * Updated citation information
 

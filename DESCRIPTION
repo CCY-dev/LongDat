@@ -1,7 +1,7 @@
 Package: LongDat
 Type: Package
 Title: A Tool for 'Covariate'-Sensitive Longitudinal Analysis on 'omics' Data
-Version: 1.1.2
+Version: 1.1.3
 Authors@R: c(person(given = "Chia-Yu",
            family = "Chen",
            role = c("aut", "cre"),

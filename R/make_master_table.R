@@ -64,15 +64,15 @@ make_master_table <- function(metadata_table, feature_table,
          metadata_table and feature_table.")}
 
   # Check if the sample_ID is unique for every sample
-  if (length(unique(metadata_table[ , sample_ID])) != nrow(metadata_table)) {
+  if (length(unique(metadata_table[[sample_ID]])) != nrow(metadata_table)) {
     stop("Error! There are repeated sample_IDs in the metadata_table.
     Please make sure that sample_IDs are unique for each sample.")}
-  if (length(unique(feature_table[ , sample_ID])) != nrow(feature_table)) {
+  if (length(unique(feature_table[[sample_ID]])) != nrow(feature_table)) {
     stop("Error! There are repeated sample_IDs in the feature_table
     Please make sure that sample_IDs are unique for each sample.")}
 
   # Check if the sample_IDs match between the two tables
-  diff <- setdiff(metadata_table[ , sample_ID], feature_table[ , sample_ID])
+  diff <- setdiff(metadata_table[[sample_ID]], feature_table[[sample_ID]])
   if (length(diff) > 0) {
     stop("Error! The sample_IDs don't match between the
          metadata_table and feature_table. ")}
@@ -87,6 +87,7 @@ make_master_table <- function(metadata_table, feature_table,
 
   # Join the two tables
   master <- inner_join(metadata_table, feature_table, by = sample_ID)
+  master <- as.data.frame(master)
 
   # Discard the sample_ID column (or keep it by user's choice)
   if (keep_id == TRUE) {
